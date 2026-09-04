@@ -217,18 +217,18 @@
                                </a>
                             </div>
                         </div>
-                        <!-- <div class="col-md-4"> 
+                        <div class="col-md-4"> 
                           <div class="form-group"> 
                             <label for="student_search">Search Student</label> 
                             <input type="text" name="student_search" id="student_search" class="form-control" placeholder="Name or Admission No" autocomplete="off" value="{{ request('student_search') ?? request('search') }}"> 
                             <small class="text-muted"> Type at least 3 characters </small> 
                            </div> 
-                        </div> -->
+                        </div> 
 
 
                     </div>
 
-                   {{---- <div class="row">
+                    <div class="row">
                         <div class="col-md-12">
 
                             <button type="submit"
@@ -244,7 +244,7 @@
                             </a>
 
                         </div>
-                    </div>---}}
+                    </div>
 
                 <!-- </form> -->
 
@@ -253,7 +253,7 @@
 
 
         <!-- Student List -->
-       {{---<div class="card">
+       <div class="card">
 
             <div class="card-header">
                 <h3 class="card-title">
@@ -339,12 +339,10 @@
                                     </span>
                                 </div>
                                 <div class="col-md-6 text-right">
-                                    <button type="submit"
-                                            class="btn btn-success"
-                                            id="generateButton">
-                                        <i class="fas fa-id-card mr-1"></i>
-                                        Generate ID Cards
-                                    </button>
+                                    <a href="{{ route('idcard.print-filtered') }}?{{ request()->getQueryString() }}" 
+                                     class="btn btn-info" target="_blank">
+                                      <i class="fas fa-print mr-1"></i> Print ID Cards
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -353,7 +351,7 @@
             </div>
             </div>
 
-           </div>--}} 
+        </div>
 </section>
 
 
