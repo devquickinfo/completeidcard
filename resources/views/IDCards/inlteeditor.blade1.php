@@ -1,6 +1,14 @@
 @extends('frontend.layout.applayout')
 @section('title', 'ID Card Editor — ' . ucwords($school->school_name ?? ''))
 @section('content')
+@php
+  $editorBackground = $designcard->background ?? ($selectedSample->file_path ?? null);
+  $editorBackgroundUrl = $editorBackground
+      ? (preg_match('/^https?:\\/\\//', $editorBackground)
+          ? $editorBackground
+          : asset('storage/' . $editorBackground))
+      : '';
+@endphp
 <style>
   :root{
     --maroon:#9e1b32;
@@ -61,11 +69,10 @@
     flex-wrap:wrap;
   }
 
-  /* =========== LEFT CONTROLS =========== */
+  /* =========== CONTROLS (now on the RIGHT, scrolls with the page) =========== */
   .controls{
-    width:340px;
-    max-height:calc(100vh - 100px);
-    overflow-y:auto;
+    order:2;
+    width:460px;
     background:var(--panel-bg);
     border-radius:10px;
     box-shadow:0 2px 10px rgba(0,0,0,.08);
@@ -237,14 +244,18 @@
     padding:0;
   }
 
-  /* =========== RIGHT PREVIEW =========== */
+  /* =========== IMAGE CANVAS (now on the LEFT, stays static on scroll) =========== */
   .preview-wrap{
+    order:1;
     flex:1;
     /* min-width:340px; */
     display:flex;
     flex-direction:column;
     align-items:center;
     gap:16px;
+    position:sticky;
+    top:24px;
+    align-self:flex-start;
   }
   .zoom-controls{
     display:flex;
@@ -256,14 +267,14 @@
   .zoom-controls input{vertical-align:middle;}
 
   .card-stage{
-    background:repeating-conic-gradient(#e9eaed 0% 25%, #f6f7f8 0% 50%) 50% / 20px 20px;
+   /* background:repeating-conic-gradient(#e9eaed 0% 25%, #f6f7f8 0% 50%) 50% / 20px 20px;*/
     padding:40px;
     border-radius:12px;
   }
 
     .id-card{
         position:relative;
-        background-image: url('{{ isset($designcard->background) && $designcard->background ? asset('storage/' . $designcard->background) : (isset($selectedSample->file_path) ? asset('storage/' . $selectedSample->file_path) : '') }}');
+        background-image: url('{{ $editorBackgroundUrl }}');
         background-size:100% 100%;
         background-repeat:no-repeat;
         background-position:center;
@@ -330,6 +341,22 @@
     max-width:700px;
   }
 
+  /* =========== ALWAYS-VISIBLE ACTION TOOLBAR =========== */
+  .floating-toolbar{
+    position:fixed;
+    left:42%;
+    bottom:22px;
+    transform:translateX(-50%);
+    z-index:1000;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:#fff;
+    padding:10px 10px;
+    border-radius:40px;
+    box-shadow:0 6px 22px rgba(0,0,0,.22);
+  }
+
     .field-css{
         width:100%;
         min-height:44px;
@@ -344,6 +371,109 @@
 
   ::-webkit-scrollbar{width:8px;}
   ::-webkit-scrollbar-thumb{background:#c9ccd1;border-radius:4px;}
+
+  /* =========================================================
+     MOBILE / RESPONSIVE FIXES ONLY
+     (no functional changes — layout/sizing adjustments so the
+     existing editor fits and stays usable on small screens)
+  ========================================================= */
+  @media (max-width: 991px){
+    .editor{
+      padding:16px;
+      gap:16px;
+    }
+    .controls{
+      width:100%;
+    }
+    .preview-wrap{
+      width:100%;
+      position:static;
+      top:auto;
+    }
+  }
+
+  @media (max-width: 767px){
+    html, body{
+      overflow-x:hidden;
+    }
+    .id-editor-header-row{
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .id-editor-header-actions{
+      flex-wrap:wrap;
+      width:100%;
+      justify-content:flex-start;
+      gap:6px;
+    }
+    .id-editor-header-actions .btn{
+      margin:0 !important;
+      font-size:12px;
+      padding:6px 10px;
+    }
+    .editor{
+      padding:12px;
+      gap:14px;
+    }
+    .controls{
+      border-radius:8px;
+    }
+    .group{
+      padding:12px 14px;
+    }
+    .row4{
+      gap:6px;
+    }
+    .row4 .field{
+      min-width:64px;
+    }
+    .card-stage{
+      padding:20px;
+      max-width:100%;
+      overflow-x:auto;
+    }
+    .zoom-controls{
+      flex-wrap:wrap;
+      justify-content:center;
+      text-align:center;
+    }
+    .hint{
+      max-width:100%;
+      padding:0 8px;
+    }
+    .floating-toolbar{
+      left:50%;
+      bottom:12px;
+      max-width:94vw;
+      flex-wrap:wrap;
+      justify-content:center;
+      padding:8px;
+      gap:6px;
+    }
+    .floating-toolbar .btn{
+      font-size:12px;
+      padding:6px 10px;
+      margin:0 !important;
+    }
+  }
+
+  @media (max-width: 420px){
+    .id-editor-header-actions .btn{
+      font-size:11px;
+      padding:5px 8px;
+    }
+    .card-stage{
+      padding:12px;
+    }
+    .row4 .field{
+      min-width:56px;
+    }
+    .field input[type="text"],
+    .field input[type="number"],
+    .field select{
+      font-size:16px; /* prevents iOS auto-zoom on focus */
+    }
+  }
 </style>
 <div class="content-wrapper">
     <section class="content-header">
@@ -359,42 +489,37 @@
             <div class="card mt-4">
                 <div class="card-header">
                     <div class="d-flex align-items-center">
-                        <div class="d-flex align-items-center justify-content-between w-100">
+                        <div class="d-flex align-items-center justify-content-between w-100 id-editor-header-row">
                             <div>
                                 <h4 class="mb-0">ID Card Editor</h4>
                                 <div class="sub">
                                     {{ ucwords($school->school_name ?? " ") }} · drag fields on the card or use the controls
                                 </div>
                             </div>
-                            <div class="d-flex align-items-center">
-
+                            <div class="d-flex align-items-center id-editor-header-actions">
                                 <button
                                     type="button"
                                     id="exportLayoutBtn"
                                     class="btn btn-success btn-sm mx-1">
                                     💾 Export Layout
                                 </button>
-
                                 <button
                                     type="button"
                                     id="saveLayoutBtn"
                                     class="btn btn-primary btn-sm mx-2">
                                     💾 Save ID Card
                                 </button>
-
                                 <input
                                     type="file"
                                     id="importLayoutFile"
                                     accept="application/json"
                                     style="display:none;">
-
                                 <button
                                     type="button"
                                     id="downloadBtn"
                                     class="btn btn-warning btn-sm">
                                     ⬇ Download PNG
                                 </button>
-
                             </div>
                         </div>
                     </div>
@@ -418,7 +543,7 @@
                         <div class="group-title"><h3>Card Background</h3><span class="chev">▾</span></div>
                         <div class="group-body">
                             <div class="field">
-                                <label for="orientationSelect">Orientation</label>
+                               <label for="orientationSelect">Orientation</label>
                                <select id="orientationSelect">
                                     <option value="horizontal"
                                         {{ ($orientation ?? 'vertical') === 'horizontal' ? 'selected' : '' }}>
@@ -778,7 +903,9 @@
                         </div>
 
                         <div class="card-stage">
-                        <div id="idCard" class="id-card">
+                            <div id="idCard" class="id-card"
+                                data-vertical-sample="{{ isset($verticalSample->file_path) ? asset('storage/' . $verticalSample->file_path) : '' }}"
+                                data-horizontal-sample="{{ isset($horizontalSample->file_path) ? asset('storage/' . $horizontalSample->file_path) : '' }}">
 
                             <img id="elLogo" class="el el-logo"
                                 src="{{ isset($designcard->layout['fields']['logo']['src']) && $designcard->layout['fields']['logo']['src'] ? asset('storage/' . $designcard->layout['fields']['logo']['src']) : 'https://placehold.co/160x160/ffffff/9e1b32?text=Logo' }}" alt="School Logo">
@@ -808,6 +935,12 @@
                         </div>
 
                         <div class="hint">Tip: drag any field directly on the card to reposition it — the X/Y boxes on the left update automatically. Use the ⎘ button next to any field's name to duplicate it (e.g. add a second logo).</div>
+
+                        <div class="floating-toolbar">
+                            <button type="button" id="exportLayoutBtnFloat" class="btn btn-success btn-sm mx-1">💾 Export Layout</button>
+                            <button type="button" id="saveLayoutBtnFloat" class="btn btn-primary btn-sm mx-1">💾 Save ID Card</button>
+                            <button type="button" id="downloadBtnFloat" class="btn btn-warning btn-sm mx-1">⬇ Download PNG</button>
+                        </div>
                     </div>
 
                     </div>
@@ -848,6 +981,14 @@
 
         card.style.width = CARD_W + 'px';
         card.style.height = CARD_H + 'px';
+
+        const sampleUrl = horizontal
+            ? card.dataset.horizontalSample
+            : card.dataset.verticalSample;
+
+        if (sampleUrl) {
+            card.style.backgroundImage = `url("${sampleUrl}")`;
+        }
     }
 
 
@@ -860,7 +1001,9 @@
     orientationSelect.addEventListener(
         'change',
         function () {
-            setCardSize(orientationSelect.value);
+            const url = new URL(window.location.href);
+            url.searchParams.set('orientation', orientationSelect.value);
+            window.location.href = url.toString();
         }
     );
 
@@ -3926,8 +4069,38 @@
 
 
 })();
-
 </script>
+
+<script>
+// =========================================================
+// FLOATING TOOLBAR
+// Mirrors clicks to the original header buttons so all
+// existing save/export/download logic is reused as-is.
+// =========================================================
+(function () {
+
+    function mirrorClick(floatId, originalId) {
+
+        const floatBtn = document.getElementById(floatId);
+        const originalBtn = document.getElementById(originalId);
+
+        if (!floatBtn || !originalBtn) {
+            return;
+        }
+
+        floatBtn.addEventListener('click', function () {
+            originalBtn.click();
+        });
+    }
+
+    mirrorClick('exportLayoutBtnFloat', 'exportLayoutBtn');
+    mirrorClick('saveLayoutBtnFloat', 'saveLayoutBtn');
+    mirrorClick('downloadBtnFloat', 'downloadBtn');
+
+})();
+</script>
+
+
 <script>
 document.getElementById('bgUpload').addEventListener('change', function () {
 
@@ -4038,7 +4211,7 @@ document.getElementById('bgUpload').addEventListener('change', function () {
             const orientation = data.orientation;
 
              window.location.href =
-            `http://localhost:8001/idcard-editor?orientation=${encodeURIComponent(orientation)}`;
+            `https://dev.infotasks.com/idcard-editor?orientation=${encodeURIComponent(orientation)}`;
 
 
         }
@@ -4059,4 +4232,5 @@ document.getElementById('bgUpload').addEventListener('change', function () {
 
 });
 </script>
+
 @endsection

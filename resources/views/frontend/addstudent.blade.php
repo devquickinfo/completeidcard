@@ -1,293 +1,7 @@
 @extends('frontend.layout.applayout')
 @section('title', 'Add Student')
 @section('content')
-<style>
-    .id-card-preview {
-        position: relative;
-        width: 100%;
-        max-width: 600px;
-        margin: 0 auto;
-        overflow: hidden;
-        border-radius: 8px;
-        background: #fff;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, .25);
-    }
 
-    /* Background template */
-    .id-card-template {
-        display: block;
-        width: 100%;
-        height: auto;
-    }
-
-    /* =========================
-     SCHOOL LOGO
-  ========================= */
-
-    .card-school-logo {
-        position: absolute;
-        top: 4%;
-        left: 5%;
-        width: 12%;
-        aspect-ratio: 1 / 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 100%;
-        overflow: hidden;
-        z-index: 5;
-
-    }
-
-    .card-school-logo img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    }
-
-    .logo-placeholder {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        background: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 8px;
-        font-weight: bold;
-        color: #333;
-    }
-
-    /* =========================
-     SCHOOL NAME & ADDRESS
-  ========================= */
-
-    .card-school-name {
-        position: absolute;
-        top: 3%;
-        left: 20%;
-        width: 75%;
-        text-align: left;
-        font-size: clamp(12px, 2vw, 22px);
-        font-weight: 800;
-        color: #173f7a;
-        text-transform: uppercase;
-        z-index: 5;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .card-school-address {
-        position: absolute;
-        top: 13%;
-        left: 20%;
-        width: 75%;
-        text-align: left;
-        font-size: clamp(6px, 1vw, 11px);
-        font-weight: 500;
-        color: #555;
-        z-index: 5;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    /* =========================
-     STUDENT PHOTO
-  ========================= */
-
-    .card-student-photo {
-        position: absolute;
-        top: 50%;
-        left: 5%;
-        width: 22%;
-        aspect-ratio: 3 / 4;
-        background: #eee;
-        border: 3px solid #fff;
-        border-radius: 8px;
-        overflow: hidden;
-        z-index: 5;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, .25);
-    }
-
-    .card-student-photo img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-
-    .student-photo-placeholder {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        font-weight: bold;
-        color: #777;
-    }
-
-    /* =========================
-     STUDENT DETAILS
-  ========================= */
-
-    .card-student-details {
-        position: absolute;
-        top: 25%;
-        left: 32%;
-        width: 63%;
-        z-index: 5;
-        color: #173f7a;
-        font-size: clamp(7px, 1.15vw, 14px);
-        font-weight: 600;
-    }
-
-    .card-detail-row {
-        display: flex;
-        width: 100%;
-        margin-bottom: 1.2%;
-        line-height: 1.25;
-    }
-
-    .detail-label {
-        width: 32%;
-        font-weight: 800;
-        flex-shrink: 0;
-    }
-
-    .detail-value {
-        width: 68%;
-        font-weight: 600;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    /* Mobile Responsive */
-    @media (max-width: 767px) {
-        .card-school-name {
-            font-size: 14px;
-        }
-
-        .card-school-address {
-            font-size: 7px;
-        }
-
-        .card-student-details {
-            font-size: 8px;
-        }
-    }
-
-    /*ID card Edit Styles*/
-    .preview-field {
-        position: absolute;
-        font-size: 12px;
-        font-weight: 600;
-        color: #111;
-    }
-
-    #preview-name {
-        top: 80px;
-        left: 80px;
-    }
-
-    #preview-admission {
-        top: 100px;
-        left: 80px;
-        font-size: 10px;
-    }
-
-    #preview-class {
-        top: 115px;
-        left: 80px;
-        font-size: 10px;
-    }
-
-    #preview-address {
-        bottom: 15px;
-        left: 20px;
-        font-size: 10px;
-    }
-
-    /* Make modal body scrollable */
-    #editSampleModal .modal-body {
-        max-height: 80vh;
-        overflow-y: auto;
-    }
-
-    /* Make the preview column stick while the right column scrolls */
-    #editSampleModal .col-md-6:first-child {
-        position: sticky;
-        top: 0;
-        align-self: flex-start;
-    }
-
-    /* Bootstrap's .row is display:flex by default, but just in case */
-    #editSampleModal .row {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    #id-card-preview {
-        transition: width 0.2s ease, height 0.2s ease;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    .preview-field {
-        position: absolute;
-        font-size: 12px;
-        font-weight: 600;
-        color: #111;
-        white-space: nowrap;
-    }
-
-    #preview-name {
-        top: 80px;
-        left: 80px;
-    }
-
-    #preview-admission {
-        top: 100px;
-        left: 80px;
-        font-size: 10px;
-    }
-
-    #preview-class {
-        top: 115px;
-        left: 80px;
-        font-size: 10px;
-    }
-
-    #preview-address {
-        bottom: 15px;
-        left: 20px;
-        font-size: 10px;
-    }
-
-    #preview-photo {
-        top: 60px;
-        left: 15px;
-        width: 80px;
-        height: 80px;
-    }
-
-    #preview-logo {
-        top: 10px;
-        left: 10px;
-        width: 40px;
-        height: 40px;
-    }
-
-    #preview-signature {
-        bottom: 10px;
-        right: 15px;
-        width: 60px;
-        height: 30px;
-    }
-</style>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -330,426 +44,203 @@
                             @if(isset($student))
                             @method('PUT')
                             @endif
+                            <input type="hidden" name="photo_data" id="photo_data" value="">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Admission No</label>
-                                            <input type="text" name="admission_no" class="form-control"
-                                                id="exampleInputEmail1" placeholder="Enter Admission No"
-                                                value="{{ old('admission_no', $student->admission_no ?? '') }}">
-                                            @error('admission_no')
-                                            <span class="text-danger">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputPassword1">First Name</label>
-                                            <input type="text" name="first_name" class="form-control"
-                                                id="exampleInputPassword1" placeholder="Enter First Name"
-                                                value="{{ old('first_name', $student->first_name ?? '') }}">
-                                            @error('first_name')
-                                            <span class="text-danger">{{ $message }}</span>
-                                            @enderror
-                                        </div>
+                                    <!---form fields------>
 
-                                        <div class="form-group">
-                                            <label for="exampleInputPassword2">Last Name</label>
-                                            <input type="text" name="last_name" class="form-control"
-                                                id="exampleInputPassword2" placeholder="Enter Last Name"
-                                                value="{{ old('last_name', $student->last_name ?? '') }}">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="exampleInputPassword2">Father Name</label>
-                                            <input type="text" name="father_name" class="form-control"
-                                                id="exampleInputPassword2" placeholder="Enter Father Name"
-                                                value="{{ old('father_name', $student->father_name ?? '') }}">
-                                            @error('father_name')
-                                            <span class="text-danger">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Gender</label>
-                                            <select name="gender" id="gender" class="form-control">
-                                                <option value="">-- Select Gender --</option>
-                                                <option value="Male" {{ old('gender', $student->gender ?? '') == 'Male'
-                                                    ? 'selected' : ''
-                                                    }}>Male</option>
-                                                <option value="Female" {{ old('gender', $student->gender ?? '') ==
-                                                    'Female' ? 'selected' : ''
-                                                    }}>Female</option>
-                                                <option value="Other" {{ old('gender', $student->gender ?? '') ==
-                                                    'Other' ? 'selected' : ''
-                                                    }}>Other</option>
-                                            </select>
-                                            @error('gender')
-                                            <span class="text-danger">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="exampleInputPassword1">Date of Birth</label>
-                                            <input type="date" name="date_of_birth" class="form-control"
-                                                id="exampleInputPassword1" placeholder="Enter Date of Birth"
-                                                value="{{ old('date_of_birth', optional($student->date_of_birth ?? null)->format('Y-m-d') ?? '') }}">
-                                            @error('date_of_birth')
-                                            <span class="text-danger">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputPassword2">Class</label>
-                                            <select name="class_id" id="class_id" class="form-control" required>
-                                                <option value="">Select Class</option>
-
-                                                @foreach($classes as $class)
-                                                <option value="{{ $class->id }}" {{ old('class_id', $student->class_id
-                                                    ?? '') == $class->id ?
-                                                    'selected' : '' }}>
-                                                    {{ $class->name }}
-                                                </option>
-                                                @endforeach
-                                            </select>
-                                            @error('class_id')
-                                            <span class="text-danger">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputPassword2">Section</label>
-                                            <select name="section_id" id="section_id" class="form-control" required>
-                                                <option value="">Select Section</option>
-                                                @foreach($sections as $section)
-                                                <option value="{{ $section->id }}"
-                                                    data-class-id="{{ $section->class_id }}" {{ old('section_id',
-                                                    $student->section_id ?? '') == $section->id ? 'selected' : '' }}>
-                                                    {{ $section->name }}
-                                                </option>
-                                                @endforeach
-                                            </select>
-                                            @error('section_id')
-                                            <span class="text-danger">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputPassword2">Blood Group</label>
-                                            <input type="text" name="blood_group" class="form-control"
-                                                id="exampleInputPassword2" placeholder="Enter Blood Group"
-                                                value="{{ old('blood_group', $student->blood_group ?? '') }}">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputPassword2">Phone</label>
-                                            <input type="text" name="phone" class="form-control"
-                                                id="exampleInputPassword2" placeholder="Enter Phone"
-                                                value="{{ old('phone', $student->phone ?? '') }}">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputPassword2">Photo Upload</label>
-                                            <input type="file" name="photo" class="form-control"
-                                                id="exampleInputPassword2" placeholder="Upload Photo">
-                                        </div>
-                                        @if(isset($student) && $student->photo)
-                                        <div class="form-group">
-                                            <label>Current Upload Photo:</label><br>
-                                            <img src="{{ asset('storage/' . $student->photo) }}" alt="Student Photo"
-                                                style="max-width: 150px; max-height: 150px;">
-                                        </div>
-                                        @endif
-                                        @if(isset($student) && $student->capturephoto)
-                                        <div class="form-group">
-                                            <label>Current Capture Photo:</label><br>
-                                            <img src="{{ asset('storage/' . $student->capturephoto) }}"
-                                                alt="Captured Student Photo"
-                                                style="max-width: 150px; max-height: 150px;">
-                                        </div>
-                                        @endif
-                                        @error('photo')
-                                        <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                        <div class="form-group">
-                                            <label for="exampleInputPassword2">Address</label>
-                                            <textarea name="address" class="form-control" rows="5"
-                                                id="exampleInputPassword2"
-                                                placeholder="Enter Address">{{ old('address', $student->address ?? '') }}</textarea>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-10">
-                                        <h3>Capture Photo (Laptop/Mobile)</h3>
-                                        <p>Capture frame is fixed to passport size ratio 3.5cm x 4.5cm. Captured area
-                                            keeps original crop
-                                            pixels with no downscaling.</p>
-                                        <div class="row mt-3">
-                                            <!-- Live Camera -->
-                                            <div class="col-md-3">
-                                                <div class="card card-primary">
-                                                    <div class="card-header">
-                                                        <h3 class="card-title">Live Camera</h3>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div id="camera-stage"
-                                                            style="background:#dbeafe;padding:8px;border-radius:8px;">
-                                                            <div id="camera"
-                                                                style="position:relative;aspect-ratio:3/4;background:#fff;border-radius:8px;overflow:hidden;">
-                                                                <div id="camera-feed"
-                                                                    style="position:absolute;inset:0;">
-                                                                </div>
-                                                                <div id="capture-frame" style="position:absolute;
-                                                        left:50%;
-                                                        top:50%;
-                                                        width:62%;
-                                                        aspect-ratio:35/45;
-                                                        transform:translate(-50%,-50%);
-                                                        border:3px solid #000;
-                                                        border-radius:12px;
-                                                        box-shadow:0 0 0 9999px rgba(0,0,0,.25);
-                                                        pointer-events:none;">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                    <div class="col-md-6">
+                                        <h5 class="text-center badge badge-info">Student Details</h5>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                 <div class="form-group">
+                                                    <label for="exampleInputEmail1">Admission No</label>
+                                                    <input type="text" name="admission_no" class="form-control"
+                                                        id="exampleInputEmail1" placeholder="Enter Admission No"
+                                                        value="{{ old('admission_no', $student->admission_no ?? '') }}">
+                                                    @error('admission_no')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
                                                 </div>
                                             </div>
-                                            <!-- Captured Photo -->
-                                            <div class="col-md-3">
-                                                <div class="card card-success">
-                                                    <div class="card-header">
-                                                        <h3 class="card-title">Captured Photo</h3>
-                                                    </div>
-                                                    <div class="card-body text-center">
-                                                        <div id="camera-preview" style="width:200px;
-                                                height:258px;
-                                                margin:auto;
-                                                width:100%;
-                                                border:1px solid #ccc;
-                                                border-radius:8px;
-                                                display:flex;
-                                                align-items:center;
-                                                justify-content:center;
-                                                overflow:hidden;
-                                                background:#fff;">
-
-                                                            @if(isset($student) && ($student->capturephoto ||
-                                                            $student->photo))
-                                                            <img src="{{ asset('storage/' . ($student->capturephoto ?? $student->photo)) }}"
-                                                                style="width:100%;height:100%;object-fit:cover;">
-                                                            @else
-                                                            No Capture
-                                                            @endif
-                                                        </div>
-                                                    </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword1">Full Name <span class="text-danger">*</span></label>
+                                                    <input type="text" name="first_name" class="form-control"
+                                                        id="exampleInputPassword1" placeholder="Enter First Name"
+                                                        value="{{ old('first_name', trim(($student->first_name ?? '') . ' ' . ($student->last_name ?? ''))) }}">
+                                                    @error('first_name')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
                                                 </div>
                                             </div>
-                                            <!-- Camera Settings -->
-                                            <!-- <div class="col-md-2">
-                        <div class="card card-info">
-                          <div class="card-header">
-                            <h3 class="card-title">Camera Settings</h3>
-                          </div>
-                          <div class="card-body">
-                            <div class="form-group">
-                              <label>Capture Background</label>
-                              <select id="camera-bg" name="capture_background" class="form-control">
-                                <option value="#dbeafe" {{ old('capture_background', $student->capture_background ??
-                                  'Sky Blue') == '#dbeafe' ? 'selected' : '' }}>Sky Blue</option>
-                                <option value="#e2e8f0" {{ old('capture_background', $student->capture_background ??
-                                  'Sky Blue') == '#e2e8f0' ? 'selected' : '' }}>Light Slate</option>
-                                <option value="#dcfce7" {{ old('capture_background', $student->capture_background ??
-                                  'Sky Blue') == '#dcfce7' ? 'selected' : '' }}>Mint Green</option>
-                              </select>
-                            </div>
-                            <div class="form-group">
-                              <label>Camera</label>
-                              <select id="camera-facing-mode" class="form-control">
-                                <option value="user">Front Camera</option>
-                                <option value="environment" selected>Back Camera</option>
-                              </select>
-                            </div>
-                            <div class="form-group mt-4">
-                              <button type="button" id="start-camera" class="btn btn-primary btn-sm">
-                                <i class="fas fa-video"></i>
-                                Start Camera
-                              </button>
-                            </div>
-                            <div class="form-group">
-                              <button type="button" id="capture-photo" class="btn btn-sm btn-success">
-                                <i class="fas fa-camera"></i>
-                                Capture Photo
-                              </button>
-                            </div>
-                            <input type="hidden" name="photo_data" id="photo_data">
-                          </div>
-                        </div>
-                      </div>-->
-                                            <div class="col-md-2">
-                                                <div class="card card-info mb-2">
-
-                                                    <!-- Header -->
-                                                    <div class="card-header py-1 px-2">
-                                                        <h3 class="card-title mb-0" style="font-size: 15px;">
-                                                            <i class="fas fa-camera mr-1"></i>
-                                                            Camera Settings
-                                                        </h3>
-                                                    </div>
-
-                                                    <!-- Body -->
-                                                    <div class="card-body p-2">
-
-                                                        <!-- Background + Camera -->
-                                                        <div class="row">
-
-                                                            <!-- Capture Background -->
-                                                            <div class="col-6 pr-1">
-                                                                <div class="form-group mb-2">
-                                                                    <label class="mb-1" style="font-size: 11px;">
-                                                                        Background
-                                                                    </label>
-
-                                                                    <select id="camera-bg" name="capture_background"
-                                                                        class="form-control form-control-sm"
-                                                                        style="font-size: 11px;">
-
-                                                                        <option value="#dbeafe" {{
-                                                                            old( 'capture_background' , $student->
-                                                                            capture_background ?? '#dbeafe'
-                                                                            ) == '#dbeafe' ? 'selected' : '' }}>
-                                                                            Sky Blue
-                                                                        </option>
-
-                                                                        <option value="#e2e8f0" {{
-                                                                            old( 'capture_background' , $student->
-                                                                            capture_background ?? '#dbeafe'
-                                                                            ) == '#e2e8f0' ? 'selected' : '' }}>
-                                                                            Light Slate
-                                                                        </option>
-
-                                                                        <option value="#dcfce7" {{
-                                                                            old( 'capture_background' , $student->
-                                                                            capture_background ?? '#dbeafe'
-                                                                            ) == '#dcfce7' ? 'selected' : '' }}>
-                                                                            Mint Green
-                                                                        </option>
-
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                            <!-- Camera -->
-                                                            <div class="col-6 pl-1">
-                                                                <div class="form-group mb-2">
-                                                                    <label class="mb-1" style="font-size: 11px;">
-                                                                        Camera
-                                                                    </label>
-
-                                                                    <select id="camera-facing-mode"
-                                                                        class="form-control form-control-sm"
-                                                                        style="font-size: 11px;">
-
-                                                                        <option value="user">
-                                                                            Front
-                                                                        </option>
-
-                                                                        <option value="environment" selected>
-                                                                            Back
-                                                                        </option>
-
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-
-                                                        <!-- Camera Buttons -->
-                                                        <div class="row">
-
-                                                            <div class="col-6 pr-1">
-                                                                <button type="button" id="start-camera"
-                                                                    class="btn btn-primary btn-sm"
-                                                                    style="font-size: 10px;">
-
-                                                                    <i class="fas fa-video mr-1"></i>
-                                                                    Start
-                                                                </button>
-                                                            </div>
-
-                                                            <div class="col-6 pl-1">
-                                                                <button type="button" id="capture-photo"
-                                                                    class="btn btn-success btn-sm btn-block"
-                                                                    style="font-size: 11px;">
-
-                                                                    <i class="fas fa-camera mr-1"></i>
-                                                                    Capture
-                                                                </button>
-                                                            </div>
-
-                                                        </div>
-
-                                                        <!-- Hidden Photo Data -->
-                                                        <input type="hidden" name="photo_data" id="photo_data">
-
-                                                    </div>
+                                            <!-- <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword1">Last Name </label>
+                                                    <input type="text" name="last_name" class="form-control"
+                                                        id="exampleInputPassword1" placeholder="Enter Last Name"
+                                                        value="{{ old('last_name', $student->last_name  ?? '') }}">
+                                                    @error('first_name')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                            </div> -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword2">Father Name <span class="text-danger">*</span></label>
+                                                    <input type="text" name="father_name" class="form-control"
+                                                        id="exampleInputPassword2" placeholder="Enter Father Name"
+                                                        value="{{ old('father_name', $student->father_name ?? '') }}">
+                                                    @error('father_name')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword2">Mother Name </label>
+                                                    <input type="text" name="mother_name" class="form-control"
+                                                        id="exampleInputPassword2" placeholder="Enter Mother Name"
+                                                        value="{{ old('mother_name', $student->mother_name ?? '') }}">
+                                                    @error('father_name')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Gender</label>
+                                                    <select name="gender" id="gender" class="form-control">
+                                                        <option value="">-- Select Gender --</option>
+                                                        <option value="Male" {{ old('gender', $student->gender ?? '') == 'Male'
+                                                            ? 'selected' : ''
+                                                            }}>Male</option>
+                                                        <option value="Female" {{ old('gender', $student->gender ?? '') ==
+                                                            'Female' ? 'selected' : ''
+                                                            }}>Female</option>
+                                                        <option value="Other" {{ old('gender', $student->gender ?? '') ==
+                                                            'Other' ? 'selected' : ''
+                                                            }}>Other</option>
+                                                    </select>
+                                                    @error('gender')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword1">Date of Birth</label>
+                                                    <input type="date" name="date_of_birth" class="form-control"
+                                                        id="exampleInputPassword1" placeholder="Enter Date of Birth"
+                                                        value="{{ old('date_of_birth', optional($student->date_of_birth ?? null)->format('Y-m-d') ?? '') }}">
+                                                    @error('date_of_birth')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword2">Class</label>
+                                                    <select name="class_id" id="class_id" class="form-control" required>
+                                                        <option value="">Select Class</option>
+
+                                                        @foreach($classes as $class)
+                                                        <option value="{{ $class->id }}" {{ old('class_id', $student->class_id
+                                                            ?? '') == $class->id ?
+                                                            'selected' : '' }}>
+                                                            {{ $class->name }}
+                                                        </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('class_id')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword2">Section</label>
+                                                    <select name="section_id" id="section_id" class="form-control" required>
+                                                        <option value="">Select Section</option>
+                                                        @foreach($sections as $section)
+                                                        <option value="{{ $section->id }}"
+                                                            data-class-id="{{ $section->class_id }}" {{ old('section_id',
+                                                            $student->section_id ?? '') == $section->id ? 'selected' : '' }}>
+                                                            {{ $section->name }}
+                                                        </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('section_id')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword2">Blood Group</label>
+                                                    <input type="text" name="blood_group" class="form-control"
+                                                        id="exampleInputPassword2" placeholder="Enter Blood Group"
+                                                        value="{{ old('blood_group', $student->blood_group ?? '') }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword2">Phone</label>
+                                                    <input type="text" name="phone" class="form-control"
+                                                        id="exampleInputPassword2" placeholder="Enter Phone"
+                                                        value="{{ old('phone', $student->phone ?? '') }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword2">Photo Upload</label>
+                                                    <input type="file" name="photo" class="form-control"
+                                                        id="exampleInputPassword2" placeholder="Upload Photo">
+                                                </div>
+                                            </div> 
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword2">Address</label>
+                                                    <textarea name="address" class="form-control" rows="1"
+                                                        id="exampleInputPassword2"
+                                                        placeholder="Enter Address">{{ old('address', $student->address ?? '') }}</textarea>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-md-12">
                                                 <div class="card card-info">
                                                     <div class="card-header d-flex align-items-center">
                                                         <h3 class="card-title mb-0">Live ID Card Preview</h3>
-                                                        <!-- <button type="button"
-                                          class="btn btn-sm btn-warning ml-auto"
-                                          data-toggle="modal"
-                                          data-target="#editSampleModal">
-                                      <i class="fas fa-edit"></i> Edit
-                                  </button> -->
-                                                        <!-- <a href="{{ route('idcard.editor') }}"
-                                     class="btn btn-sm btn-warning ml-auto" target="_blank">
-                                      <i class="fas fa-edit"></i> Edit
-                                  </a> -->
+
                                                     </div>
                                                     <div class="card-body p-2" style="overflow-x:auto;">
-
                                                         <ul class="nav nav-tabs mb-3" role="tablist">
-
                                                             <li class="nav-item">
-                                                                <a class="nav-link active" id="student-vertical-tab"
-                                                                    data-toggle="tab" href="#student-vertical-card"
-                                                                    role="tab">
-
+                                                                <a class="nav-link {{ $defaultOrientation === 'vertical' ? 'active' : '' }}" id="student-vertical-tab" data-toggle="tab"
+                                                                    href="#student-vertical-card" role="tab">
                                                                     <i class="fas fa-mobile-alt mr-1"></i>
                                                                     Vertical
-
                                                                 </a>
                                                             </li>
-
                                                             <li class="nav-item">
-                                                                <a class="nav-link" id="student-horizontal-tab"
-                                                                    data-toggle="tab" href="#student-horizontal-card"
-                                                                    role="tab">
-
+                                                                <a class="nav-link {{ $defaultOrientation === 'horizontal' ? 'active' : '' }}" id="student-horizontal-tab" data-toggle="tab"
+                                                                    href="#student-horizontal-card" role="tab">
                                                                     <i class="fas fa-mobile-alt fa-rotate-90 mr-1"></i>
                                                                     Horizontal
-
                                                                 </a>
                                                             </li>
-
                                                         </ul>
-
-
+                                                       
                                                         <div class="tab-content">
+                                                            <div class="tab-pane fade {{ $defaultOrientation === 'vertical' ? 'show active' : '' }}" id="student-vertical-card"
+                                                                role="tabpanel">
 
-
-                                                            {{-- =====================================================
-                                                            --}}
-                                                            {{-- VERTICAL CARD --}}
-                                                            {{-- =====================================================
-                                                            --}}
-
-                                                            <div class="tab-pane fade show active"
-                                                                id="student-vertical-card" role="tabpanel">
-
-                                                                @if($verticalDesign &&
-                                                                is_array($verticalDesign->layout))
+                                                                @if(@$verticalDesign &&
+                                                                is_array(@$verticalDesign->layout))
 
                                                                 @php
 
-                                                                $layout = $verticalDesign->layout;
+                                                                $layout = @$verticalDesign->layout;
 
                                                                 $cardWidth = (int) (
                                                                 $verticalDesign->card_width
@@ -770,10 +261,12 @@
                                                                 );
 
                                                                 $background = $verticalDesign->background
-                                                                ?: ($verticalSample->file_path ?? null);
+                                                                ?: (@$verticalSample->file_path ?? null);
 
                                                                 $backgroundUrl = $background
-                                                                ? asset('storage/' . $background)
+                                                                ? (preg_match('/^https?:\\/\\//', $background)
+                                                                    ? $background
+                                                                    : asset('storage/' . $background))
                                                                 : null;
 
                                                                 $fields = $layout['fields'] ?? [];
@@ -794,224 +287,231 @@
 
 
                                                                     <div class="id-card-preview" style="
-                        width:{{ $previewWidth }}px;
-                        height:{{ $previewHeight }}px;
-                        position:relative;
-                        margin:auto;
-                     ">
+                                                                        width:{{ $previewWidth }}px;
+                                                                        height:{{ $previewHeight }}px;
+                                                                        position:relative;
+                                                                        margin:auto;
+                                                                    ">
 
                                                                         <div style="
-                        position:absolute;
-                        left:50%;
-                        top:50%;
-                        width:{{ $cardWidth }}px;
-                        height:{{ $cardHeight }}px;
+                                                                        position:absolute;
+                                                                        left:50%;
+                                                                        top:50%;
+                                                                        width:{{ $cardWidth }}px;
+                                                                        height:{{ $cardHeight }}px;
 
-                        transform:
-                            translate(-50%, -50%)
-                            scale({{ $scale }});
+                                                                        transform:
+                                                                            translate(-50%, -50%)
+                                                                            scale({{ $scale }});
 
-                        transform-origin:center;
+                                                                        transform-origin:center;
 
-                        background:
-                            {{ $backgroundUrl
-                                ? " url('" . $backgroundUrl . "')" : '#fff' }} center / 100% 100% no-repeat;
-                                                                            overflow:hidden; ">
-
-
-                        @foreach($fields as $key => $field)
-
-                            @php
-
-                                $type = $field['type'] ?? 'text';
-
-                                $fieldType = strtolower(
-                                    str_replace(
-                                        [' ', '-'],
-                                        '_',
-                                        $field['fieldType']
-                                        ?? $field['field_type']
-                                        ?? $key
-                                    )
-                                );
-
-                                $fieldLabel = strtolower(
-                                    $field['label']
-                                    ?? $field['text']
-                                    ?? ''
-                                );
+                                                                        background:
+                                                                            {{ $backgroundUrl
+                                                                                ? " url('" . $backgroundUrl . "')" : '#fff' }} center /
+                                                                            100% 100% no-repeat; overflow:hidden; ">
 
 
-                                /*
-                                |--------------------------------------------------------------------------
-                                | Detect field type
-                                |--------------------------------------------------------------------------
-                                */
+                                                                        @foreach($fields as $key => $field)
 
-                                if (
-                                    str_contains($fieldType, 'father') ||
-                                    str_contains($fieldLabel, 'father')
-                                ) {
-                                    $fieldType = 'father_name';
-                                }
+                                                                            @php
 
-                                if (
-                                    $fieldType === 'adm' ||
-                                    str_contains($fieldType, 'admission') ||
-                                    str_contains($fieldLabel, 'admission') ||
-                                    str_contains($fieldLabel, 'adm no') ||
-                                    str_contains($fieldLabel, 'roll no')
-                                ) {
-                                    $fieldType = 'admission_no';
-                                }
+                                                                                $type = $field['type'] ?? 'text';
 
+                                                                                $fieldType = strtolower(
+                                                                                    str_replace(
+                                                                                        [' ', '-'],
+                                                                                        '_',
+                                                                                        $field['fieldType']
+                                                                                        ?? $field['field_type']
+                                                                                        ?? $key
+                                                                                    )
+                                                                                );
 
-                                /*
-                                |--------------------------------------------------------------------------
-                                | Student value
-                                |--------------------------------------------------------------------------
-                                */
-
-                                $value = match ($fieldType) {
-
-                                    'student_name',
-                                    'name'
-                                        => trim(
-                                            ($student->first_name ?? '') .
-                                            ' ' .
-                                            ($student->last_name ?? '')
-                                        ),
-
-                                    'first_name'
-                                        => $student->first_name ?? '',
-
-                                    'last_name'
-                                        => $student->last_name ?? '',
-
-                                    'father_name'
-                                        => $student->father_name ?? '',
-
-                                    'admission_no'
-                                        => $student->admission_no ?? '',
-
-                                    'class' => 'Class ' . trim(
-                                        ($student->studentClass->name ?? '') .
-                                        ' - ' .
-                                        ($student->section ?? '')
-                                    ),
-
-                                    'dob',
-                                    'date_of_birth'
-                                        => $student->date_of_birth
-                                            ? $student->date_of_birth->format('d-M-Y')
-                                            : '',
-
-                                    'gender'
-                                        => $student->gender ?? '',
-
-                                    'blood_group'
-                                        => $student->blood_group ?? '',
-
-                                    'phone'
-                                        => $student->phone ?? '',
-
-                                    'school_name'
-                                        => $school->school_name ?? '',
-
-                                    'principal_name'
-                                        => $school->principal_name ?? '',
-
-                                    default
-                                        => $field['text'] ?? '',
-                                };
+                                                                                $fieldLabel = strtolower(
+                                                                                    $field['label']
+                                                                                    ?? $field['text']
+                                                                                    ?? ''
+                                                                                );
 
 
-                                $left = (int)($field['x'] ?? 0);
-                                $top = (int)($field['y'] ?? 0);
+                                                                                /*
+                                                                                |--------------------------------------------------------------------------
+                                                                                | Detect field type
+                                                                                |--------------------------------------------------------------------------
+                                                                                */
 
-                                $width = isset($field['width'])
-                                    ? 'width:' . (int)$field['width'] . 'px;'
-                                    : '';
+                                                                                if (
+                                                                                    str_contains($fieldType, 'father') ||
+                                                                                    str_contains($fieldLabel, 'father')
+                                                                                ) {
+                                                                                    $fieldType = 'father_name';
+                                                                                }
 
-                                $height = isset($field['height'])
-                                    ? 'height:' . (int)$field['height'] . 'px;'
-                                    : '';
-
-                                $zIndex = $type === 'shape'
-                                    ? 1
-                                    : 10;
-
-                                $style = " position:absolute; left:{$left}px; top:{$top}px; z-index:{$zIndex}; {$width}
-                                                                            {$height} ";
-
-                                if (!($field['visible'] ?? true)) {
-                                    $style .= 'display:none;';
-                                }
-
-                            @endphp
-
-
-                            {{-- IMAGE --}}
-                            @if($type === 'image')
-
-                                @php
-
-                                    $photoPath = collect([
-                                        $student->capturephoto,
-                                        $student->photo
-                                    ])->first(function ($path) {
-
-                                        return $path &&
-                                            Storage::disk('public')
-                                                ->exists($path);
-
-                                    });
+                                                                                if (
+                                                                                    $fieldType === 'adm' ||
+                                                                                    str_contains($fieldType, 'admission') ||
+                                                                                    str_contains($fieldLabel, 'admission') ||
+                                                                                    str_contains($fieldLabel, 'adm no') ||
+                                                                                    str_contains($fieldLabel, 'roll no')
+                                                                                ) {
+                                                                                    $fieldType = 'admission_no';
+                                                                                }
 
 
-                                    $isStudentPhoto =
-                                        in_array(
-                                            $fieldType,
-                                            ['photo', 'student_photo']
-                                        )
-                                        ||
-                                        str_contains(
-                                            $fieldType,
-                                            'photo'
-                                        )
-                                        ||
-                                        str_contains(
-                                            $fieldLabel,
-                                            'photo'
-                                        );
+                                                                                /*
+                                                                                |--------------------------------------------------------------------------
+                                                                                | Student value
+                                                                                |--------------------------------------------------------------------------
+                                                                                */
+
+                                                                                $value = match ($fieldType) {
+
+                                                                                    'student_name',
+                                                                                    'name'
+                                                                                        => trim(
+                                                                                            ($student->first_name ?? '') .
+                                                                                            ' ' .
+                                                                                            ($student->last_name ?? '')
+                                                                                        ),
+
+                                                                                    'first_name'
+                                                                                        => $student->first_name ?? '',
+
+                                                                                    'last_name'
+                                                                                        => $student->last_name ?? '',
+
+                                                                                    'father_name'
+                                                                                        => $student->father_name ?? '',
+
+                                                                                    'admission_no'
+                                                                                        => $student->admission_no ?? '',
+
+                                                                                    'class' => 'Class ' . trim(
+                                                                                        ($student->studentClass->name ?? '') .
+                                                                                        ' - ' .
+                                                                                        ($student->section ?? '')
+                                                                                    ),
+
+                                                                                    'dob',
+                                                                                    'date_of_birth'
+                                                                                        => $student->date_of_birth
+                                                                                            ? $student->date_of_birth->format('d-M-Y')
+                                                                                            : '',
+
+                                                                                    'gender'
+                                                                                        => $student->gender ?? '',
+
+                                                                                    'blood_group'
+                                                                                        => $student->blood_group ?? '',
+
+                                                                                    'phone'
+                                                                                        => $student->phone ?? '',
+
+                                                                                    'school_name'
+                                                                                        => $school->school_name ?? '',
+
+                                                                                    'principal_name'
+                                                                                        => $school->principal_name ?? '',
+
+                                                                                    default
+                                                                                        => $field['text'] ?? '',
+                                                                                };
 
 
-                                    $imagePath = $isStudentPhoto
-                                        ? $photoPath
-                                        : ($field['src'] ?? null);
+                                                                                $left = (int)($field['x'] ?? 0);
+                                                                                $top = (int)($field['y'] ?? 0);
+
+                                                                                $width = isset($field['width'])
+                                                                                    ? 'width:' . (int)$field['width'] . 'px;'
+                                                                                    : '';
+
+                                                                                $height = isset($field['height'])
+                                                                                    ? 'height:' . (int)$field['height'] . 'px;'
+                                                                                    : '';
+
+                                                                                $zIndex = $type === 'shape'
+                                                                                    ? 1
+                                                                                    : 10;
+
+                                                                                $style = " position:absolute; left:{$left}px; top:{$top}px;
+                                                                            z-index:{$zIndex}; {$width} {$height} ";
+
+                                                                                if (!($field['visible'] ?? true)) {
+                                                                                    $style .= 'display:none;';
+                                                                                }
+
+                                                                            @endphp
 
 
-                                    $imageUrl = null;
+                                                                            {{-- IMAGE --}}
+                                                                            @if($type === 'image')
 
-                                    if ($imagePath) {
-
-                                        $imageUrl = preg_match(
-                                            '/^https?:\/\//',
-                                            $imagePath
-                                        )
-                                            ? $imagePath
-                                            : asset(
-                                                'storage/' . $imagePath
-                                            );
-
-                                    }
-
-                                @endphp
+                                                                                @php
+                                                                                    $photo = pathinfo($student->photo, PATHINFO_DIRNAME) . '/' .
+                                                                                                pathinfo($student->photo, PATHINFO_FILENAME) . '.jpg';
+                                                                                
+                                                                                    if (pathinfo($student->photo, PATHINFO_DIRNAME) === '.') {
+                                                                                        $photo = pathinfo($student->photo, PATHINFO_FILENAME) . '.jpg';
+                                                                                    }
 
 
-                                @if($imageUrl)
+                                                                                    $photoPath = collect([
+                                                                                        $student->capturephoto,
+                                                                                        $photo
+                                                                                    ])->first(function ($path) {
 
-                                    <img
-                                        src=" {{ $imageUrl }}" alt="{{ $fieldType }}"
+                                                                                        return $path &&
+                                                                                            Storage::disk('public')
+                                                                                                ->exists($path);
+
+                                                                                    });
+
+
+                                                                                    $isStudentPhoto =
+                                                                                        in_array(
+                                                                                            $fieldType,
+                                                                                            ['photo', 'student_photo']
+                                                                                        )
+                                                                                        ||
+                                                                                        str_contains(
+                                                                                            $fieldType,
+                                                                                            'photo'
+                                                                                        )
+                                                                                        ||
+                                                                                        str_contains(
+                                                                                            $fieldLabel,
+                                                                                            'photo'
+                                                                                        );
+
+
+                                                                                    $imagePath = $isStudentPhoto
+                                                                                        ? $photoPath
+                                                                                        : ($field['src'] ?? null);
+
+
+                                                                                    $imageUrl = null;
+
+                                                                                    if ($imagePath) {
+
+                                                                                        $imageUrl = preg_match(
+                                                                                            '/^https?:\/\//',
+                                                                                            $imagePath
+                                                                                        )
+                                                                                            ? $imagePath
+                                                                                            : asset(
+                                                                                                'storage/' . $imagePath
+                                                                                            );
+
+                                                                                    }
+
+                                                                                @endphp
+
+
+                                                                                @if($imageUrl)
+
+                                                                                    <img
+                                                                                        src=" {{ $imageUrl }}" alt="{{ $fieldType }}"
                                                                             style="{{ $style }}object-fit:contain;">
 
                                                                             @endif
@@ -1021,323 +521,278 @@
                                                                             @elseif($type === 'shape')
 
                                                                             <div style="
-                                    {{ $style }}
-                                    background-color:{{ $field['backgroundColor'] ?? 'transparent' }};
-                                    opacity:{{ $field['opacity'] ?? 1 }};
-                                    border-radius:{{ (int)($field['borderRadius'] ?? 0) }}px;
-                                    box-sizing:border-box;
-                                "></div>
+                                                                                    {{ $style }}
+                                                                                    background-color:{{ $field['backgroundColor'] ?? 'transparent' }};
+                                                                                    opacity:{{ $field['opacity'] ?? 1 }};
+                                                                                    border-radius:{{ (int)($field['borderRadius'] ?? 0) }}px;
+                                                                                    box-sizing:border-box;
+                                                                                "></div>
 
 
                                                                             {{-- TEXT --}}
                                                                             @else
-
                                                                             <div style="
-                                    {{ $style }}
-                                    font-size:{{ (int)($field['fontSize'] ?? 14) }}px;
-                                    color:{{ $field['color'] ?? '#111' }};
-                                    font-weight:{{ $field['fontWeight'] ?? 'normal' }};
-                                ">
+                                                                                    {{ $style }}
+                                                                                    font-size:{{ (int)($field['fontSize'] ?? 14) }}px;
+                                                                                    color:{{ $field['color'] ?? '#111' }};
+                                                                                    font-weight:{{ $field['fontWeight'] ?? 'normal' }};
+                                                                                ">
                                                                                 {{ $value }}
                                                                             </div>
-
                                                                             @endif
-
                                                                             @endforeach
-
                                                                         </div>
-
                                                                     </div>
-
-
-                                                                    @elseif($verticalSample)
-
+                                                                    @elseif(@$verticalSample)
                                                                     <div class="text-center">
 
                                                                         <img src="{{ asset('storage/' . $verticalSample->file_path) }}"
                                                                             alt="Vertical ID Card" style="
-                            width:204px;
-                            height:317px;
-                            object-fit:fill;
-                        " class="img-thumbnail">
-
+                                                                            width:204px;
+                                                                            height:317px;
+                                                                            object-fit:fill;
+                                                                        " class="img-thumbnail">
                                                                     </div>
-
                                                                     @else
-
                                                                     <div class="alert alert-warning">
                                                                         No vertical ID card selected.
                                                                     </div>
-
                                                                     @endif
-
                                                             </div>
-
-
-                                                            {{-- =====================================================
-                                                            --}}
-                                                            {{-- HORIZONTAL CARD --}}
-                                                            {{-- =====================================================
-                                                            --}}
-
-                                                            <div class="tab-pane fade" id="student-horizontal-card"
-                                                                role="tabpanel">
-
-                                                                @if($horizontalDesign &&
-                                                                is_array($horizontalDesign->layout))
-
+                                                            <div class="tab-pane fade {{ $defaultOrientation === 'horizontal' ? 'show active' : '' }}" id="student-horizontal-card" role="tabpanel">
+                                                                @if(@$horizontalDesign &&
+                                                                is_array(@$horizontalDesign->layout))
                                                                 @php
-
-                                                                $layout = $horizontalDesign->layout;
-
+                                                                $layout = @$horizontalDesign->layout;
                                                                 $cardWidth = (int) (
-                                                                $horizontalDesign->card_width
+                                                                @$horizontalDesign->card_width
                                                                 ?? ($layout['cardWidth'] ?? 317)
                                                                 );
-
                                                                 $cardHeight = (int) (
-                                                                $horizontalDesign->card_height
+                                                                @$horizontalDesign->card_height
                                                                 ?? ($layout['cardHeight'] ?? 204)
                                                                 );
-
                                                                 $previewWidth = 317;
                                                                 $previewHeight = 204;
-
                                                                 $scale = min(
                                                                 $previewWidth / max($cardWidth, 1),
                                                                 $previewHeight / max($cardHeight, 1)
                                                                 );
-
-                                                                $background = $horizontalDesign->background
+                                                                $background = @$horizontalDesign->background
                                                                 ?: ($horizontalSample->file_path ?? null);
-
                                                                 $backgroundUrl = $background
-                                                                ? asset('storage/' . $background)
+                                                                ? (preg_match('/^https?:\\/\\//', $background)
+                                                                    ? $background
+                                                                    : asset('storage/' . $background))
                                                                 : null;
-
                                                                 $fields = $layout['fields'] ?? [];
-
                                                                 uksort($fields, function ($first, $second) use ($fields)
                                                                 {
-
                                                                 $firstShape =
                                                                 ($fields[$first]['type'] ?? '') === 'shape';
-
                                                                 $secondShape =
                                                                 ($fields[$second]['type'] ?? '') === 'shape';
-
                                                                 return $secondShape <=> $firstShape;
                                                                     });
-
                                                                     @endphp
+                                                                    <div class="id-card-preview" style=" width:317px; height:204px; position:relative;
+                                                                    margin:auto;
+                                                                    ">
+
+                                                                    <div style="
+                                                                    position:absolute;
+                                                                    left:50%;
+                                                                    top:50%;
+                                                                    width:{{ $cardWidth }}px;
+                                                                    height:{{ $cardHeight }}px;
+                                                                    transform:
+                                                                        translate(-50%, -50%)
+                                                                        scale({{ $scale }});
+                                                                    transform-origin:center;
+                                                                    background:
+                                                                        {{ $backgroundUrl
+                                                                            ? " url('" . $backgroundUrl . "')" : '#fff' }} center / 100%
+                                                                            100% no-repeat; overflow:hidden; ">
+                                                                    @foreach($fields as $key => $field)
+                                                                            @php
+                                                                                $type = $field['type'] ?? 'text';
+                                                                                $fieldType = strtolower(
+                                                                                    str_replace(
+                                                                                        [' ', '-'],
+                                                                                        '_',
+                                                                                        $field['fieldType']
+                                                                                        ?? $field['field_type']
+                                                                                        ?? $key
+                                                                                    )
+                                                                                );
+                                                                                $fieldLabel = strtolower(
+                                                                                    $field['label']
+                                                                                    ?? $field['text']
+                                                                                    ?? ''
+                                                                                );
+
+                                                                                if (
+                                                                                    str_contains($fieldType, 'father') ||
+                                                                                    str_contains($fieldLabel, 'father')
+                                                                                ) {
+                                                                                    $fieldType = 'father_name';
+                                                                                }
+
+                                                                                if (
+                                                                                    $fieldType === 'adm' ||
+                                                                                    str_contains($fieldType, 'admission') ||
+                                                                                    str_contains($fieldLabel, 'admission') ||
+                                                                                    str_contains($fieldLabel, 'adm no') ||
+                                                                                    str_contains($fieldLabel, 'roll no')
+                                                                                ) {
+                                                                                    $fieldType = 'admission_no';
+                                                                                }
 
 
-                                                                    <div class="id-card-preview" style="
-                        width:317px;
-                        height:204px;
-                        position:relative;
-                        margin:auto;
-                     ">
+                                                                                $value = match ($fieldType) {
 
-                                                                        <div style="
-                        position:absolute;
-                        left:50%;
-                        top:50%;
-                        width:{{ $cardWidth }}px;
-                        height:{{ $cardHeight }}px;
+                                                                                    'student_name',
+                                                                                    'name'
+                                                                                        => trim(
+                                                                                            ($student->first_name ?? '') .
+                                                                                            ' ' .
+                                                                                            ($student->last_name ?? '')
+                                                                                        ),
 
-                        transform:
-                            translate(-50%, -50%)
-                            scale({{ $scale }});
+                                                                                    'first_name'
+                                                                                        => $student->first_name ?? '',
 
-                        transform-origin:center;
+                                                                                    'last_name'
+                                                                                        => $student->last_name ?? '',
 
-                        background:
-                            {{ $backgroundUrl
-                                ? " url('" . $backgroundUrl . "')" : '#fff' }} center / 100% 100% no-repeat;
-                                                                            overflow:hidden; ">
+                                                                                    'father_name'
+                                                                                        => $student->father_name ?? '',
 
+                                                                                    'admission_no'
+                                                                                        => $student->admission_no ?? '',
 
-                        @foreach($fields as $key => $field)
+                                                                                'class' => 'Class ' .trim(
+                                                                                        ($student->studentClass->name ?? '') .
+                                                                                        ' - ' .
+                                                                                        ($student->section ?? '')
+                                                                                    ),
 
-                            @php
+                                                                                    'dob',
+                                                                                    'date_of_birth'
+                                                                                        => $student->date_of_birth
+                                                                                            ? $student->date_of_birth->format('d-M-Y')
+                                                                                            : '',
 
-                                $type = $field['type'] ?? 'text';
+                                                                                    'gender'
+                                                                                        => $student->gender ?? '',
 
-                                $fieldType = strtolower(
-                                    str_replace(
-                                        [' ', '-'],
-                                        '_',
-                                        $field['fieldType']
-                                        ?? $field['field_type']
-                                        ?? $key
-                                    )
-                                );
+                                                                                    'blood_group'
+                                                                                        => $student->blood_group ?? '',
 
-                                $fieldLabel = strtolower(
-                                    $field['label']
-                                    ?? $field['text']
-                                    ?? ''
-                                );
+                                                                                    'phone'
+                                                                                        => $student->phone ?? '',
 
+                                                                                    'school_name'
+                                                                                        => $school->school_name ?? '',
 
-                                if (
-                                    str_contains($fieldType, 'father') ||
-                                    str_contains($fieldLabel, 'father')
-                                ) {
-                                    $fieldType = 'father_name';
-                                }
+                                                                                    'principal_name'
+                                                                                        => $school->principal_name ?? '',
 
-                                if (
-                                    $fieldType === 'adm' ||
-                                    str_contains($fieldType, 'admission') ||
-                                    str_contains($fieldLabel, 'admission') ||
-                                    str_contains($fieldLabel, 'adm no') ||
-                                    str_contains($fieldLabel, 'roll no')
-                                ) {
-                                    $fieldType = 'admission_no';
-                                }
+                                                                                    default
+                                                                                        => $field['text'] ?? '',
+                                                                                };
 
 
-                                $value = match ($fieldType) {
+                                                                                $left = (int)($field['x'] ?? 0);
+                                                                                $top = (int)($field['y'] ?? 0);
 
-                                    'student_name',
-                                    'name'
-                                        => trim(
-                                            ($student->first_name ?? '') .
-                                            ' ' .
-                                            ($student->last_name ?? '')
-                                        ),
+                                                                                $width = isset($field['width'])
+                                                                                    ? 'width:' . (int)$field['width'] . 'px;'
+                                                                                    : '';
 
-                                    'first_name'
-                                        => $student->first_name ?? '',
+                                                                                $height = isset($field['height'])
+                                                                                    ? 'height:' . (int)$field['height'] . 'px;'
+                                                                                    : '';
 
-                                    'last_name'
-                                        => $student->last_name ?? '',
+                                                                                $zIndex = $type === 'shape'
+                                                                                    ? 1
+                                                                                    : 10;
 
-                                    'father_name'
-                                        => $student->father_name ?? '',
+                                                                                $style = " position:absolute; left:{$left}px; top:{$top}px;
+                                                                                z-index:{$zIndex}; {$width} {$height} ";
 
-                                    'admission_no'
-                                        => $student->admission_no ?? '',
-
-                                   'class' => 'Class ' .trim(
-                                        ($student->studentClass->name ?? '') .
-                                        ' - ' .
-                                        ($student->section ?? '')
-                                    ),
-
-                                    'dob',
-                                    'date_of_birth'
-                                        => $student->date_of_birth
-                                            ? $student->date_of_birth->format('d-M-Y')
-                                            : '',
-
-                                    'gender'
-                                        => $student->gender ?? '',
-
-                                    'blood_group'
-                                        => $student->blood_group ?? '',
-
-                                    'phone'
-                                        => $student->phone ?? '',
-
-                                    'school_name'
-                                        => $school->school_name ?? '',
-
-                                    'principal_name'
-                                        => $school->principal_name ?? '',
-
-                                    default
-                                        => $field['text'] ?? '',
-                                };
+                                                                                if (!($field['visible'] ?? true)) {
+                                                                                    $style .= 'display:none;';
+                                                                                }
+                                                                            @endphp
 
 
-                                $left = (int)($field['x'] ?? 0);
-                                $top = (int)($field['y'] ?? 0);
+                                                                        @if($type === 'image')
 
-                                $width = isset($field['width'])
-                                    ? 'width:' . (int)$field['width'] . 'px;'
-                                    : '';
+                                                                            @php
+                                                                                $photo = pathinfo($student->photo, PATHINFO_DIRNAME) . '/' .
+                                                                                                pathinfo($student->photo, PATHINFO_FILENAME) . '.jpg';
+                                                                                
+                                                                                    if (pathinfo($student->photo, PATHINFO_DIRNAME) === '.') {
+                                                                                        $photo = pathinfo($student->photo, PATHINFO_FILENAME) . '.jpg';
+                                                                                    }
 
-                                $height = isset($field['height'])
-                                    ? 'height:' . (int)$field['height'] . 'px;'
-                                    : '';
+                                                                                $photoPath = collect([
+                                                                                    $student->capturephoto,
+                                                                                    $photo
+                                                                                ])->first(function ($path) {
 
-                                $zIndex = $type === 'shape'
-                                    ? 1
-                                    : 10;
+                                                                                    return $path &&
+                                                                                        Storage::disk('public')
+                                                                                            ->exists($path);
 
-                                $style = " position:absolute; left:{$left}px; top:{$top}px; z-index:{$zIndex}; {$width}
-                                                                            {$height} ";
-
-                                if (!($field['visible'] ?? true)) {
-                                    $style .= 'display:none;';
-                                }
-
-                            @endphp
+                                                                                });
 
 
-                            @if($type === 'image')
-
-                                @php
-
-                                    $photoPath = collect([
-                                        $student->capturephoto,
-                                        $student->photo
-                                    ])->first(function ($path) {
-
-                                        return $path &&
-                                            Storage::disk('public')
-                                                ->exists($path);
-
-                                    });
-
-
-                                    $isStudentPhoto =
-                                        in_array(
-                                            $fieldType,
-                                            ['photo', 'student_photo']
-                                        )
-                                        ||
-                                        str_contains(
-                                            $fieldType,
-                                            'photo'
-                                        )
-                                        ||
-                                        str_contains(
-                                            $fieldLabel,
-                                            'photo'
-                                        );
+                                                                                $isStudentPhoto =
+                                                                                    in_array(
+                                                                                        $fieldType,
+                                                                                        ['photo', 'student_photo']
+                                                                                    )
+                                                                                    ||
+                                                                                    str_contains(
+                                                                                        $fieldType,
+                                                                                        'photo'
+                                                                                    )
+                                                                                    ||
+                                                                                    str_contains(
+                                                                                        $fieldLabel,
+                                                                                        'photo'
+                                                                                    );
 
 
-                                    $imagePath = $isStudentPhoto
-                                        ? $photoPath
-                                        : ($field['src'] ?? null);
+                                                                                $imagePath = $isStudentPhoto
+                                                                                    ? $photoPath
+                                                                                    : ($field['src'] ?? null);
 
 
-                                    $imageUrl = null;
+                                                                                $imageUrl = null;
 
-                                    if ($imagePath) {
+                                                                                if ($imagePath) {
 
-                                        $imageUrl = preg_match(
-                                            '/^https?:\/\//',
-                                            $imagePath
-                                        )
-                                            ? $imagePath
-                                            : asset(
-                                                'storage/' . $imagePath
-                                            );
+                                                                                    $imageUrl = preg_match(
+                                                                                        '/^https?:\/\//',
+                                                                                        $imagePath
+                                                                                    )
+                                                                                        ? $imagePath
+                                                                                        : asset(
+                                                                                            'storage/' . $imagePath
+                                                                                        );
 
-                                    }
+                                                                                }
 
-                                @endphp
+                                                                            @endphp
 
 
-                                @if($imageUrl)
+                                                                            @if($imageUrl)
 
-                                    <img
-                                        src=" {{ $imageUrl }}" alt="{{ $fieldType }}"
+                                                                                <img
+                                                                                    src=" {{ $imageUrl }}" alt="{{ $fieldType }}"
                                                                             style="{{ $style }}object-fit:contain;">
 
                                                                             @endif
@@ -1346,44 +801,45 @@
                                                                             @elseif($type === 'shape')
 
                                                                             <div style="
-                                    {{ $style }}
-                                    background-color:{{ $field['backgroundColor'] ?? 'transparent' }};
-                                    opacity:{{ $field['opacity'] ?? 1 }};
-                                    border-radius:{{ (int)($field['borderRadius'] ?? 0) }}px;
-                                    box-sizing:border-box;
-                                "></div>
+                                                                                {{ $style }}
+                                                                                background-color:{{ $field['backgroundColor'] ?? 'transparent' }};
+                                                                                opacity:{{ $field['opacity'] ?? 1 }};
+                                                                                border-radius:{{ (int)($field['borderRadius'] ?? 0) }}px;
+                                                                                box-sizing:border-box;
+                                                                            "></div>
 
 
                                                                             @else
 
                                                                             <div style="
-                                    {{ $style }}
-                                    font-size:{{ (int)($field['fontSize'] ?? 14) }}px;
-                                    color:{{ $field['color'] ?? '#111' }};
-                                    font-weight:{{ $field['fontWeight'] ?? 'normal' }};
-                                ">
+                                                                                {{ $style }}
+                                                                                font-size:{{ (int)($field['fontSize'] ?? 14) }}px;
+                                                                                color:{{ $field['color'] ?? '#111' }};
+                                                                                font-weight:{{ $field['fontWeight'] ?? 'normal' }};
+                                                                            ">
                                                                                 {{ $value }}
                                                                             </div>
 
                                                                             @endif
 
-                                                                            @endforeach
+                                                                    @endforeach
 
                                                                         </div>
 
                                                                     </div>
 
 
-                                                                    @elseif($horizontalSample)
+                                                                    @elseif(@$horizontalSample)
 
                                                                     <div class="text-center">
 
                                                                         <img src="{{ asset('storage/' . $horizontalSample->file_path) }}"
                                                                             alt="Horizontal ID Card" style="
-                                                                            width:317px;
-                                                                            height:204px;
-                                                                            object-fit:fill;
-                                                                        " class="img-thumbnail">
+                                                                                                                        width:317px;
+                                                                                                                        height:204px;
+                                                                                                                        object-fit:fill;
+                                                                                                                    "
+                                                                            class="img-thumbnail">
 
                                                                     </div>
 
@@ -1399,17 +855,126 @@
 
                                                         </div>
 
+                                                        </div>
+                                                        </div>
+                                                        </div>
+                                                        
+                                                    </div>
+                                            </div>
+                                           
+                                                        <!---form fields end--->
+                                                        <!-----cmaera code----->
+                                            <div class="col-md-6">
+                                                <h5 class="text-center badge badge-info">Capture Photo (Laptop/Mobile)</h5>
+                                                <div class="row">
+                                                   <div class="col-md-12 col-sm-12">
+                                                        <div class="form-group">
+                                                            <label>Camera</label>
+                                                            <select id="camera-facing-mode"
+                                                                    class="form-control">
+
+                                                                <option value="user">
+                                                                    Front Camera
+                                                                </option>
+                                                                <option value="environment" selected>
+                                                                    Back Camera
+                                                                </option>
+                                                            </select>
+                                                        </div>
+                                                   </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="card card-primary">
+                                                           <div class="card-header d-flex align-items-center">
+                                                                <button type="button"
+                                                                        id="start-camera"
+                                                                        class="btn btn-info btn-xs">
+                                                                    <i class="fas fa-video"></i>
+                                                                    Start 
+                                                                </button>
+
+                                                                <button type="button"
+                                                                        id="capture-photo"
+                                                                        class="btn btn-success btn-xs ml-auto">
+                                                                    <i class="fas fa-camera"></i>
+                                                                    Capture 
+                                                                </button>
+                                                            </div>
+
+                                                            <div class="card-body">
+                                                                <div id="camera-stage"
+                                                                     style="background:#dbeafe;padding:8px;border-radius:8px;">
+
+                                                                    <div id="camera"
+                                                                         style="position:relative;
+                                                                                aspect-ratio:3/4;
+                                                                                background:#fff;
+                                                                                border-radius:8px;
+                                                                                overflow:hidden;">
+
+                                                                        <div id="camera-feed"
+                                                                             style="position:absolute;inset:0;">
+                                                                        </div>
+
+                                                                        <div id="capture-frame"
+                                                                             style="position:absolute;
+                                                                                    left:50%;
+                                                                                    top:50%;
+                                                                                    width:90%;
+                                                                                    height:90%;
+                                                                                    aspect-ratio:35/45;
+                                                                                    transform:translate(-50%,-50%);
+                                                                                    border:3px solid #000;
+                                                                                    border-radius:12px;
+                                                                                    box-shadow:0 0 0 9999px rgba(0,0,0,.25);
+                                                                                    pointer-events:none;">
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="card card-success">
+                                                            <div class="card-header">
+                                                                <h3 class="card-title">Captured Photo</h3>
+                                                            </div>
+                                                            <div class="card-body text-center">
+                                                                <div id="camera-preview" style="width:200px;
+                                                                    height:258px;
+                                                                    margin:auto;
+                                                                    width:100%;
+                                                                    border:1px solid #ccc;
+                                                                    border-radius:8px;
+                                                                    display:flex;
+                                                                    align-items:center;
+                                                                    justify-content:center;
+                                                                    overflow:hidden;
+                                                                    background:#fff;">
+                                                                    @if(isset($student) && $student->photo)
+                                                                    <img src="{{ asset('storage/' . $student->photo) }}"
+                                                                        style="width:100%;height:100%;object-fit:cover;">
+                                                                    @else
+                                                                    No Capture
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                   
+
+
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
                                     </div>
-                                </div>
                             </div>
                             <div class="card-footer">
                                 <button type="submit" class="btn btn-primary">{{ isset($student) ? 'Update' : 'Submit'
                                     }}</button>
                             </div>
+                           
                         </form>
                     </div>
                 </div>

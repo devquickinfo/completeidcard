@@ -23,13 +23,13 @@
     @endif
 >
 
-                        {{ $all->name }}
+                       {{ Str::limit($all->name, 20, '...') }}
 
                     </label>
 
                 @else
 
-                    {{ $all->name }}
+                    {{ Str::limit($all->name, 20, '...') }}
 
                 @endif
 

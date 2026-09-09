@@ -29,6 +29,12 @@
 
     }
 </style>
+@php
+    $defaultOrientation = \App\Models\SelectedSample::where(
+        'school_id',
+        auth()->user()->school_id ?? session('viewing_school')
+    )->latest('id')->value('orientation') ?? 'vertical';
+@endphp
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
@@ -108,7 +114,7 @@
 
                                 @if($school->logo)
                                 <img src="{{ Storage::disk('public')->url($school->logo) }}" alt="School Logo"
-                                    class="school-logo">
+                                    class="school-logo img-thumbnail">
                                 @else
                                 <div class="no-logo">
                                     <i class="fas fa-school"></i>
@@ -171,7 +177,7 @@
                                 <ul class="nav nav-tabs mb-3" role="tablist">
 
                                     <li class="nav-item">
-                                        <a class="nav-link active" id="vertical-tab" data-toggle="tab"
+                                        <a class="nav-link {{ $defaultOrientation === 'vertical' ? 'active' : '' }}" id="vertical-tab" data-toggle="tab"
                                             href="#vertical-card" role="tab">
 
                                             <i class="fas fa-mobile-alt mr-1"></i>
@@ -181,7 +187,7 @@
                                     </li>
 
                                     <li class="nav-item">
-                                        <a class="nav-link" id="horizontal-tab" data-toggle="tab"
+                                        <a class="nav-link {{ $defaultOrientation === 'horizontal' ? 'active' : '' }}" id="horizontal-tab" data-toggle="tab"
                                             href="#horizontal-card" role="tab">
 
                                             <i class="fas fa-mobile-alt fa-rotate-90 mr-1"></i>
@@ -199,7 +205,7 @@
                                     {{-- VERTICAL --}}
                                     {{-- ===================================================== --}}
 
-                                    <div class="tab-pane fade show active" id="vertical-card" role="tabpanel">
+                                    <div class="tab-pane fade show {{ $defaultOrientation === 'vertical' ? 'show active' : '' }}" id="vertical-card" role="tabpanel">
 
                                         @if($verticalDesign && is_array($verticalDesign->layout))
 
@@ -331,7 +337,7 @@
 
                                                         @if($src)
                                                         <img src="{{ $src }}" alt="{{ $key }}"
-                                                            style="{{ $style }}object-fit:contain;">
+                                                            style="{{ $style }}object-fit:contain;" class="img-thumbnail">
                                                         @endif
 
 
@@ -445,7 +451,7 @@
                                     {{-- HORIZONTAL --}}
                                     {{-- ===================================================== --}}
 
-                                    <div class="tab-pane fade" id="horizontal-card" role="tabpanel">
+                                    <div class="tab-pane fade {{ $defaultOrientation === 'horizontal' ? 'show active' : '' }}" id="horizontal-card" role="tabpanel">
 
                                         @if($horizontalDesign && is_array($horizontalDesign->layout))
 
@@ -553,7 +559,7 @@
                                                         @endphp
                                                         @if($src)
                                                         <img src="{{ $src }}" alt="{{ $key }}"
-                                                            style="{{ $style }}object-fit:contain;">
+                                                            style="{{ $style }}object-fit:contain;" class="img-thumbnail">
                                                         @endif
                                                         @elseif($type === 'shape')
                                                         @php
@@ -647,7 +653,7 @@
                     @else
                     <div class="row">
                         @foreach($classes as $class)
-                        <div class="col-md-4 mb-4">
+                       {{---- <div class="col-md-4 mb-4">
                             <a href="{{ route('schools.classes.students', ['school' => $school, 'class' => $class]) }}"
                                 class="text-decoration-none text-dark">
                                 <div class="card h-100 cursor-pointer">
@@ -655,23 +661,102 @@
                                         <h3 class="card-title mb-0 flex-grow-1">{{ $class->name }}</h3>
                                         <span class="badge bg-light text-dark ms-3" style="font-size: 0.9rem;">
                                             {{ App\Models\Student::where('class_id', $class->id)->where('school_id',
-                                            $school->id)->count() }} Students
+                                            $school->id)->where('IsDeleted', '0')->count() }} Students
                                         </span>
                                     </div>
                                     <div class="card-body">
                                         <p class="mb-0 text-muted">Click to view students</p>
                                         <p class="mb-0 mt-2 text-success" style="font-size: 1rem;">
                                             {{ App\Models\Student::where('class_id', $class->id)->where('school_id',
-                                            $school->id)->whereNull('photo')->count() }} students without capture photo
+                                            $school->id)->whereNull('photo')->where('IsDeleted', '0')->count() }} students without capture photo
                                         </p>
                                         <p class="mb-0 mt-2 text-danger" style="font-size: 1rem;">
                                             {{ App\Models\Student::where('class_id', $class->id)->where('school_id',
-                                            $school->id)->where('idcardprinted', 'no')->count() }} students without
+                                            $school->id)->where('idcardprinted', 'no')->where('IsDeleted', '0')->count() }} students without
                                             printed ID cards
                                         </p>
                                     </div>
                                 </div>
                             </a>
+                        </div>----}}
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 cursor-pointer">
+                                <a href="{{ route('schools.classes.students', [
+                                    'school' => $school->id,
+                                    'class' => $class->id
+                                ]) }}"
+                                class="text-decoration-none">
+                                    <div class="card-header bg-primary text-white d-flex align-items-center w-100">
+                                        <h3 class="card-title mb-0 flex-grow-1">
+                                            {{ $class->name }}
+                                        </h3>
+                                        <span class="badge bg-light text-dark ms-3" style="font-size: 0.9rem;">
+                                            {{ App\Models\Student::where('class_id', $class->id)
+                                                ->where('school_id', $school->id)->where('IsDeleted', '0')
+                                                ->count() }}
+                                            Students
+                                        </span>
+                                    </div>
+                                </a>
+                                <div class="card-body">
+                                    <a href="{{ route('schools.classes.students', [
+                                        'school' => $school->id,
+                                        'class' => $class->id
+                                    ]) }}"
+                                    class="text-decoration-none">
+
+                                        <p class="mb-0 text-muted">
+                                            Click to view students
+                                        </p>
+
+                                    </a>
+                                    @php
+                                        $withoutPhoto = App\Models\Student::where('class_id', $class->id)
+                                            ->where('school_id', $school->id)
+                                            ->where(function ($query) {
+                                                $query->whereNull('photo')->where('IsDeleted', '0')
+                                                    ->orWhere('photo', '');
+                                            })
+                                            ->count();
+                                    @endphp
+
+                                    <a href="{{ route('schools.classes.students', [
+                                        'school' => $school->id,
+                                        'class' => $class->id,
+                                        'student_photo' => 'without_photo'
+                                    ]) }}"
+                                    class="text-decoration-none">
+
+                                        <p class="mb-0 mt-2 text-success" style="font-size: 1rem;">
+                                            {{ $withoutPhoto }} students without capture photo
+                                        </p>
+
+                                    </a>
+
+
+                                    {{-- WITHOUT PRINTED ID CARD --}}
+                                    @php
+                                        $withoutPrinted = App\Models\Student::where('class_id', $class->id)
+                                            ->where('school_id', $school->id)->where('IsDeleted', '0')
+                                            ->where('idcardprinted', 'no')
+                                            ->count();
+                                    @endphp
+
+                                    <a href="{{ route('schools.classes.students', [
+                                        'school' => $school->id,
+                                        'class' => $class->id,
+                                        'idcard_filter' => 'not_printed'
+                                    ]) }}"
+                                    class="text-decoration-none">
+
+                                        <p class="mb-0 mt-2 text-danger" style="font-size: 1rem;">
+                                            {{ $withoutPrinted }} students without printed ID cards
+                                        </p>
+
+                                    </a>
+
+                                </div>
+                            </div>
                         </div>
                         @endforeach
                     </div>

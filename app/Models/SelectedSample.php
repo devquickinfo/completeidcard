@@ -11,4 +11,14 @@ class SelectedSample extends Model
         'sample_id',
         'orientation',
     ];
+
+
+    public function uploadSample()
+    {
+        return $this->belongsTo(
+            UploadSample::class,
+            'sample_id', // FK in selected_samples
+            'id'         // PK in upload_samples
+        );
+    }
 }

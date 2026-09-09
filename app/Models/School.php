@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Mainidcard;
+use App\Models\Teacher;
 
 class School extends Model
 {
@@ -21,10 +22,15 @@ class School extends Model
         'logo',
         'status',
         'principal_signature',
+        'IsDeleted',
 
     ];
     public function mainidcards()
     {
         return $this->hasMany(Mainidcard::class);
+    }
+    public function teachers()
+    {
+        return $this->hasMany(Teacher::class, 'school_id', 'id');
     }
 }

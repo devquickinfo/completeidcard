@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\School;
 
 class Teacher extends Model
 {
@@ -15,12 +16,14 @@ class Teacher extends Model
         'phone',
         'address',
         'gender',
-        'date_of_birth',
+        'dob',
         'photo',
-        'capturephoto',
-        'captured_by_camera',
-        'capture_background',
-        'idcardprinted',
+        'employee_code',
+        'father_husband',
         'school_id',
     ];
+    public function school()
+    {
+        return $this->belongsTo(School::class, 'school_id', 'id');
+    }
 }

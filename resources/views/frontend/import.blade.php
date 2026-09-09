@@ -189,15 +189,15 @@
                             <h5>Required Columns</h5>
 
                             <ul class="mb-0">
-                                <li>first_name</li>
-                                <li>last_name</li>
-                                <li>father_name</li>
-                                <li>gender</li>
-                                <li>date_of_birth</li>
+                                <li>Full Name (Required)</li>
+                                <!-- <li>last_name</li> -->
+                                <li>Father Name (Required)</li>
+                                <li>gender (optional)</li>
+                                <li>date_of_birth (optional)</li>
                                 <li>admission_no (optional)</li>
-                                <li>phone</li>
-                                <li>class_id</li>
-                                <li>section_id</li>
+                                <li>phone (Required)</li>
+                                <li>class_id (optional)</li>
+                                <li>section_id (optional)</li>
                             </ul>
 
                         </div>

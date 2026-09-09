@@ -62,6 +62,9 @@ class LoginController extends Controller
 
     public function dashboard()
     {
+        if (session()->has('viewing_school')) {
+            session()->forget('viewing_school');
+        }
         $user = Auth::user();
 
         if ($user?->role === 'school') {

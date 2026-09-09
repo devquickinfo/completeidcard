@@ -26,12 +26,275 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js"></script>
+  <style>
 
+      /* School section */
+      .school-navbar-info {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-left: 15px;
+          min-width: 0;
+      }
+
+      .school-name {
+          color: #fff;
+          text-decoration: none;
+          font-weight: 500;
+
+          max-width: 350px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+      }
+
+      .school-name:hover {
+          color: #fff;
+          text-decoration: underline;
+      }
+
+      .admin-menu-btn {
+          white-space: nowrap;
+      }
+
+
+      /* Profile */
+      .profile-image-link {
+          display: flex;
+          align-items: center;
+      }
+
+      .profile-image {
+          width: 32px;
+          height: 32px;
+          object-fit: cover;
+          display: block;
+      }
+
+      .profile-icon {
+          font-size: 28px;
+          line-height: 32px;
+      }
+
+
+      /* User */
+      .user-dropdown-link {
+          display: flex !important;
+          align-items: center;
+          white-space: nowrap;
+      }
+
+      .user-name {
+          max-width: 150px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+      }
+
+
+      /* Mobile */
+      @media (max-width: 767.98px) {
+
+          .school-navbar-info {
+              margin-left: 5px;
+              gap: 5px;
+              max-width: calc(100vw - 130px);
+          }
+
+          .school-name {
+              max-width: 120px;
+              font-size: 13px;
+          }
+
+          .admin-menu-btn {
+              font-size: 11px;
+              padding: 4px 7px;
+          }
+
+          .admin-menu-btn i {
+              display: none;
+          }
+
+          .profile-image {
+              width: 28px;
+              height: 28px;
+          }
+
+          .profile-icon {
+              font-size: 25px;
+          }
+
+          .user-name {
+              display: none;
+          }
+
+          .user-dropdown-link {
+              padding-left: 5px !important;
+              padding-right: 5px !important;
+          }
+
+          .user-dropdown-link .fa-user {
+              margin-right: 0 !important;
+          }
+
+          .user-dropdown-link .fa-caret-down {
+              margin-left: 3px !important;
+          }
+
+      }
+
+
+      /* Very small phones */
+      @media (max-width: 400px) {
+
+          .school-navbar-info {
+              max-width: calc(100vw - 115px);
+          }
+
+          .school-name {
+              max-width: 90px;
+              font-size: 12px;
+          }
+
+          .admin-menu-btn {
+              font-size: 10px;
+              padding: 3px 5px;
+          }
+
+          .profile-image {
+              width: 26px;
+              height: 26px;
+          }
+
+      }
+      #mobile-settings-toggle {
+            display: none;
+        }
+
+        @media (max-width: 767.98px) {
+
+            /* Floating cog button */
+            #mobile-settings-toggle {
+                display: flex !important;
+
+                position: fixed !important;
+
+                right: 15px !important;
+                bottom: 15px !important;
+
+                width: 50px !important;
+                height: 50px !important;
+
+                padding: 0 !important;
+
+                align-items: center !important;
+                justify-content: center !important;
+
+                border-radius: 50% !important;
+
+                z-index: 99999 !important;
+
+                font-size: 20px !important;
+
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+            }
+
+            /* Floating settings panel */
+            #camera-settings-card {
+                position: fixed !important;
+
+                right: 15px !important;
+                bottom: 75px !important;
+
+                width: 200px !important;
+
+                margin: 0 !important;
+
+                z-index: 99998 !important;
+
+                border-radius: 8px !important;
+
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3) !important;
+            }
+
+            /* Hide settings */
+            #camera-settings-card.mobile-hidden {
+                display: none !important;
+            }
+
+            /* Compact header */
+            #camera-settings-card .card-header {
+                padding: 8px 10px !important;
+            }
+
+            #camera-settings-card .card-title {
+                font-size: 13px !important;
+                margin: 0 !important;
+            }
+
+            /* Compact body */
+            #camera-settings-card .card-body {
+                padding: 10px !important;
+            }
+
+            #camera-settings-card label {
+                font-size: 12px !important;
+                margin-bottom: 3px !important;
+            }
+
+            #camera-settings-card .form-group {
+                margin-bottom: 8px !important;
+            }
+
+            #camera-settings-card select {
+                height: 32px !important;
+                padding: 3px 6px !important;
+                font-size: 12px !important;
+            }
+
+            #camera-settings-card .btn {
+                font-size: 12px !important;
+                padding: 6px !important;
+            }
+
+        }
+
+        #camera-stage,
+        #camera-feed {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 3 / 4;   /* match whatever ID-photo shape you want */
+            overflow: hidden;
+        }
+        .modal-content{
+               width: 1000px !important;
+         }
+         @media (max-width: 767px) {
+           .modal-content {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .modal-dialog {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+            }
+
+            .modal-body {
+                overflow-x: hidden !important;
+            }
+        }
+
+  </style>
 </head>
 <body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed text-sm">
   
 <div class="wrapper">
-    <nav class="main-header navbar navbar-expand navbar-dark">
+  <nav class="main-header navbar navbar-expand navbar-dark">
+
+    <!-- Left -->
     <ul class="navbar-nav">
         <li class="nav-item">
             <a class="nav-link"
@@ -42,50 +305,127 @@
             </a>
         </li>
     </ul>
-    
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item d-flex align-items-center">
-          <a class="nav-link p-0 d-flex align-items-center" href="#">
-              @if(Auth::user()->profilepicture)
-                <a href="{{ asset('storage/' . Auth::user()->profilepicture) }}" target="_blank">
-                  <img src="{{ asset('storage/' . Auth::user()->profilepicture) }}"
-                      alt="Profile"
-                      class="img-circle elevation-2"
-                      style="width: 32px; height: 32px; object-fit: cover; display: block;">
-                </a>
-              @else
-                  <i class="fas fa-user-circle fa-lg"></i>
-              @endif
-          </a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="far fa-user"> {{ ucwords(Auth::user()->name) }}</i>
-        </a>
-        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-          <div class="dropdown-divider"></div>
-          @if(Auth::user()?->role === 'school')
-          <a href="{{ route('school.profile') }}" class="dropdown-item">
-            <i class="fas fa-school mr-2"></i> School Profile
-          </a>
-          @else
-          <a href="{{ route('admin.profile') }}" class="dropdown-item">
-            <i class="fas fa-user mr-2"></i>Profile
-          </a>
-          @endif
-          <div class="dropdown-divider"></div>
-          <a href="{{ route('user.logout') }}" class="dropdown-item">
-            <i class="fas fa-sign-out-alt mr-2"></i> Logout
-          </a>
-          <div class="dropdown-divider"></div>
+
+    @php
+        use App\Helpers\ImageHelper;
+
+        $schoolID = session('school_id');
+        $schoolname = '';
+
+        if (session()->has('viewing_school')) {
+            $schoolID = session('viewing_school');
+            $schoolname = ImageHelper::getSchoolName($schoolID);
+        }
+    @endphp
+
+
+    <!-- School Name + Admin Menu -->
+    @if(session()->has('viewing_school'))
+        <div class="school-navbar-info">
+
+            <a href="{{ route('schools.show', session('viewing_school')) }}"
+               class="school-name">
+                {{ ucwords(trim($schoolname, '"')) }}
+            </a>
+
+            <a href="{{ route('dashboard') }}"
+               class="btn btn-info btn-sm admin-menu-btn">
+                <i class="fas fa-arrow-left mr-1"></i>
+                Admin Menu
+            </a>
+
         </div>
-      </li>
-      <!-- <li class="nav-item">
-        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
-          <i class="fas fa-th-large"></i>
-        </a>
-      </li> -->
+    @endif
+
+
+    <!-- Right -->
+    <ul class="navbar-nav ml-auto">
+
+        <!-- Profile Image -->
+        <li class="nav-item d-flex align-items-center mr-2">
+            @if(Auth::user()->profilepicture)
+
+                <a href="{{ asset('storage/' . Auth::user()->profilepicture) }}"
+                   target="_blank"
+                   class="profile-image-link">
+
+                    <img src="{{ asset('storage/' . Auth::user()->profilepicture) }}"
+                         alt="Profile"
+                         class="img-circle elevation-2 profile-image">
+
+                </a>
+
+            @else
+
+                <span class="profile-icon">
+                    <i class="fas fa-user-circle"></i>
+                </span>
+
+            @endif
+        </li>
+
+
+        <!-- User Dropdown -->
+        <li class="nav-item dropdown">
+
+            <a class="nav-link user-dropdown-link"
+               data-toggle="dropdown"
+               href="#">
+
+                <i class="far fa-user mr-1"></i>
+
+                <span class="user-name">
+                    {{ ucwords(Auth::user()->name) }}
+                </span>
+
+                <i class="fas fa-caret-down ml-1"></i>
+
+            </a>
+
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+
+                <div class="dropdown-divider"></div>
+
+                @if(Auth::user()?->role === 'school')
+
+                    <a href="{{ route('school.profile') }}"
+                       class="dropdown-item">
+
+                        <i class="fas fa-school mr-2"></i>
+                        School Profile
+
+                    </a>
+
+                @else
+
+                    <a href="{{ route('admin.profile') }}"
+                       class="dropdown-item">
+
+                        <i class="fas fa-user mr-2"></i>
+                        Profile
+
+                    </a>
+
+                @endif
+
+                <div class="dropdown-divider"></div>
+
+                <a href="{{ route('user.logout') }}"
+                   class="dropdown-item">
+
+                    <i class="fas fa-sign-out-alt mr-2"></i>
+                    Logout
+
+                </a>
+
+                <div class="dropdown-divider"></div>
+
+            </div>
+
+        </li>
+
     </ul>
+
   </nav>
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
@@ -111,6 +451,7 @@
                     data-accordion="false">
 
                     <!-- Dashboard -->
+                    @if(session('role') === 'superadmin' && !session('viewing_school'))
                     <li class="nav-item">
                         <a href="{{ route('dashboard') }}"
                         class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
@@ -118,12 +459,13 @@
                             <p>Dashboard</p>
                         </a>
                     </li>
-
+                    @endif
+                
                     <!-- Deleted Students -->
                    
 
                     <!-- School -->
-                    @if(session('role') !== 'school')
+                    @if(session('role') !== 'school' && !session('viewing_school'))
                     <li class="nav-item">
                         <a href="{{ Auth::user()->role === 'school'
                             ? route('schools.show', Auth::user()->school_id)
@@ -131,7 +473,18 @@
                         class="nav-link {{ request()->routeIs('schools.*') ? 'active' : '' }}">
 
                             <i class="nav-icon fas fa-school"></i>
-                            <p>School <i class="right fas {{ session('role') === 'superadmin' && session('viewing_school') ? 'fa-angle-down' : 'fa-angle-left' }}"></i></p>
+                            <p>School</p>
+                            
+                        </a>
+                    </li>
+                    @endif
+                    @if(session('viewing_school') || session('role') === 'school')
+                    <li class="nav-item">
+                        <a href="{{ route('schools.show', $schoolID) }}"
+                        class="nav-link {{ request()->routeIs('schools.*') ? 'active' : '' }}">
+
+                            <i class="nav-icon fas fa-school"></i>
+                            <p>School</p>
                             
                         </a>
                     </li>
@@ -154,7 +507,7 @@
                             <a href="{{ route('idcard.create') }}"
                             class="nav-link {{ request()->routeIs('idcard.create') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-id-card"></i>
-                                <p>Create ID Card</p>
+                                <p>Create Student ID Card</p>
                             </a>
                         </li>
 
@@ -187,19 +540,35 @@
                         </a>
                         </li>
                         <li class="nav-item">
+                        <a href="{{ route('idcard.grid') }}"
+                        class="nav-link {{ request()->routeIs('idcard.grid.*') ? 'active' : '' }}">
+
+                            <i class="nav-icon fas fa-layer-group"></i>
+                            <p>ID Card Templates</p>
+                        </a>
+                        </li>
+                       {{---<li class="nav-item">
                         <a href="{{ route('idcard.editor') }}"
                         class="nav-link {{ request()->routeIs('idcard.editor.*') ? 'active' : '' }}">
 
                             <i class="nav-icon fas fa-layer-group"></i>
                             <p>ID Card Templates</p>
                         </a>
+                        </li>---}}
+                        <li class="nav-item">
+                        <a href="{{ route('school.profile')}}"
+                        class="nav-link {{ request()->routeIs('idcard.editor.*') ? 'active' : '' }}">
+
+                            <i class="nav-icon fas fa-user"></i>
+                            <p>Profile</p>
+                        </a>
                         </li>
 
                     @endif
-                    @if(session('role') === 'superadmin')
+                    @if(session('role') === 'superadmin' && !session('viewing_school'))
                     <li class="nav-item">
                         <a href="#" class="nav-link {{ request()->routeIs('student.deleted') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-gear"></i>
+                            <i class="nav-icon fas fa-cog"></i>
                             <p>
                             Administration
                             <i class="right fas fa-angle-left"></i>
@@ -310,7 +679,14 @@
       if (stream) {
           stream.getTracks().forEach(track => track.stop());
       }
-      const facingMode = document.getElementById('camera-facing-mode').value;
+      const facingModeInput = document.getElementById('camera-facing-mode');
+      const cameraFeed = document.getElementById('camera-feed');
+
+      if (!facingModeInput || !cameraFeed) {
+          return;
+      }
+
+      const facingMode = facingModeInput.value;
       try {
           stream = await navigator.mediaDevices.getUserMedia({
               video: {
@@ -327,8 +703,8 @@
           video.style.height = "100%";
           video.style.objectFit = "cover";
 
-          document.getElementById('camera-feed').innerHTML = "";
-          document.getElementById('camera-feed').appendChild(video);
+          cameraFeed.innerHTML = "";
+          cameraFeed.appendChild(video);
 
           await video.play();
           if (video.videoWidth && video.videoHeight) {
@@ -342,11 +718,20 @@
       }
   }
   // Start button
-  document.getElementById('start-camera').addEventListener('click', startCamera);
+  const startCameraButton = document.getElementById('start-camera');
+  const cameraFacingMode = document.getElementById('camera-facing-mode');
+  const capturePhotoButton = document.getElementById('capture-photo');
+
+  if (startCameraButton) {
+      startCameraButton.addEventListener('click', startCamera);
+  }
   // Change camera (Front/Back)
-  document.getElementById('camera-facing-mode').addEventListener('change', startCamera);
+  if (cameraFacingMode) {
+      cameraFacingMode.addEventListener('change', startCamera);
+  }
   // Capture
-  document.getElementById('capture-photo').addEventListener('click', function () {
+  if (capturePhotoButton) {
+      capturePhotoButton.addEventListener('click', function () {
       const video = document.querySelector('#camera-feed video');
       if (!video) {
           alert("Please start the camera first.");
@@ -358,10 +743,26 @@
       const ctx = canvas.getContext('2d');
       ctx.drawImage(video, 0, 0);
       const image = canvas.toDataURL("image/png");
-      document.getElementById('photo_data').value = image;
-      document.getElementById('camera-preview').innerHTML =
-          '<img src="' + image + '" style="width:100%;height:100%;object-fit:cover;">';
-  });
+      const photoData = document.getElementById('photo_data');
+      const cameraPreview = document.getElementById('camera-preview');
+      const previewPhoto = document.getElementById('preview-photo');
+
+      if (photoData) {
+          photoData.value = image;
+      }
+
+      if (cameraPreview) {
+          cameraPreview.innerHTML =
+              '<img src="' + image + '" style="width:100%;height:100%;object-fit:cover;">';
+      }
+
+      if (previewPhoto) {
+          previewPhoto.src = image;
+          previewPhoto.style.display = 'block';
+      }
+      });
+  }
+    
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -754,28 +1155,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 <script>
- document.getElementById('capture-photo').addEventListener('click', function () {
-
-    // Your existing capture/canvas code here
-
-    const imageData = canvas.toDataURL('image/jpeg');
-
-    // Store captured photo
-    document.getElementById('photo_data').value = imageData;
-
-    // Show in captured photo preview
-    document.getElementById('camera-preview').innerHTML = `
-        <img
-            src="${imageData}"
-            style="width:100%;height:100%;object-fit:cover;"
-        >
-    `;
-
-    // Show immediately on ID card
-    updateCardPhoto(imageData);
-});
-</script>
-<script>
 $(document).on('change', '.sample-radio', function () {
 
     var sampleId = $(this).val();
@@ -797,6 +1176,123 @@ $(document).on('change', '.sample-radio', function () {
     }
 
 });
+</script>
+<script>
+  $(document).on('click', '[data-target="#photoModal"]', function () {
+      let studentId = $(this).data('student-id');
+      console.log('Clicked Student ID:', studentId);
+      $('#photoModal #student_id').val(studentId);
+      console.log(
+          'Modal Student ID:',
+          $('#photoModal #student_id').val()
+      );
+      $('#existing-student-photo')
+          .hide()
+          .attr('src', '');
+      $('#preview-placeholder').show();
+      $.ajax({
+          url: "{{ url('/student') }}/" + studentId + "/photo",
+          type: "GET",
+          success: function(response) {
+              console.log('Photo response:', response);
+              if (response.photo) {
+                  $('#existing-student-photo')
+                      .attr('src', response.photo)
+                      .show();
+                  $('#preview-placeholder').hide();
+              } else {
+                  $('#existing-student-photo').hide();
+                  $('#preview-placeholder').show();
+              }
+          },
+          error: function(xhr) {
+              console.log('Photo loading error:', xhr);
+          }
+      });
+  });
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const settingsCard = document.getElementById('camera-settings-card');
+    const settingsButton = document.getElementById('mobile-settings-toggle');
+
+    if (!settingsCard || !settingsButton) {
+        return;
+    }
+
+    // Hide settings initially on mobile
+    if (window.innerWidth <= 767) {
+        settingsCard.classList.add('mobile-hidden');
+    }
+
+    settingsButton.addEventListener('click', function () {
+
+        settingsCard.classList.toggle('mobile-hidden');
+
+    });
+
+});
+</script>
+<script>
+    $(document).on('click', '.get-student-card', function (event) {
+        event.preventDefault();
+
+        let studentId = $('#student_id').val();
+        let orientation = $(this).attr('data-card-orientation');
+        let previewUrl = "{{ route('student.card.preview', ['id' => '__STUDENT_ID__']) }}";
+
+        if (!studentId) {
+            $('#id-card-preview-container').html(`
+                <div class="alert alert-danger">
+                    Student ID is missing.
+                </div>
+            `);
+            return;
+        }
+
+        previewUrl = previewUrl.replace('__STUDENT_ID__', studentId);
+        previewUrl += '?orientation=' + encodeURIComponent(orientation);
+        $('#student_id').val(studentId);
+
+        // Show loading
+        $('#id-card-preview-container').html(`
+            <div class="text-center p-4">
+                <i class="fas fa-spinner fa-spin"></i>
+                Loading ID Card...
+            </div>
+        `);
+
+        $.ajax({
+            url: previewUrl,
+            type: "GET",
+
+            success: function (html) {
+                $('#id-card-preview-container').html(html);
+                $('#student-' + orientation + '-tab').tab('show');
+            },
+
+            error: function (xhr) {
+                console.log(xhr.responseText);
+
+                $('#id-card-preview-container').html(`
+                    <div class="alert alert-danger">
+                        Unable to load ID card preview.
+                    </div>
+                `);
+            }
+        });
+
+    });
+</script>
+<script>
+    $(document).on('click', '[data-target="#photoModal"][data-student-id]', function () {
+        $('#photoModal #student_id').val($(this).data('student-id'));
+    });
+
+    $('#photoModal').on('shown.bs.modal', function () {
+        $(this).find('.get-student-card.active').first().trigger('click');
+    });
 </script>
 @yield('scripts')
 

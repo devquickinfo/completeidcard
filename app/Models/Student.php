@@ -28,6 +28,7 @@ class Student extends Model
         'captured_by_camera',
         'idcardprinted',
         'IsDeleted',
+        'mother_name',
     ];
 
     protected $casts = [

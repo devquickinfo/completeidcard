@@ -18,7 +18,7 @@ use App\Models\Mainidcard;
 
 class SchoolController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
 
@@ -33,12 +33,21 @@ class SchoolController extends Controller
             return redirect()->route('schools.show', $school);
         }
 
-        //$schools = School::latest()->paginate(10);
-        $schools = School::orderBy('school_name', 'asc')->paginate(10);
+        
+        //$schools = School::where('IsDeleted', 0)->orderBy('school_name', 'asc')->paginate(10);
+         $search = $request->input('search');
+
+         $schools = School::where('IsDeleted', 0)
+            ->when(strlen($search) >= 3, function ($query) use ($search) {
+                $query->where('school_name', 'like', '%' . $search . '%');
+            })
+            ->orderBy('school_name', 'asc')
+            ->paginate(10)
+            ->withQueryString();
 
         return view(
             'schools.index',
-            compact('schools')
+            compact('schools','search')
         );
     }
 
@@ -51,14 +60,78 @@ class SchoolController extends Controller
 
 
 
+    // public function store(Request $request)
+    // {
+
+    //     $validator = Validator::make($request->all(), [
+    //         'school_name' => 'required',
+    //         'school_code' => 'required|unique:schools',
+    //         'email' => 'nullable|email',
+    //         'school_logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return redirect()
+    //             ->back()
+    //             ->withErrors($validator)
+    //             ->withInput();
+    //     }
+    //     $data = $request->only([
+    //         'school_name',
+    //         'school_code',
+    //         'email',
+    //         'phone',
+    //         'address',
+    //         'city',
+    //         'state',
+    //         'pincode',
+    //         'status',
+    //     ]);
+
+    //     if ($request->hasFile('school_logo')) {
+    //         $data['logo'] = $request->file('school_logo')->store('schools', 'public');
+    //     }
+
+    //     $school = School::create($data);
+
+    //     if (!empty($school->email)) {
+    //         User::create([
+    //             'name' => $school->school_name,
+    //             'email' => $school->email,
+    //             'password' => Hash::make('password'),
+    //             'role' => 'school',
+    //             'school_id' => $school->id,
+    //         ]);
+    //     }
+
+    //     //  return redirect()
+    //     // ->route('schools.show', ['school' => Auth::user()->school_id])
+    //     // ->with('success', 'School Added Successfully');
+    //     return redirect()
+    //     ->route('schools.show', ['school' => $school->id])
+    //     ->with('success', 'School Added Successfully');
+
+    // }
     public function store(Request $request)
     {
 
+       // echo '<pre>';print_r($request->all()); die;
         $validator = Validator::make($request->all(), [
             'school_name' => 'required',
-            'school_code' => 'required|unique:schools',
+            //'school_code' => 'required|unique:schools',
             'email' => 'nullable|email',
+            'phone' =>'required',
+
             'school_logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'username' => 'required|string|max:255|unique:users,username',
+            'password' => 'required|string|min:4',
+            
+        ], [
+            'username.required' => 'Username is required.',
+            'username.unique' => 'This username is already taken.',
+            'password.required' => 'Password is required.',
+            'password.min' => 'Password must be at least 6 characters.',
+           
         ]);
 
         if ($validator->fails()) {
@@ -67,6 +140,7 @@ class SchoolController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
+
         $data = $request->only([
             'school_name',
             'school_code',
@@ -80,28 +154,32 @@ class SchoolController extends Controller
         ]);
 
         if ($request->hasFile('school_logo')) {
-            $data['logo'] = $request->file('school_logo')->store('schools', 'public');
+            $data['logo'] = $request->file('school_logo')
+                ->store('schools', 'public');
         }
 
+        // Create school
         $school = School::create($data);
 
-        if (!empty($school->email)) {
-            User::create([
-                'name' => $school->school_name,
-                'email' => $school->email,
-                'password' => Hash::make('password'),
-                'role' => 'school',
-                'school_id' => $school->id,
-            ]);
-        }
+        // Create school user
+        $user= User::create([
+            'name' => $school->school_name,
+            'username' => $request->username,
+            'email' => $school->email,
+            'password' => Hash::make($request->password),
+            'role' => 'school',
+            'school_id' => $school->id,
+        ]);
 
-        //  return redirect()
-        // ->route('schools.show', ['school' => Auth::user()->school_id])
-        // ->with('success', 'School Added Successfully');
+        $userId = $user->id;
+
+        $school->update([
+            'user_id' => $userId,
+        ]);
+
         return redirect()
-        ->route('schools.show', ['school' => $school->id])
-        ->with('success', 'School Added Successfully');
-
+            ->route('schools.show', ['school' => $school->id])
+            ->with('success', 'School Added Successfully');
     }
 
 
@@ -118,18 +196,17 @@ class SchoolController extends Controller
         ) {
             abort(403);
         }
-
         $classes = StudentClass::with('sections')
              ->whereHas('students', function ($query) use ($school) {
-                $query->where('school_id', $school->id);
+                $query->where('school_id', $school->id)->where('IsDeleted', '0');
              })
             ->withCount([
                 'students as students_count' => function ($query) use ($school) {
-                    $query->where('school_id', $school->id);
+                    $query->where('school_id', $school->id)->where('IsDeleted', '0');
                 },
                 'students as without_photo_count' => function ($query) use ($school) {
-                    $query->where('school_id', $school->id)
-                        ->whereNull('capturephoto');
+                    $query->where('school_id', $school->id)->where('IsDeleted', '0')
+                        ->whereNull('photo');
                 },
             ])
             ->get();
@@ -205,30 +282,55 @@ class SchoolController extends Controller
         );
     }
 
-    public function profile()
-    {
-        $user = Auth::user();
-
-        if (! $user || $user->role !== 'school' || ! $user->school_id) {
-            abort(403);
-        }
-         
-        $school = $user->school;
-        $schoolUser = User::where('role', 'school')->where('school_id', $school->id)->first();
-
-        return view('schools.profile', compact('school', 'schoolUser'));
-    }
-   
-    // public function updateProfile(Request $request)
+    // public function profile()
     // {
     //     $user = Auth::user();
 
     //     if (! $user || $user->role !== 'school' || ! $user->school_id) {
     //         abort(403);
     //     }
-
+         
     //     $school = $user->school;
     //     $schoolUser = User::where('role', 'school')->where('school_id', $school->id)->first();
+
+    //     return view('schools.profile', compact('school', 'schoolUser'));
+    // }
+
+    public function profile()
+    {
+        $user = Auth::user();
+
+        if (
+            !session('viewing_school') &&
+            (!$user || $user->role !== 'school' || !$user->school_id)
+        ) {
+            abort(403);
+        }
+
+        $schoolId = $user?->school_id ?? session('viewing_school');
+
+        $school = School::findOrFail($schoolId);
+
+        $schoolUser = User::where('school_id', $schoolId)
+            ->where('role', 'school')
+            ->first();
+
+        return view('schools.profile', compact('school', 'schoolUser'));
+    }
+   
+   
+    // public function updateProfile(Request $request)
+    // {
+    //     $user = Auth::user();
+    //     if (! $user || $user->role !== 'school' || ! $user->school_id) {
+    //         abort(403);
+    //     }
+
+    //     $school = $user->school;
+
+    //     $schoolUser = User::where('role', 'school')
+    //         ->where('school_id', $school->id)
+    //         ->first();
 
     //     $request->validate([
     //         'school_name' => 'required',
@@ -237,19 +339,39 @@ class SchoolController extends Controller
     //         'principal_name' => 'required|string',
     //         'phone' => 'required|string',
     //         'address' => 'required|string',
-    //         'username' => 'required|string|unique:users,email,' . ($schoolUser?->id ?? 'NULL'),
-    //         'password' => 'nullable|min:6|confirmed',
-    //         'school_logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-    //     ]);
-    //    if ($request->hasFile('school_logo')) {
 
-    //         if ($school->logo && Storage::disk('public')->exists($school->logo)) {
+    //         'username' => 'required|string|unique:users,email,' . ($schoolUser?->id ?? 'NULL'),
+
+    //         'password' => 'nullable|min:6|confirmed',
+
+    //         'school_logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+
+    //         'principal_signature' => 'nullable|image|mimes:jpg,jpeg,png,webp,avif|max:5120',
+    //     ]);
+    //     $data = [];
+    //     if ($request->hasFile('school_logo')) {
+    //         if (
+    //             $school->logo &&
+    //             Storage::disk('public')->exists($school->logo)
+    //         ) {
     //             Storage::disk('public')->delete($school->logo);
     //         }
 
-    //         $data['logo'] = $request->file('school_logo')->store('schools', 'public');
+    //         $data['logo'] = $request->file('school_logo')
+    //             ->store('schools', 'public');
     //     }
+    //     if ($request->hasFile('principal_signature')) {
 
+    //         if (
+    //             $school->principal_signature &&
+    //             Storage::disk('public')->exists($school->principal_signature)
+    //         ) {
+    //             Storage::disk('public')->delete($school->principal_signature);
+    //         }
+
+    //         $data['principal_signature'] = $request->file('principal_signature')
+    //             ->store('schools/signatures', 'public');
+    //     }
     //     $school->update([
     //         'school_name' => $request->school_name,
     //         'school_code' => $request->school_code,
@@ -258,12 +380,23 @@ class SchoolController extends Controller
     //         'phone' => $request->phone,
     //         'address' => $request->address,
     //         'status' => $school->status,
+
     //         'logo' => $data['logo'] ?? $school->logo,
+
+    //         'principal_signature' =>
+    //             $data['principal_signature'] ?? $school->principal_signature,
     //     ]);
 
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Update School User
+    //     |--------------------------------------------------------------------------
+    //     */
+
     //     if ($schoolUser) {
+
     //         $schoolUser->update([
-    //             'name' =>  $school->school_name,
+    //             'name' => $school->school_name,
     //             'email' => $request->username,
     //         ]);
 
@@ -274,42 +407,44 @@ class SchoolController extends Controller
     //         }
     //     }
 
-    //      return redirect()
-    //     ->route('schools.show', ['school' => Auth::user()->school_id])
-    //     ->with('success', 'School Updated Successfully');
+    //     return redirect()
+    //         ->route('schools.show', [
+    //             'school' => Auth::user()->school_id
+    //         ])
+    //         ->with('success', 'School Updated Successfully');
     // }
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
-
-        if (! $user || $user->role !== 'school' || ! $user->school_id) {
+        if (
+            !session('viewing_school') &&
+            (!$user || $user->role !== 'school' || !$user->school_id)
+        ) {
             abort(403);
         }
-
-        $school = $user->school;
-
+        $schoolId = session('viewing_school') ?? $user?->school_id;
+        $school = School::findOrFail($schoolId);
         $schoolUser = User::where('role', 'school')
-            ->where('school_id', $school->id)
+            ->where('school_id', $schoolId)
             ->first();
-
         $request->validate([
             'school_name' => 'required',
-            'school_code' => 'required|unique:schools,school_code,' . $school->id,
-            'email' => 'required|email',
-            'principal_name' => 'required|string',
+            'school_code' => 'nullable|unique:schools,school_code,' . $school->id,
+            'email' => 'nullable|email',
+            'principal_name' => 'nullable|string',
             'phone' => 'required|string',
-            'address' => 'required|string',
-
-            'username' => 'required|string|unique:users,email,' . ($schoolUser?->id ?? 'NULL'),
-
+            'address' => 'nullable|string',
+            'username' => 'required|string|unique:users,username,' . ($schoolUser?->id ?? 'NULL'),
             'password' => 'nullable|min:6|confirmed',
-
             'school_logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-
             'principal_signature' => 'nullable|image|mimes:jpg,jpeg,png,webp,avif|max:5120',
         ]);
+
         $data = [];
+
+        // School Logo
         if ($request->hasFile('school_logo')) {
+
             if (
                 $school->logo &&
                 Storage::disk('public')->exists($school->logo)
@@ -320,6 +455,8 @@ class SchoolController extends Controller
             $data['logo'] = $request->file('school_logo')
                 ->store('schools', 'public');
         }
+
+        // Principal Signature
         if ($request->hasFile('principal_signature')) {
 
             if (
@@ -332,6 +469,8 @@ class SchoolController extends Controller
             $data['principal_signature'] = $request->file('principal_signature')
                 ->store('schools/signatures', 'public');
         }
+
+        // Update School
         $school->update([
             'school_name' => $request->school_name,
             'school_code' => $request->school_code,
@@ -347,17 +486,13 @@ class SchoolController extends Controller
                 $data['principal_signature'] ?? $school->principal_signature,
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Update School User
-        |--------------------------------------------------------------------------
-        */
-
+        // Update School User
         if ($schoolUser) {
 
             $schoolUser->update([
                 'name' => $school->school_name,
-                'email' => $request->username,
+                'username' => $request->username,
+                'email' => $school->email,
             ]);
 
             if ($request->filled('password')) {
@@ -369,7 +504,7 @@ class SchoolController extends Controller
 
         return redirect()
             ->route('schools.show', [
-                'school' => Auth::user()->school_id
+                'school' => $school->id
             ])
             ->with('success', 'School Updated Successfully');
     }
@@ -443,19 +578,33 @@ class SchoolController extends Controller
     }
   
       
-    public function destroy(School $school)
+    public function destroy($id)
     {
+        
+        $school = School::findOrFail($id);
         $school->update([
-            'status' => ! $school->status,
+            'IsDeleted' => 1,
         ]);
-
-        $message = $school->status ? 'School activated successfully.' : 'School deactivated successfully.';
-
+        $message =  'School Deleted successfully.';
         return redirect()
             ->route('schools.index')
             ->with('success', $message);
     }
-    // public function saveSample(Request $request)
+
+
+    public function updateStatus($id)
+    {
+        $school = School::findOrFail($id);
+
+        $school->update([
+            'status' => $school->status == 1 ? 0 : 1,
+        ]);
+
+        return redirect()
+            ->back()
+            ->with('success', 'School status updated successfully.');
+    }
+        // public function saveSample(Request $request)
     // {
        
     //     $schoolId = Auth::user()->school_id ?? session('viewing_school');

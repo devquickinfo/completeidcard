@@ -101,24 +101,16 @@ class IdCardController extends Controller
         ->header('Pragma', 'no-cache')
         ->header('Expires', '0');
     }
-    // public function editIDCard(Request $request)
-    // {
-    //      $schoolId = Auth::user()->school_id ?? session('viewing_school');
-    //      $selectid =SelectedSample::where('school_id',$schoolId)->pluck('sample_id')->toArray();
-    //      $selectedSample = UploadSample::whereIn('id', $selectid)->first();
-    //      $school = School::find($schoolId);
-    //      $idCardData=Mainidcard::where('school_id',$schoolId)->first();
-    //      if($idCardData){
-    //         $designcard=$idCardData;
-    //      } else {
-    //         $designcard = null;
-    //      }
-    //      return response()
-    //     ->view('IDCards.inlteeditor', compact('schoolId','selectedSample','designcard','school'))
-    //     ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-    //     ->header('Pragma', 'no-cache')
-    //     ->header('Expires', '0');
-    // }
+    public function IdCardGrid(Request $request){
+       
+      $schoolId = Auth::user()->school_id ?? session('viewing_school');
+      $classes=StudentClass::all();
+      $selectedSamples = SelectedSample::where('school_id', $schoolId)
+      ->with('uploadSample')
+      ->get();
+      return view('IDCards.grideditor',compact('classes','selectedSamples','schoolId'));
+
+    }
     public function editIDCard(Request $request)
     {
         //echo '<pre>';print_r($request->all()); die;
@@ -134,8 +126,20 @@ class IdCardController extends Controller
         if ($selectedSampleId) {
             $selectedSample = UploadSample::find($selectedSampleId);
         }
+        $verticalSample = UploadSample::find(
+            SelectedSample::where('school_id', $schoolId)
+                ->where('orientation', 'vertical')
+                ->value('sample_id')
+        );
+        $horizontalSample = UploadSample::find(
+            SelectedSample::where('school_id', $schoolId)
+                ->where('orientation', 'horizontal')
+                ->value('sample_id')
+        );
         $school = School::find($schoolId);
-        $idCardData = Mainidcard::where('school_id', $schoolId)->where('orientation',$request->orientation)->first();
+        $idCardData = Mainidcard::where('school_id', $schoolId)
+            ->where('orientation', $orientation)
+            ->first();
         $designcard = $idCardData ?: null;
         return response()
             ->view(
@@ -143,6 +147,8 @@ class IdCardController extends Controller
                 compact(
                     'schoolId',
                     'selectedSample',
+                    'verticalSample',
+                    'horizontalSample',
                     'designcard',
                     'school',
                     'orientation'
@@ -155,10 +161,187 @@ class IdCardController extends Controller
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
     }
+   
 
-    /**
-     * Print filtered students ID cards using Mainidcard layout
-     */
+    protected function buildStudentQuery(Request $request, $schoolId)
+    {
+        $search = trim($request->input('search', $request->input('student_search', '')));
+        return Student::with(['studentClass', 'section'])
+            ->where('school_id', $schoolId)
+            ->when($request->filled('class_id'), function ($query) use ($request) {
+                $query->where('class_id', $request->class_id);
+            })
+            ->when($request->filled('section_id'), function ($query) use ($request) {
+                $query->where('section_id', $request->section_id);
+            })
+            ->when($request->filled('photo'), function ($query) use ($request) {
+                if ($request->photo === 'available') {
+                    $query->where(function ($query) {
+                        $query->where(function ($q) {
+                            $q->whereNotNull('photo')
+                                ->where('photo', '!=', '');
+                        })
+                            ->orWhere(function ($q) {
+                                $q->whereNotNull('capturephoto')
+                                    ->where('capturephoto', '!=', '');
+                            });
+                    });
+                }
+
+                if ($request->photo === 'not_available') {
+                    $query->where(function ($query) {
+                        $query->where(function ($q) {
+                            $q->whereNull('photo')
+                                ->orWhere('photo', '');
+                        })
+                            ->where(function ($q) {
+                                $q->whereNull('capturephoto')
+                                    ->orWhere('capturephoto', '');
+                            });
+                    });
+                }
+            })
+            ->when($request->filled('printed'), function ($query) use ($request) {
+                if ($request->printed === 'yes') {
+                    $query->where('idcardprinted', 'yes');
+                } elseif ($request->printed === 'no') {
+                    $query->where('idcardprinted', 'no');
+                }
+            })
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('first_name', 'LIKE', '%' . $search . '%')
+                        ->orWhere('last_name', 'LIKE', '%' . $search . '%')
+                        ->orWhere('admission_no', 'LIKE', '%' . $search . '%');
+                });
+            })
+            ->orderBy('first_name');
+    }
+    
+
+    public function uploadDesign(Request $request)
+    {
+        $schoolId = Auth::user()?->school_id
+            ?? session('viewing_school');
+
+        if (!$schoolId) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'School not found.'
+            ], 400);
+        }
+        $request->validate([
+            'image' => [
+                'required',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:20480'
+            ],
+
+            'orientation' => [
+                'required',
+                'in:horizontal,vertical'
+            ],
+        ]);
+        $uploadedFile = $request->file('image');
+        $orientation = $request->input('orientation');
+        $originalName = $uploadedFile->getClientOriginalName();
+        if ($orientation === 'horizontal') {
+
+            $width = 317;
+            $height = 204;
+
+        } else {
+
+            $width = 204;
+            $height = 317;
+        }
+        $manager = new ImageManager(
+            new Driver()
+        );
+
+        try {
+
+            $image = $manager->read(
+                $uploadedFile->getPathname()
+            );
+
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to read uploaded image.'
+            ], 422);
+        }
+        $image->resize(
+            width: $width,
+            height: $height
+        );
+        $maxSize = 1024 * 1024; // 1 MB
+        $quality = 90;
+        do {
+            $encoded = $image->toJpeg($quality);
+            $size = strlen($encoded);
+            $quality -= 5;
+        } while (
+            $size > $maxSize &&
+            $quality >= 20
+        );
+        if ($size > $maxSize) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to reduce image below 1 MB.'
+            ], 422);
+        }
+        $filename = uniqid('sample_') . '.jpg';
+        $path = 'samples/' . $schoolId . '/' . $filename;
+        try {
+
+            Storage::disk('public')->put(
+                $path,
+                (string) $encoded
+            );
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to save image.'
+            ], 500);
+        }
+        $sample = UploadSample::create([
+            'school_id' => $schoolId,
+            'name' => $originalName,
+            'file_path' => $path,
+            'orientation' => $orientation,
+        ]);
+        $selectedSample = SelectedSample::updateOrCreate(
+            [
+                'school_id' => $schoolId,
+                'orientation' => $orientation,
+            ],
+            [
+                'sample_id' => $sample->id,
+            ]
+        );
+        $imageUrl = Storage::disk('public')->url(
+            $path
+        );
+        return response()->json([
+            'success' => true,
+            'message' => 'Card design uploaded successfully.',
+            'sample_id' => $sample->id,
+            'name' => $sample->name,
+            'path' => $sample->file_path,
+            'url' => $imageUrl,
+            'orientation' => $orientation,
+            'width' => $width,
+            'height' => $height,
+            'size' => round($size / 1024, 2) . ' KB',
+            'selected_sample_id' => $selectedSample->id,
+        ]);
+    }
+
     public function printFiltered(Request $request)
     {
         $schoolId = Auth::user()->school_id ?? session('viewing_school');
@@ -223,336 +406,6 @@ class IdCardController extends Controller
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
-    }
-
-    protected function buildStudentQuery(Request $request, $schoolId)
-    {
-        $search = trim($request->input('search', $request->input('student_search', '')));
-        return Student::with(['studentClass', 'section'])
-            ->where('school_id', $schoolId)
-            ->when($request->filled('class_id'), function ($query) use ($request) {
-                $query->where('class_id', $request->class_id);
-            })
-            ->when($request->filled('section_id'), function ($query) use ($request) {
-                $query->where('section_id', $request->section_id);
-            })
-            ->when($request->filled('photo'), function ($query) use ($request) {
-                if ($request->photo === 'available') {
-                    $query->where(function ($query) {
-                        $query->where(function ($q) {
-                            $q->whereNotNull('photo')
-                                ->where('photo', '!=', '');
-                        })
-                            ->orWhere(function ($q) {
-                                $q->whereNotNull('capturephoto')
-                                    ->where('capturephoto', '!=', '');
-                            });
-                    });
-                }
-
-                if ($request->photo === 'not_available') {
-                    $query->where(function ($query) {
-                        $query->where(function ($q) {
-                            $q->whereNull('photo')
-                                ->orWhere('photo', '');
-                        })
-                            ->where(function ($q) {
-                                $q->whereNull('capturephoto')
-                                    ->orWhere('capturephoto', '');
-                            });
-                    });
-                }
-            })
-            ->when($request->filled('printed'), function ($query) use ($request) {
-                if ($request->printed === 'yes') {
-                    $query->where('idcardprinted', 'yes');
-                } elseif ($request->printed === 'no') {
-                    $query->where('idcardprinted', 'no');
-                }
-            })
-            ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('first_name', 'LIKE', '%' . $search . '%')
-                        ->orWhere('last_name', 'LIKE', '%' . $search . '%')
-                        ->orWhere('admission_no', 'LIKE', '%' . $search . '%');
-                });
-            })
-            ->orderBy('first_name');
-    }
-     public function uploadDesign(Request $request)
-    {
-        /*
-        |--------------------------------------------------------------------------
-        | Get School ID
-        |--------------------------------------------------------------------------
-        */
-
-        $schoolId = Auth::user()?->school_id
-            ?? session('viewing_school');
-
-        if (!$schoolId) {
-
-            return response()->json([
-                'success' => false,
-                'message' => 'School not found.'
-            ], 400);
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Validate request
-        |--------------------------------------------------------------------------
-        |
-        | Do NOT use max:1024 here.
-        | We will compress the image to 1 MB ourselves.
-        |
-        */
-
-        $request->validate([
-            'image' => [
-                'required',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:20480'
-            ],
-
-            'orientation' => [
-                'required',
-                'in:horizontal,vertical'
-            ],
-        ]);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Get uploaded image
-        |--------------------------------------------------------------------------
-        */
-
-        $uploadedFile = $request->file('image');
-
-        $orientation = $request->input('orientation');
-
-        $originalName = $uploadedFile->getClientOriginalName();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Card dimensions
-        |--------------------------------------------------------------------------
-        */
-
-        if ($orientation === 'horizontal') {
-
-            $width = 317;
-            $height = 204;
-
-        } else {
-
-            $width = 204;
-            $height = 317;
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Create Image Manager
-        |--------------------------------------------------------------------------
-        */
-
-        $manager = new ImageManager(
-            new Driver()
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Read Image
-        |--------------------------------------------------------------------------
-        */
-
-        try {
-
-            $image = $manager->read(
-                $uploadedFile->getPathname()
-            );
-
-        } catch (\Throwable $e) {
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Unable to read uploaded image.'
-            ], 422);
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Resize image exactly
-        |--------------------------------------------------------------------------
-        */
-
-        $image->resize(
-            width: $width,
-            height: $height
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Compress image to <= 1 MB
-        |--------------------------------------------------------------------------
-        */
-
-        $maxSize = 1024 * 1024; // 1 MB
-
-        $quality = 90;
-
-        do {
-
-            $encoded = $image->toJpeg($quality);
-
-            $size = strlen($encoded);
-
-            $quality -= 5;
-
-        } while (
-            $size > $maxSize &&
-            $quality >= 20
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Check final size
-        |--------------------------------------------------------------------------
-        */
-
-        if ($size > $maxSize) {
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Unable to reduce image below 1 MB.'
-            ], 422);
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Generate filename
-        |--------------------------------------------------------------------------
-        */
-
-        $filename = uniqid('sample_') . '.jpg';
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Storage path
-        |--------------------------------------------------------------------------
-        */
-
-        $path = 'samples/' . $schoolId . '/' . $filename;
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Save image
-        |--------------------------------------------------------------------------
-        */
-
-        try {
-
-            Storage::disk('public')->put(
-                $path,
-                (string) $encoded
-            );
-
-        } catch (\Throwable $e) {
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Unable to save image.'
-            ], 500);
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Insert into upload_samples
-        |--------------------------------------------------------------------------
-        */
-
-        $sample = UploadSample::create([
-            'school_id' => $schoolId,
-            'name' => $originalName,
-            'file_path' => $path,
-            'orientation' => $orientation,
-        ]);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Set uploaded sample as selected sample
-        |--------------------------------------------------------------------------
-        */
-
-        $selectedSample = SelectedSample::updateOrCreate(
-
-            [
-                'school_id' => $schoolId,
-                'orientation' => $orientation,
-            ],
-
-            [
-                'sample_id' => $sample->id,
-            ]
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Image URL
-        |--------------------------------------------------------------------------
-        */
-
-        $imageUrl = Storage::disk('public')->url(
-            $path
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Return JSON
-        |--------------------------------------------------------------------------
-        */
-
-        return response()->json([
-
-            'success' => true,
-
-            'message' => 'Card design uploaded successfully.',
-
-            'sample_id' => $sample->id,
-
-            'name' => $sample->name,
-
-            'path' => $sample->file_path,
-
-            'url' => $imageUrl,
-
-            'orientation' => $orientation,
-
-            'width' => $width,
-
-            'height' => $height,
-
-            'size' => round($size / 1024, 2) . ' KB',
-
-            'selected_sample_id' => $selectedSample->id,
-
-        ]);
     }
 }
 

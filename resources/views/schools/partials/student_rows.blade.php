@@ -14,8 +14,16 @@
 
         <td class="text-center">
             @if($student->photo)
-                <a href="{{ asset('storage/' . $student->photo) }}" target="_blank">
-                    <img src="{{ asset('storage/' . $student->photo) }}"
+                  @php
+                    $photo = pathinfo($student->photo, PATHINFO_DIRNAME) . '/' .
+                                 pathinfo($student->photo, PATHINFO_FILENAME) . '.jpg';
+                   
+                    if (pathinfo($student->photo, PATHINFO_DIRNAME) === '.') {
+                        $photo = pathinfo($student->photo, PATHINFO_FILENAME) . '.jpg';
+                    }
+                   @endphp
+                <a href="{{ asset('storage/' . $photo) }}" target="_blank">
+                    <img src="{{ asset('storage/' . $photo) }}"
                         alt="Student Photo"
                         style="width: 50px; height: 50px; object-fit: cover;" class="img-thumbnail rounded-circle">
                 </a>

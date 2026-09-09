@@ -11,4 +11,13 @@ class UploadSample extends Model
         'file_path',
         'caption', 'orientation','school_id',
     ];
+
+    public function selectedSample()
+    {
+        return $this->hasOne(
+            SelectedSample::class,
+            'sample_id', // FK in selected_samples
+            'id'         // PK in upload_samples
+        );
+    }
 }

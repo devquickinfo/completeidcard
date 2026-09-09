@@ -10,11 +10,17 @@ use App\Http\Controllers\Backend\StudentController;
 use App\Http\Controllers\Backend\SchoolController;
 use App\Http\Controllers\Backend\StudentImportController;
 use App\Http\Controllers\UploadSampleController;
-use App\Http\Controllers\IdCardTemplateController;
 use App\Http\Controllers\MainidcardController;
+use Illuminate\Support\Facades\Artisan;
 
 Route::get('/check', function () {
     return view('check');
+});
+Route::get('/optimize', function () {
+
+    Artisan::call('optimize');
+
+    return 'Laravel optimized successfully.';
 });
 
 Route::get('/', function () {
@@ -61,11 +67,9 @@ Route::middleware('auth')->group(function () {
     ->name('idcard.search.students');
     Route::post('/idcard/generate', [IdCardController::class, 'generate'])
     ->name('idcard.generate');
-    Route::get('/idcard/print-filtered', [IdCardController::class, 'printFiltered'])
-    ->name('idcard.print-filtered');
     Route::get('/student/list', [StudentListController::class, 'index'])
     ->name('student.list');
-    Route::get('/teacher/list', [TeacherListController::class, 'index'])
+    Route::get('/teacher/list', [TeacherController::class, 'index'])
     ->name('teacher.list');
     Route::resource('teachers', TeacherController::class);
     Route::resource('upload-samples', UploadSampleController::class);
@@ -83,54 +87,43 @@ Route::middleware('auth')->group(function () {
 
 
 
-    Route::get('/id-card-templates', 
-        [IdCardTemplateController::class, 'index']
-    )->name('id-card-templates.index');
-
-    Route::get('/id-card-templates/create', 
-        [IdCardTemplateController::class, 'create']
-    )->name('id-card-templates.create');
-
-    Route::post('/id-card-templates', 
-        [IdCardTemplateController::class, 'store']
-    )->name('id-card-templates.store');
-
-    Route::get('/id-card-templates/{template}/designer', 
-        [IdCardTemplateController::class, 'designer']
-    )->name('id-card-templates.designer');
-
-    Route::post('/id-card-templates/{template}/fields', 
-        [IdCardTemplateController::class, 'saveFields']
-    )->name('id-card-templates.save-fields');
-
-    Route::get('/id-card-templates/{template}/edit', 
-        [IdCardTemplateController::class, 'edit']
-    )->name('id-card-templates.edit');
-
-    Route::put('/id-card-templates/{template}', 
-        [IdCardTemplateController::class, 'update']
-    )->name('id-card-templates.update');
-
-    Route::delete('/id-card-templates/{template}', 
-        [IdCardTemplateController::class, 'destroy']
-    )->name('id-card-templates.destroy');
-
-    Route::post('/id-card-templates/{template}/activate', 
-        [IdCardTemplateController::class, 'activate']
-    )->name('id-card-templates.activate');
-
-    Route::get('/id-card-templates/{template}/students', 
-        [IdCardTemplateController::class, 'selectStudents']
-    )->name('id-card-templates.students');
-
-    Route::post('/id-card-templates/{template}/generate', 
-        [IdCardTemplateController::class, 'generate']
-    )->name('id-card-templates.generate');
     Route::get('idcard-editor', [IdCardController::class, 'editIDCard'])->name('idcard.editor');
 
     Route::post('/mainidcard/save',[MainidcardController::class, 'store'])->name('mainidcard.store');
-     //user upload id card from editor
+
+
+    //user upload id card from editor
     Route::post('/id-card/upload-design', [IDCardController::class, 'uploadDesign'])
     ->name('id-card.upload-design');
+
+    Route::delete('/student/bulk-action', [StudentController::class, 'bulkAction'])
+    ->name('student.bulkAction');
+
+    Route::get('/idcard/print-filtered', [IdCardController::class, 'printFiltered'])
+    ->name('idcard.print-filtered');
+
+
+    Route::get('/student/{id}/photo', [StudentController::class, 'getPhoto'])
+    ->name('student.photo');
+    Route::get('/student/card-preview/{id}', [StudentController::class, 'studentCardPreview'])
+    ->name('student.card.preview');
+    Route::get('/schools/{school}/status', [SchoolController::class, 'updateStatus'])
+    ->name('schools.status');
+
+
+    Route::get('idcard-grid', [IdCardController::class, 'IdCardGrid'])->name('idcard.grid');
+
+
+
+
+
+
+
+
+
+    Route::get('/card/{schoolId}/{orientation}/edit', [MainidcardController::class, 'edit'])
+    ->name('card.template.edit');
+    // Route::post('/card/{mainidcard}/layout', [MainidcardController::class, 'saveLayout'])
+    // ->name('card.template.layout.save');
 
 });

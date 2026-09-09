@@ -40,7 +40,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>School Name</label>
+                                    <label>School Name <span class="text-danger"> * </span></label>
                                     <input type="text" name="school_name" class="form-control {{ Auth::user()?->role === 'school' ? 'school-readonly' : '' }}" value="{{ old('school_name', $school->school_name) }}" @if(Auth::user()?->role === 'school') readonly @endif>
                                     @error('school_name')
                                         <span class="text-danger">{{ $message }}</span>
@@ -54,14 +54,14 @@
                                     @enderror
                                 </div>
                                 <div class="form-group">
-                                    <label>Principal Name</label>
+                                    <label>Principal Name </label>
                                     <input type="text" name="principal_name" class="form-control" value="{{ old('principal_name', $schoolUser?->name ?? '') }}">
                                     @error('principal_name')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="form-group">
-                                    <label>Phone</label>
+                                    <label>Phone <span class="text-danger"> * </span></label>
                                     <input type="text" name="phone" class="form-control" value="{{ old('phone', $school->phone) }}">
                                     @error('phone')
                                         <span class="text-danger">{{ $message }}</span>
@@ -77,8 +77,8 @@
                                     @enderror
                                 </div>
                                 <div class="form-group">
-                                    <label>Username</label>
-                                    <input type="text" name="username" class="form-control" value="{{ old('username', $schoolUser?->email ?? '') }}">
+                                    <label>Username <span class="text-danger"> * </span></label>
+                                    <input type="text" name="username" class="form-control" value="{{ old('username', $schoolUser?->username ?? '') }}">
                                     @error('username')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -90,13 +90,22 @@
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
-                                <div class="form-group">
+                                {{---<div class="form-group">
                                     <label>Confirm Password</label>
                                     <input type="password" name="password_confirmation" class="form-control" autocomplete="new-password">
                                     @error('password_confirmation')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
+                                </div>--}}
+
+                                <div class="form-group">
+                                    <label>Address</label>
+                                    <textarea name="address" class="form-control" rows="1">{{ old('address', $school->address) }}</textarea>
                                 </div>
+                                @error('address')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                           
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -133,17 +142,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>Address</label>
-                                    <textarea name="address" class="form-control" rows="4">{{ old('address', $school->address) }}</textarea>
-                                </div>
-                                @error('address')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Save Profile</button>
+                        <button type="submit" class="btn btn-primary mt-4">Save Profile</button>
                     </form>
                 </div>
             </div>
