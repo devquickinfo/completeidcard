@@ -1,7 +1,7 @@
 @php
     use App\Helpers\ImageHelper;
     $orientation = $orientation
-        ?? \App\Models\SelectedSample::where(
+        ?? \App\Models\Mainidcard::where(
             'school_id',
             auth()->user()->school_id ?? session('viewing_school')
         )->latest('id')->value('orientation')
