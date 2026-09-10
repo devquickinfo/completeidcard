@@ -1,6 +1,12 @@
 @extends('frontend.layout.applayout')
 @section('title', 'Student Details')
 @section('content')
+@php
+    $defaultOrientation = \App\Models\Mainidcard::where(
+        'school_id',
+        auth()->user()->school_id ?? session('viewing_school')
+    )->latest('id')->value('orientation') ?? 'vertical';
+@endphp
 <style>
     /*.student-photo-wrapper {
         position: relative;
