@@ -30,7 +30,7 @@
     }
 </style>
 @php
-    $defaultOrientation = \App\Models\Mainidcard::where(
+    $defaultOrientation = \App\Models\SelectedSample::where(
         'school_id',
         auth()->user()->school_id ?? session('viewing_school')
     )->latest('id')->value('orientation') ?? 'vertical';
@@ -169,8 +169,13 @@
                                         <i class="fas fa-id-card mr-2"></i>
                                         Live ID Card Preview Click Card to Edit
                                     </h6>
+                                    <!-- <a href="{{ route('idcard.editor', ['orientation' => 'vertical']) }}"
+                                        id="editIdCardBtn" class="btn btn-sm btn-warning ml-auto" target="_blank">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a> -->
                                 </div>
                                 <ul class="nav nav-tabs mb-3" role="tablist">
+
                                     <li class="nav-item">
                                         <a class="nav-link {{ $defaultOrientation === 'vertical' ? 'active' : '' }}" id="vertical-tab" data-toggle="tab"
                                             href="#vertical-card" role="tab">
@@ -180,15 +185,20 @@
 
                                         </a>
                                     </li>
+
                                     <li class="nav-item">
                                         <a class="nav-link {{ $defaultOrientation === 'horizontal' ? 'active' : '' }}" id="horizontal-tab" data-toggle="tab"
                                             href="#horizontal-card" role="tab">
 
                                             <i class="fas fa-mobile-alt fa-rotate-90 mr-1"></i>
                                             Horizontal
+
                                         </a>
                                     </li>
+
                                 </ul>
+
+
                                 <div class="tab-content">
                                     <div class="tab-pane fade show {{ $defaultOrientation === 'vertical' ? 'show active' : '' }}" id="vertical-card" role="tabpanel">
 
@@ -214,19 +224,6 @@
 
                                         $fields = $layout['fields'] ?? [];
 
-                                        // ------------------------------------------------------------
-                                        // TABLE DATA (mirrors the editor's Layout Data > Table tab)
-                                        // ------------------------------------------------------------
-                                        $tabledataHtml = $layout['tabledata'] ?? '';
-                                        $tablePos = $layout['tablePosition'] ?? [];
-
-                                        $tableLeft   = isset($tablePos['left'])   ? (float) $tablePos['left']   : 30;
-                                        $tableTop    = isset($tablePos['top'])    ? (float) $tablePos['top']    : 120;
-                                        $tableWidth  = isset($tablePos['width'])  ? (float) $tablePos['width']  : max(120, $cardW - 60);
-                                        $tableHeight = isset($tablePos['height']) ? (float) $tablePos['height'] : 0;
-
-                                        $hasTableData = is_string($tabledataHtml) && trim(strip_tags($tabledataHtml)) !== '';
-
                                         if (!empty($verticalDesign->background)) {
                                         $bgUrl = asset(
                                         'storage/' . $verticalDesign->background
@@ -243,32 +240,32 @@
 
                                         <div class="id-card-preview text-center">
 
-                                        <a href="{{ route('card.template.edit',['schoolId' => $school->id, 'orientation' => 'vertical']) }}"
+                                            <a href="{{ route('idcard.editor', ['orientation' => 'vertical']) }}"
                                                 target="_blank" title="Edit Vertical ID Card"
                                                 style="display:inline-block;">
 
                                                 <div style="
-                                            width:{{ $previewW }}px;
-                                            height:{{ $previewH }}px;
-                                            overflow:hidden;
-                                            position:relative;
-                                            margin:auto;
-                                            cursor:pointer;
-                                            ">
+                        width:{{ $previewW }}px;
+                        height:{{ $previewH }}px;
+                        overflow:hidden;
+                        position:relative;
+                        margin:auto;
+                        cursor:pointer;
+                        ">
 
-                                                                        <div style="
-                                                width:{{ $cardW }}px;
-                                                height:{{ $cardH }}px;
-                                                position:relative;
-                                                transform:scale({{ $scale }});
-                                                transform-origin:top left;
-                                                background-image:url('{{ $bgUrl }}');
-                                                background-size:100% 100%;
-                                                background-repeat:no-repeat;
-                                                overflow:hidden;
-                                                box-shadow:0 8px 24px rgba(0,0,0,.25);
-                                                border-radius:6px;
-                                            ">
+                                                    <div style="
+                            width:{{ $cardW }}px;
+                            height:{{ $cardH }}px;
+                            position:relative;
+                            transform:scale({{ $scale }});
+                            transform-origin:top left;
+                            background-image:url('{{ $bgUrl }}');
+                            background-size:100% 100%;
+                            background-repeat:no-repeat;
+                            overflow:hidden;
+                            box-shadow:0 8px 24px rgba(0,0,0,.25);
+                            border-radius:6px;
+                        ">
 
                                                         @foreach($fields as $key => $field)
 
@@ -404,27 +401,6 @@
 
                                                         @endforeach
 
-                                                        {{-- ============================================= --}}
-                                                        {{-- TABLE DATA (rendered as-is, same as saved) --}}
-                                                        {{-- ============================================= --}}
-
-                                                        @if($hasTableData)
-
-                                                        <div style="
-                                                            position:absolute;
-                                                            left:{{ $tableLeft }}px;
-                                                            top:{{ $tableTop }}px;
-                                                            width:{{ $tableWidth }}px;
-                                                            @if($tableHeight > 0) height:{{ $tableHeight }}px; @endif
-                                                            z-index:10;
-                                                            overflow:hidden;
-                                                            box-sizing:border-box;
-                                                        ">
-                                                            {!! $tabledataHtml !!}
-                                                        </div>
-
-                                                        @endif
-
                                                     </div>
 
                                                 </div>
@@ -438,16 +414,17 @@
 
                                         {{-- No saved design --}}
                                         <div class="id-card-preview text-center">
-                                        <a href="{{ route('card.template.edit', [ 'schoolId' => $school->id, 'orientation' => 'vertical']) }}"
+
+                                            <a href="{{ route('idcard.editor', ['orientation' => 'vertical']) }}"
                                                 target="_blank">
 
                                                 <img src="{{ asset('storage/' . $verticalSample->file_path) }}"
                                                     alt="Vertical ID Card" class="img-thumbnail" style="
-                                            width:204px;
-                                            height:317px;
-                                            object-fit:fill;
-                                            cursor:pointer;
-                                        ">
+                            width:204px;
+                            height:317px;
+                            object-fit:fill;
+                            cursor:pointer;
+                        ">
 
                                             </a>
 
@@ -491,20 +468,6 @@
                                         1
                                         );
                                         $fields = $layout['fields'] ?? [];
-
-                                        // ------------------------------------------------------------
-                                        // TABLE DATA (mirrors the editor's Layout Data > Table tab)
-                                        // ------------------------------------------------------------
-                                        $tabledataHtml = $layout['tabledata'] ?? '';
-                                        $tablePos = $layout['tablePosition'] ?? [];
-
-                                        $tableLeft   = isset($tablePos['left'])   ? (float) $tablePos['left']   : 30;
-                                        $tableTop    = isset($tablePos['top'])    ? (float) $tablePos['top']    : 120;
-                                        $tableWidth  = isset($tablePos['width'])  ? (float) $tablePos['width']  : max(120, $cardW - 60);
-                                        $tableHeight = isset($tablePos['height']) ? (float) $tablePos['height'] : 0;
-
-                                        $hasTableData = is_string($tabledataHtml) && trim(strip_tags($tabledataHtml)) !== '';
-
                                         if (!empty($horizontalDesign->background)) {
                                         $bgUrl = asset(
                                         'storage/' . $horizontalDesign->background
@@ -518,7 +481,7 @@
                                         }
                                         @endphp
                                         <div class="id-card-preview text-center">
-                                            <a href="{{ route('card.template.edit', [ 'schoolId' => $school->id, 'orientation' => 'horizontal']) }}"
+                                            <a href="{{ route('idcard.editor', ['orientation' => 'horizontal']) }}"
                                                 target="_blank" title="Edit Horizontal ID Card"
                                                 style="display:inline-block;">
 
@@ -645,35 +608,13 @@
                                                         </div>
                                                         @endif
                                                         @endforeach
-
-                                                        {{-- ============================================= --}}
-                                                        {{-- TABLE DATA (rendered as-is, same as saved) --}}
-                                                        {{-- ============================================= --}}
-
-                                                        @if($hasTableData)
-
-                                                        <div style="
-                                                            position:absolute;
-                                                            left:{{ $tableLeft }}px;
-                                                            top:{{ $tableTop }}px;
-                                                            width:{{ $tableWidth }}px;
-                                                            @if($tableHeight > 0) height:{{ $tableHeight }}px; @endif
-                                                            z-index:10;
-                                                            overflow:hidden;
-                                                            box-sizing:border-box;
-                                                        ">
-                                                            {!! $tabledataHtml !!}
-                                                        </div>
-
-                                                        @endif
-
                                                     </div>
                                                 </div>
                                             </a>
                                         </div>
                                         @elseif($horizontalSample)
                                         <div class="id-card-preview text-center">
-                                            <a href="{{ route('card.template.edit', ['schoolId' => $school->id, 'orientation' => 'horizontal']) }}"
+                                            <a href="{{ route('idcard.editor', ['orientation' => 'horizontal']) }}"
                                                 target="_blank">
 
                                                 <img src="{{ asset('storage/' . $horizontalSample->file_path) }}"

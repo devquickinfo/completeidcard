@@ -65,39 +65,6 @@ class StudentController extends Controller
             ->latest('id')
             ->value('orientation') ?? 'vertical';
 
-        $student = new Student([
-            'admission_no' => old('admission_no'),
-            'first_name'   => old('first_name'),
-            'last_name'    => old('last_name'),
-            'father_name'  => old('father_name'),
-            'mother_name'  => old('mother_name'),
-            'address'      => old('address'),
-            'gender'       => old('gender'),
-            'blood_group'  => old('blood_group'),
-            'phone'        => old('phone'),
-            'class_id'     => old('class_id'),
-            'section_id'   => old('section_id'),
-            'school_id'    => $school_id,
-        ]);
-
-        if (old('date_of_birth')) {
-            $student->date_of_birth = \Illuminate\Support\Carbon::parse(old('date_of_birth'));
-        }
-
-        if (old('class_id')) {
-            $selectedClass = StudentClass::find(old('class_id'));
-            if ($selectedClass) {
-                $student->setRelation('studentClass', $selectedClass);
-            }
-        }
-
-        if (old('section_id')) {
-            $selectedSection = Section::find(old('section_id'));
-            if ($selectedSection) {
-                $student->section = $selectedSection->name;
-            }
-        }
-
         return view('frontend.addstudent', compact(
             'students',
             'classes',
@@ -105,7 +72,6 @@ class StudentController extends Controller
             'idcardsample',
             'mainidcard',
             'school',
-            'student',
             'defaultOrientation'
         ));
     }

@@ -1,12 +1,7 @@
 @extends('frontend.layout.applayout')
 @section('title', 'Add Student')
 @section('content')
-@php
-    $defaultOrientation = \App\Models\Mainidcard::where(
-        'school_id',
-        auth()->user()->school_id ?? session('viewing_school')
-    )->latest('id')->value('orientation') ?? 'vertical';
-@endphp
+
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
