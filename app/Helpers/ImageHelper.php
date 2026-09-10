@@ -10,6 +10,9 @@ use App\Models\SelectedSample;
 use App\Models\UploadSample;
 use App\Models\Mainidcard;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ApplicableUser;
+use App\Models\House;
+use App\Models\StudentClass;
 
 
 class ImageHelper
@@ -645,6 +648,17 @@ class ImageHelper
         ];
     }
     
+    public static function getHouse($id)
+    {
+        return House::find($id)?->name;
+    }
+    public static function getApplicableUser($id){
+        
+        return ApplicableUser::find($id)?->type;
+    }
+    public static function getClassName($id){
 
+        return StudentClass::find($id)?->name;
+    }
   
 }

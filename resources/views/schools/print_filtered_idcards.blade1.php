@@ -1359,40 +1359,9 @@
 
 
 
-                                        $fieldCss = strtolower((string) ($field['css'] ?? ''));
-                                        $usesAlign = (bool) preg_match('/text-align\s*:\s*(center|right)/', $fieldCss);
-
                                         if ($width !== null) {
 
-                                            // explicit width was saved — always use a real box
                                             $style .= "
-                                                white-space:pre-wrap;
-                                                word-wrap:break-word;
-                                                overflow:hidden;
-                                            ";
-
-                                        } elseif ($usesAlign) {
-
-                                            /*
-                                            |--------------------------------------------------------------------------
-                                            | No explicit width, but center/right alignment is used.
-                                            |
-                                            | Without a real width, the box shrink-wraps to the text, so
-                                            | "centered" text only looks centered by coincidence (e.g. long
-                                            | placeholder text in the editor). Real, shorter DB values then
-                                            | appear to drift left because there's no actual box to align
-                                            | inside of.
-                                            |
-                                            | Fix: give it a real fixed-width box from its X position out
-                                            | to near the card's right edge, so alignment is stable no
-                                            | matter how long or short the value is.
-                                            |--------------------------------------------------------------------------
-                                            */
-
-                                            $autoWidth = max(0, $editorWidth - $left - 6);
-
-                                            $style .= "
-                                                width:{$autoWidth}px;
                                                 white-space:pre-wrap;
                                                 word-wrap:break-word;
                                                 overflow:hidden;
@@ -1400,7 +1369,6 @@
 
                                         } else {
 
-                                            // left-aligned text with no width — shrink-wrap is fine here
                                             $maxWidth = max(0, $editorWidth - $left);
 
                                             $style .= "

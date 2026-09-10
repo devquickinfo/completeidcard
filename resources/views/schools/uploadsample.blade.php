@@ -152,7 +152,7 @@
 
                             <li class="nav-item">
 
-                                <a class="nav-link active"
+                                <a class="nav-link"
                                    id="default-tab"
                                    data-toggle="tab"
                                    href="#default-samples"
@@ -167,7 +167,7 @@
 
                             <li class="nav-item">
 
-                                <a class="nav-link"
+                                <a class="nav-link active"
                                    id="my-uploaded-tab"
                                    data-toggle="tab"
                                    href="#my-uploaded-samples"
@@ -194,7 +194,7 @@
                                  DEFAULT SAMPLES
                             ================================================== --}}
 
-                            <div class="tab-pane fade show active"
+                            <div class="tab-pane fade"
                                  id="default-samples"
                                  role="tabpanel">
 
@@ -317,119 +317,89 @@
                                  MY UPLOADED SAMPLES
                             ================================================== --}}
 
-                            <div class="tab-pane fade"
+                            <div class="tab-pane fade show active"
                                  id="my-uploaded-samples"
                                  role="tabpanel">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Image</th>
+                                                <th>Name</th>
+                                                <th>Orientation</th>
+                                                <th>Applicable</th>
+                                                <th>House</th>
+                                                <th>Apply</th>
+                                             
+                                                <th>Default</th>
+                                                
+                                                <th>Action</th>
+                                                <th>Create Template</th>
+                                            </tr>
+                                        </thead>
 
+                                        <tbody>
 
-                                {{-- CHILD TABS --}}
+                                            @forelse($ownSamples as $all)
 
-                                <ul class="nav nav-tabs mb-3"
-                                    id="myChildTabs"
-                                    role="tablist">
-
-                                    <li class="nav-item">
-
-                                        <a class="nav-link active"
-                                           data-toggle="tab"
-                                           href="#my-vertical"
-                                           role="tab">
-
-                                            <i class="fas fa-mobile-alt mr-1"></i>
-                                            Vertical
-
-                                        </a>
-
-                                    </li>
-
-                                    <li class="nav-item">
-
-                                        <a class="nav-link"
-                                           data-toggle="tab"
-                                           href="#my-horizontal"
-                                           role="tab">
-
-                                            <i class="fas fa-credit-card mr-1"></i>
-                                            Horizontal
-
-                                        </a>
-
-                                    </li>
-
-                                </ul>
-
-
-                                {{-- CHILD CONTENT --}}
-
-                                <div class="tab-content">
-
-
-                                    {{-- MY VERTICAL --}}
-                                    <div class="tab-pane fade show active"
-                                         id="my-vertical"
-                                         role="tabpanel">
-
-                                        <div class="row">
-
-                                            @forelse($ownSamples->where('orientation', 'vertical') as $all)
-
-                                                @include('schools.partials.sample-card', [
-                                                    'all' => $all
-                                                ])
-
-                                            @empty
-
-                                                <div class="col-12">
-
-                                                    <div class="alert alert-info">
-
-                                                        <i class="fas fa-info-circle mr-1"></i>
-
-                                                        You have not uploaded any vertical samples.
-
-                                                    </div>
-
-                                                </div>
-
-                                            @endforelse
-
-                                        </div>
-
-                                    </div>
-
-
-                                    {{-- MY HORIZONTAL --}}
-                                    <div class="tab-pane fade"
-                                         id="my-horizontal"
-                                         role="tabpanel">
-
-                                        <div class="row">
-
-                                            @forelse($ownSamples->where('orientation', 'horizontal') as $all)
-
-                                                @include('schools.partials.sample-card', [
-                                                    'all' => $all
-                                                ])
+                                                <tr>
+                                                    <td>
+                                                        <a href="{{ asset('storage/' . $all->file_path) }}" target="_blank">
+                                                            <img src="{{ asset('storage/' . $all->file_path) }}"
+                                                                 class="img-thumbnail"
+                                                                 alt="{{ $all->name }}"
+                                                                 style="max-width: 120px; max-height: 120px; object-fit: contain;">
+                                                        </a>
+                                                    </td>
+                                                    <td>{{ $all->name }}</td>
+                                                    <td>{{ ucfirst($all->orientation) }}</td>
+                                                    @php
+                                                      $applicable = \App\Helpers\ImageHelper::getApplicableUser($all->applicable_id);
+                                                      $house = \App\Helpers\ImageHelper::getHouse($all->house_id);
+                                                      $className = \App\Helpers\ImageHelper::getClassName($all->class_id);
+                                                    @endphp
+                                                    <td>{{ $applicable ?? '-' }}</td>
+                                                    <td>{{ $house ?? '-' }}</td>
+                                                    <td>{{ $className ?? 'Global' }}</td>
+                                                    <td class="text-center">
+                                                           
+                                                    </td>
+                                                    <td style="white-space: nowrap;">
+                                                        <a href="" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
+                                                        <a href="{{ route('card.templatesingle.edit', $all->id ) }}"
+                                                            class="btn btn-sm btn-warning">
+                                                                <i class="fas fa-edit"></i>
+                                                        </a>
+                                                       
+                                                        <a href="{{ route('singlesample.delete', $all->id) }}" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+                                                    </td> 
+                                                    <td>
+                                                         <a href="{{ route('card.template.edit', [
+                                                                'schoolId' => $all->school_id,
+                                                                'orientation' => $all->orientation
+                                                            ]) }}"
+                                                            class="btn btn-sm btn-warning">
+                                                                <i class="fas fa-edit">Edit as Template</i>
+                                                        </a>
+                                                    </td>     
+                                                </tr>
 
                                             @empty
 
-                                                <div class="col-12">
-
-                                                    <div class="alert alert-info">
-
-                                                        <i class="fas fa-info-circle mr-1"></i>
-
-                                                        You have not uploaded any horizontal samples.
-
-                                                    </div>
-
-                                                </div>
+                                                <tr>
+                                                    <td colspan="{{ (session('role') === 'school' || session('viewing_school')) ? 9 : 9 }}" class="text-center">
+                                                        <div class="alert alert-info mb-0">
+                                                            <i class="fas fa-info-circle mr-1"></i>
+                                                            You have not uploaded any samples yet.
+                                                        </div>
+                                                    </td>
+                                                </tr>
 
                                             @endforelse
 
-                                        </div>
+                                        </tbody>
 
-                                    </div>
+                                    </table>
 
                                 </div>
 

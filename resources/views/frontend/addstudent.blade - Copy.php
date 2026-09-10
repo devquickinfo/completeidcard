@@ -1,12 +1,7 @@
 @extends('frontend.layout.applayout')
 @section('title', 'Add Student')
 @section('content')
-@php
-    $defaultOrientation = \App\Models\Mainidcard::where(
-        'school_id',
-        auth()->user()->school_id ?? session('viewing_school')
-    )->latest('id')->value('orientation') ?? 'vertical';
-@endphp
+
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -211,7 +206,7 @@
                                                         placeholder="Enter Address">{{ old('address', $student->address ?? '') }}</textarea>
                                                 </div>
                                             </div>
-                                            <!-- ID Card Preview--->
+                                            
                                             <div class="col-md-12">
                                                 <div class="card card-info">
                                                     <div class="card-header d-flex align-items-center">
@@ -287,60 +282,6 @@
 
                                                                 return $secondShape <=> $firstShape;
                                                                     });
-
-                                                                    /*
-                                                                    |--------------------------------------------------------------------------
-                                                                    | TABLE DATA (mirrors editor's Layout Data > Table tab)
-                                                                    |--------------------------------------------------------------------------
-                                                                    */
-
-                                                                    $tabledataHtmlRaw = $layout['tabledata'] ?? '';
-                                                                    $tablePos = $layout['tablePosition'] ?? [];
-
-                                                                    $tableLeft   = isset($tablePos['left'])   ? (float) $tablePos['left']   : 30;
-                                                                    $tableTop    = isset($tablePos['top'])    ? (float) $tablePos['top']    : 120;
-                                                                    $tableWidth  = isset($tablePos['width'])  ? (float) $tablePos['width']  : max(120, $cardWidth - 60);
-                                                                    $tableHeight = isset($tablePos['height']) ? (float) $tablePos['height'] : 0;
-
-                                                                    $hasTableData = is_string($tabledataHtmlRaw) && trim(strip_tags($tabledataHtmlRaw)) !== '';
-
-                                                                    if ($hasTableData) {
-
-                                                                        $tablePlaceholders = [
-                                                                            '{{student_name}}'    => trim(($student->first_name ?? '') . ' ' . ($student->last_name ?? '')),
-                                                                            '{{first_name}}'      => $student->first_name ?? '',
-                                                                            '{{last_name}}'       => $student->last_name ?? '',
-                                                                            '{{father_name}}'     => $student->father_name ?? '-',
-                                                                            '{{mother_name}}'     => $student->mother_name ?? '-',
-                                                                            '{{class}}'           => trim(($student->studentClass->name ?? '') . ' - ' . ($student->section ?? '')),
-                                                                            '{{section}}'         => $student->section ?? '-',
-                                                                            '{{admission_no}}'    => $student->admission_no ?? '-',
-                                                                            '{{date_of_birth}}'   => $student->date_of_birth ? $student->date_of_birth->format('d-M-Y') : '-',
-                                                                            '{{gender}}'          => $student->gender ?? '-',
-                                                                            '{{phone}}'           => $student->phone ?? '-',
-                                                                            '{{blood_group}}'     => $student->blood_group ?? '-',
-
-                                                                            // school address only
-                                                                            '{{address}}'         => $school->address ?? '-',
-                                                                            '{{school_address}}'  => $school->address ?? '',
-
-                                                                            // student address only
-                                                                            '{{student_address}}' => $student->address ?? '-',
-
-                                                                            '{{school_name}}'     => $school->school_name ?? '',
-                                                                            '{{principal_name}}'  => $school->principal_name ?? '',
-                                                                        ];
-
-                                                                        $tabledataHtml = str_replace(
-                                                                            array_keys($tablePlaceholders),
-                                                                            array_values($tablePlaceholders),
-                                                                            $tabledataHtmlRaw
-                                                                        );
-
-                                                                    } else {
-
-                                                                        $tabledataHtml = '';
-                                                                    }
 
                                                                     @endphp
 
@@ -420,31 +361,6 @@
 
                                                                                 /*
                                                                                 |--------------------------------------------------------------------------
-                                                                                | ADDRESS — studentAddress vs address are two separate things:
-                                                                                |
-                                                                                | "studentAddress" / anything with "student" + "address"
-                                                                                |     -> student_address -> $student->address
-                                                                                |
-                                                                                | plain "address" (no "student" in it)
-                                                                                |     -> school_address -> $school->address
-                                                                                |--------------------------------------------------------------------------
-                                                                                */
-
-                                                                                if (
-                                                                                    (str_contains($fieldType, 'student') && str_contains($fieldType, 'address')) ||
-                                                                                    (str_contains($fieldLabel, 'student') && str_contains($fieldLabel, 'address'))
-                                                                                ) {
-                                                                                    $fieldType = 'student_address';
-                                                                                } elseif (
-                                                                                    str_contains($fieldType, 'address') ||
-                                                                                    str_contains($fieldLabel, 'address')
-                                                                                ) {
-                                                                                    $fieldType = 'school_address';
-                                                                                }
-
-
-                                                                                /*
-                                                                                |--------------------------------------------------------------------------
                                                                                 | Student value
                                                                                 |--------------------------------------------------------------------------
                                                                                 */
@@ -491,14 +407,6 @@
 
                                                                                     'phone'
                                                                                         => $student->phone ?? '',
-
-                                                                                    // student's own address
-                                                                                    'student_address'
-                                                                                        => $student->address ?? '',
-
-                                                                                    // school's address (never the student's)
-                                                                                    'school_address'
-                                                                                        => $school->address ?? '',
 
                                                                                     'school_name'
                                                                                         => $school->school_name ?? '',
@@ -633,28 +541,6 @@
                                                                             </div>
                                                                             @endif
                                                                             @endforeach
-
-                                                                            {{-- ============================================= --}}
-                                                                            {{-- TABLE DATA (with real student/school values) --}}
-                                                                            {{-- ============================================= --}}
-
-                                                                            @if($hasTableData)
-
-                                                                            <div style="
-                                                                                position:absolute;
-                                                                                left:{{ $tableLeft }}px;
-                                                                                top:{{ $tableTop }}px;
-                                                                                width:{{ $tableWidth }}px;
-                                                                                @if($tableHeight > 0) height:{{ $tableHeight }}px; @endif
-                                                                                z-index:10;
-                                                                                overflow:hidden;
-                                                                                box-sizing:border-box;
-                                                                            ">
-                                                                                {!! $tabledataHtml !!}
-                                                                            </div>
-
-                                                                            @endif
-
                                                                         </div>
                                                                     </div>
                                                                     @elseif(@$verticalSample)
@@ -708,61 +594,6 @@
                                                                 ($fields[$second]['type'] ?? '') === 'shape';
                                                                 return $secondShape <=> $firstShape;
                                                                     });
-
-                                                                    /*
-                                                                    |--------------------------------------------------------------------------
-                                                                    | TABLE DATA (mirrors editor's Layout Data > Table tab)
-                                                                    |--------------------------------------------------------------------------
-                                                                    */
-
-                                                                    $tabledataHtmlRaw = $layout['tabledata'] ?? '';
-                                                                    $tablePos = $layout['tablePosition'] ?? [];
-
-                                                                    $tableLeft   = isset($tablePos['left'])   ? (float) $tablePos['left']   : 30;
-                                                                    $tableTop    = isset($tablePos['top'])    ? (float) $tablePos['top']    : 120;
-                                                                    $tableWidth  = isset($tablePos['width'])  ? (float) $tablePos['width']  : max(120, $cardWidth - 60);
-                                                                    $tableHeight = isset($tablePos['height']) ? (float) $tablePos['height'] : 0;
-
-                                                                    $hasTableData = is_string($tabledataHtmlRaw) && trim(strip_tags($tabledataHtmlRaw)) !== '';
-
-                                                                    if ($hasTableData) {
-
-                                                                        $tablePlaceholders = [
-                                                                            '{{student_name}}'    => trim(($student->first_name ?? '') . ' ' . ($student->last_name ?? '')),
-                                                                            '{{first_name}}'      => $student->first_name ?? '',
-                                                                            '{{last_name}}'       => $student->last_name ?? '',
-                                                                            '{{father_name}}'     => $student->father_name ?? '-',
-                                                                            '{{mother_name}}'     => $student->mother_name ?? '-',
-                                                                            '{{class}}'           => trim(($student->studentClass->name ?? '') . ' - ' . ($student->section ?? '')),
-                                                                            '{{section}}'         => $student->section ?? '-',
-                                                                            '{{admission_no}}'    => $student->admission_no ?? '-',
-                                                                            '{{date_of_birth}}'   => $student->date_of_birth ? $student->date_of_birth->format('d-M-Y') : '-',
-                                                                            '{{gender}}'          => $student->gender ?? '-',
-                                                                            '{{phone}}'           => $student->phone ?? '-',
-                                                                            '{{blood_group}}'     => $student->blood_group ?? '-',
-
-                                                                            // school address only
-                                                                            '{{address}}'         => $school->address ?? '-',
-                                                                            '{{school_address}}'  => $school->address ?? '',
-
-                                                                            // student address only
-                                                                            '{{student_address}}' => $student->address ?? '-',
-
-                                                                            '{{school_name}}'     => $school->school_name ?? '',
-                                                                            '{{principal_name}}'  => $school->principal_name ?? '',
-                                                                        ];
-
-                                                                        $tabledataHtml = str_replace(
-                                                                            array_keys($tablePlaceholders),
-                                                                            array_values($tablePlaceholders),
-                                                                            $tabledataHtmlRaw
-                                                                        );
-
-                                                                    } else {
-
-                                                                        $tabledataHtml = '';
-                                                                    }
-
                                                                     @endphp
                                                                     <div class="id-card-preview" style=" width:317px; height:204px; position:relative;
                                                                     margin:auto;
@@ -818,31 +649,6 @@
                                                                                 }
 
 
-                                                                                /*
-                                                                                |--------------------------------------------------------------------------
-                                                                                | ADDRESS — studentAddress vs address are two separate things:
-                                                                                |
-                                                                                | "studentAddress" / anything with "student" + "address"
-                                                                                |     -> student_address -> $student->address
-                                                                                |
-                                                                                | plain "address" (no "student" in it)
-                                                                                |     -> school_address -> $school->address
-                                                                                |--------------------------------------------------------------------------
-                                                                                */
-
-                                                                                if (
-                                                                                    (str_contains($fieldType, 'student') && str_contains($fieldType, 'address')) ||
-                                                                                    (str_contains($fieldLabel, 'student') && str_contains($fieldLabel, 'address'))
-                                                                                ) {
-                                                                                    $fieldType = 'student_address';
-                                                                                } elseif (
-                                                                                    str_contains($fieldType, 'address') ||
-                                                                                    str_contains($fieldLabel, 'address')
-                                                                                ) {
-                                                                                    $fieldType = 'school_address';
-                                                                                }
-
-
                                                                                 $value = match ($fieldType) {
 
                                                                                     'student_name',
@@ -885,14 +691,6 @@
 
                                                                                     'phone'
                                                                                         => $student->phone ?? '',
-
-                                                                                    // student's own address
-                                                                                    'student_address'
-                                                                                        => $student->address ?? '',
-
-                                                                                    // school's address (never the student's)
-                                                                                    'school_address'
-                                                                                        => $school->address ?? '',
 
                                                                                     'school_name'
                                                                                         => $school->school_name ?? '',
@@ -1026,27 +824,6 @@
 
                                                                     @endforeach
 
-                                                                            {{-- ============================================= --}}
-                                                                            {{-- TABLE DATA (with real student/school values) --}}
-                                                                            {{-- ============================================= --}}
-
-                                                                            @if($hasTableData)
-
-                                                                            <div style="
-                                                                                position:absolute;
-                                                                                left:{{ $tableLeft }}px;
-                                                                                top:{{ $tableTop }}px;
-                                                                                width:{{ $tableWidth }}px;
-                                                                                @if($tableHeight > 0) height:{{ $tableHeight }}px; @endif
-                                                                                z-index:10;
-                                                                                overflow:hidden;
-                                                                                box-sizing:border-box;
-                                                                            ">
-                                                                                {!! $tabledataHtml !!}
-                                                                            </div>
-
-                                                                            @endif
-
                                                                         </div>
 
                                                                     </div>
@@ -1084,8 +861,9 @@
                                                         
                                                     </div>
                                             </div>
-                                            <!---ID Card Preview End--->
-                                            <!-----cmaera code----->
+                                           
+                                                        <!---form fields end--->
+                                                        <!-----cmaera code----->
                                             <div class="col-md-6">
                                                 <h5 class="text-center badge badge-info">Capture Photo (Laptop/Mobile)</h5>
                                                 <div class="row">

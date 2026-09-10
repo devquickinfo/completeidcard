@@ -212,39 +212,90 @@ class MainidcardController extends Controller
 
 
 
+    // public function edit($schoolId, $orientation)
+    // {
+    //     if (!in_array($orientation, ['vertical', 'horizontal'])) {
+    //         $orientation = 'vertical';
+    //     }
+    //     $schoolId = Auth::user()->school_id ?? session('viewing_school');
+    //     // $selectedSampleId = SelectedSample::where('school_id', $schoolId)
+    //     //     ->where('orientation', $orientation)
+    //     //     ->value('sample_id');
+
+    //     $selectedSample = 1;
+
+    //     if ($selectedSampleId) {
+    //         $selectedSample = UploadSample::find($selectedSampleId);
+    //     }
+    //     $verticalSampleId = SelectedSample::where('school_id', $schoolId)
+    //         ->where('orientation', 'vertical')
+    //         ->value('sample_id');
+
+    //     $verticalSample = $verticalSampleId
+    //         ? UploadSample::find($verticalSampleId)
+    //         : null;
+    //     $horizontalSampleId = SelectedSample::where('school_id', $schoolId)
+    //         ->where('orientation', 'horizontal')
+    //         ->value('sample_id');
+
+    //     $horizontalSample = $horizontalSampleId
+    //         ? UploadSample::find($horizontalSampleId)
+    //         : null;
+    //     $school = School::find($schoolId);
+    //     $idCardData = Mainidcard::where('school_id', $schoolId)
+    //         ->where('orientation', $orientation)
+    //         ->first();
+    //     $designcard = $idCardData ?: null;
+
+    //     return response()->view(
+    //         'idcard.inlteeditor',
+    //         compact(
+    //             'schoolId',
+    //             'selectedSample',
+    //             'verticalSample',
+    //             'horizontalSample',
+    //             'designcard',
+    //             'school',
+    //             'orientation'
+    //         )
+    //     );
+    // }
     public function edit($schoolId, $orientation)
     {
         if (!in_array($orientation, ['vertical', 'horizontal'])) {
             $orientation = 'vertical';
         }
-        $schoolId = Auth::user()->school_id ?? session('viewing_school');
-        $selectedSampleId = SelectedSample::where('school_id', $schoolId)
-            ->where('orientation', $orientation)
-            ->value('sample_id');
 
-        $selectedSample = null;
-
-        if ($selectedSampleId) {
-            $selectedSample = UploadSample::find($selectedSampleId);
+        // Get school ID based on role
+        if (session('role') === 'school') {
+            $schoolId = Auth::user()->school_id;
+        } elseif (session('role') === 'superadmin') {
+            $schoolId = session('viewing_school') ?? null;
+        } else {
+            $schoolId = null;
         }
-        $verticalSampleId = SelectedSample::where('school_id', $schoolId)
-            ->where('orientation', 'vertical')
-            ->value('sample_id');
 
-        $verticalSample = $verticalSampleId
-            ? UploadSample::find($verticalSampleId)
-            : null;
-        $horizontalSampleId = SelectedSample::where('school_id', $schoolId)
-            ->where('orientation', 'horizontal')
-            ->value('sample_id');
+        // Get vertical sample directly from upload_samples
+        $verticalSample = UploadSample::where('orientation', 'vertical')
+            ->latest()
+            ->first();
 
-        $horizontalSample = $horizontalSampleId
-            ? UploadSample::find($horizontalSampleId)
-            : null;
+        // Get horizontal sample directly from upload_samples
+        $horizontalSample = UploadSample::where('orientation', 'horizontal')
+            ->latest()
+            ->first();
+
+        // Current sample according to orientation
+        $selectedSample = $orientation === 'vertical'
+            ? $verticalSample
+            : $horizontalSample;
+
         $school = School::find($schoolId);
+
         $idCardData = Mainidcard::where('school_id', $schoolId)
             ->where('orientation', $orientation)
             ->first();
+
         $designcard = $idCardData ?: null;
 
         return response()->view(

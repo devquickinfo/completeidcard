@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 09, 2026 at 03:54 AM
+-- Generation Time: Sep 10, 2026 at 10:59 AM
 -- Server version: 11.4.13-MariaDB
 -- PHP Version: 8.4.24
 
@@ -20,6 +20,26 @@ SET time_zone = "+00:00";
 --
 -- Database: `host1285_idcarddev`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `applicable_user`
+--
+
+CREATE TABLE `applicable_user` (
+  `id` int(11) NOT NULL,
+  `type` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `applicable_user`
+--
+
+INSERT INTO `applicable_user` (`id`, `type`) VALUES
+(1, 'student'),
+(2, 'teacher'),
+(3, 'event');
 
 -- --------------------------------------------------------
 
@@ -44,6 +64,24 @@ CREATE TABLE `cache_locks` (
   `owner` varchar(255) NOT NULL,
   `expiration` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `houses`
+--
+
+CREATE TABLE `houses` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `houses`
+--
+
+INSERT INTO `houses` (`id`, `name`) VALUES
+(1, 'house1');
 
 -- --------------------------------------------------------
 
@@ -104,6 +142,8 @@ CREATE TABLE `mainidcards` (
   `background` varchar(255) DEFAULT NULL,
   `layout` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`layout`)),
   `is_default` tinyint(1) NOT NULL DEFAULT 0,
+  `class_id` int(11) DEFAULT NULL,
+  `type` int(11) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -112,10 +152,9 @@ CREATE TABLE `mainidcards` (
 -- Dumping data for table `mainidcards`
 --
 
-INSERT INTO `mainidcards` (`id`, `school_id`, `name`, `orientation`, `card_width`, `card_height`, `background`, `layout`, `is_default`, `created_at`, `updated_at`) VALUES
-(2, 8, 'Default ID Card', 'vertical', 204, 317, NULL, '{\"cardWidth\":204,\"cardHeight\":317,\"background\":null,\"fields\":{\"photo\":{\"x\":57,\"y\":79,\"visible\":true,\"width\":88,\"height\":90,\"type\":\"image\",\"src\":\"idcards\\/D2bXaxCJiRF3qDFh.jpeg\",\"css\":null},\"name\":{\"x\":63,\"y\":202,\"visible\":true,\"text\":\"AARAV SHARMA\",\"fontSize\":11,\"color\":\"rgb(22, 0, 159)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"father\":{\"x\":50,\"y\":217,\"visible\":true,\"text\":\"Father: Rakesh Sharma\",\"fontSize\":11,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"class\":{\"x\":74,\"y\":232,\"visible\":true,\"text\":\"Class: V - B\",\"fontSize\":11,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"dob\":{\"x\":63,\"y\":247,\"visible\":true,\"text\":\"DOB: 12-05-2015\",\"fontSize\":11,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"adm\":{\"x\":77,\"y\":262,\"visible\":true,\"text\":\"Adm No: 8\",\"fontSize\":11,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"blood\":{\"x\":12,\"y\":275,\"visible\":true,\"text\":\"Blood Group: O+  |  Ph: 98765 43210\",\"fontSize\":11,\"color\":\"rgb(23, 22, 22)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"sign\":{\"x\":117,\"y\":289,\"visible\":true,\"width\":28,\"height\":27,\"color\":\"rgb(255, 255, 255)\",\"fontWeight\":\"700\",\"type\":\"image\",\"src\":\"idcards\\/nh6D18ZWTdrmivrd.jpeg\",\"css\":null},\"qr\":{\"x\":11,\"y\":126,\"visible\":true,\"width\":36,\"height\":36,\"type\":\"image\",\"src\":\"https:\\/\\/api.qrserver.com\\/v1\\/create-qr-code\\/?size=200x200&data=MP-2026-0143\",\"css\":null}}}', 1, '2026-09-04 10:36:43', '2026-09-04 10:36:43'),
-(6, 1, 'Default ID Card', 'horizontal', 317, 204, 'samples/1/sample_6a9a82ee67cad.jpg', '{\"cardWidth\":317,\"cardHeight\":204,\"background\":\"url(\\\"https:\\/\\/dev.infotasks.com\\/storage\\/samples\\/1\\/sample_6a9a82ee67cad.jpg\\\")\",\"fields\":{\"logo\":{\"x\":7,\"y\":14,\"visible\":true,\"width\":30,\"height\":30,\"type\":\"image\",\"src\":\"https:\\/\\/dev.infotasks.com\\/storage\\/idcards\\/RuMuuyU2Zxd6H5nx.jpeg\",\"css\":null},\"schoolName\":{\"x\":55,\"y\":11,\"visible\":true,\"text\":\"Arpana Convent Higher Secondary School\",\"fontSize\":12,\"color\":\"rgb(158, 27, 50)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"address\":{\"x\":62,\"y\":29,\"visible\":true,\"text\":\"123 Education Lane, Varanasi, UP - 221001\",\"fontSize\":11,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"session\":{\"x\":7,\"y\":48,\"visible\":true,\"text\":\"Session: 2026-2027\",\"fontSize\":10,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"photo\":{\"x\":10,\"y\":67,\"visible\":true,\"width\":74,\"height\":87,\"type\":\"image\",\"src\":\"https:\\/\\/dev.infotasks.com\\/storage\\/idcards\\/FWmfWFFoWAs5EZPM.jpeg\",\"css\":null},\"name\":{\"x\":103,\"y\":64,\"visible\":true,\"text\":\"AARAV SHARMA\",\"fontSize\":11,\"color\":\"rgb(22, 0, 159)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"father\":{\"x\":103,\"y\":80,\"visible\":true,\"text\":\"Father: Rakesh Sharma\",\"fontSize\":11,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"class\":{\"x\":103,\"y\":95,\"visible\":true,\"text\":\"Class: V - B\",\"fontSize\":11,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"dob\":{\"x\":103,\"y\":110,\"visible\":true,\"text\":\"DOB: 12-05-2015\",\"fontSize\":11,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"adm\":{\"x\":22,\"y\":160,\"visible\":true,\"text\":\"Adm No: MP-2026-0143\",\"fontSize\":11,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"blood\":{\"x\":22,\"y\":178,\"visible\":true,\"text\":\"Blood Group: O+  |  Ph: 98765 43210\",\"fontSize\":10,\"color\":\"rgb(238, 27, 27)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null}}}', 1, '2026-09-07 09:12:13', '2026-09-07 09:12:13'),
-(8, 38, 'Default ID Card', 'vertical', 204, 317, 'samples/38/sample_6a9e8d3b5e3aa.jpg', '{\"cardWidth\":204,\"cardHeight\":317,\"background\":\"url(\\\"https:\\/\\/dev.infotasks.com\\/storage\\/samples\\/38\\/sample_6a9e8d3b5e3aa.jpg\\\")\",\"fields\":{\"address\":{\"x\":7,\"y\":254,\"visible\":true,\"text\":\"123 Education Lane, Varanasi, UP - 221001\",\"fontSize\":15,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"photo\":{\"x\":54,\"y\":49,\"visible\":true,\"width\":100,\"height\":100,\"type\":\"image\",\"src\":\"https:\\/\\/dev.infotasks.com\\/storage\\/https:\\/\\/placehold.co\\/300x300\\/eeeeee\\/999999?text=Photo\",\"css\":\"border-radius=50%\"},\"name\":{\"x\":32,\"y\":153,\"visible\":true,\"text\":\"AARAV SHARMA\",\"fontSize\":20,\"color\":\"rgb(22, 0, 159)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"father\":{\"x\":23,\"y\":178,\"visible\":true,\"text\":\"Father: Rakesh Sharma\",\"fontSize\":15,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"class\":{\"x\":59,\"y\":196,\"visible\":true,\"text\":\"Class: V - B\",\"fontSize\":15,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"dob\":{\"x\":40,\"y\":216,\"visible\":true,\"text\":\"DOB: 12-05-2015\",\"fontSize\":15,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"adm\":{\"x\":23,\"y\":236,\"visible\":true,\"text\":\"Adm No: MP-2026-0143\",\"fontSize\":14,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null}}}', 1, '2026-09-08 12:29:41', '2026-09-08 12:29:41');
+INSERT INTO `mainidcards` (`id`, `school_id`, `name`, `orientation`, `card_width`, `card_height`, `background`, `layout`, `is_default`, `class_id`, `type`, `created_at`, `updated_at`) VALUES
+(6, 38, 'Default ID Card', 'vertical', 204, 317, 'samples/AhljTvnmMmdVMR0tyH3Kl2ToCXaqZUOF37hhnFLy.jpg', '{\"cardWidth\":204,\"cardHeight\":317,\"background\":\"url(\\\"https:\\/\\/dev.infotasks.com\\/storage\\/samples\\/AhljTvnmMmdVMR0tyH3Kl2ToCXaqZUOF37hhnFLy.jpg\\\")\",\"fields\":{\"photo\":{\"label\":\"Photo\",\"x\":46,\"y\":59,\"visible\":true,\"width\":115,\"height\":115,\"borderRadius\":100,\"type\":\"image\",\"src\":\"https:\\/\\/dev.infotasks.com\\/storage\\/idcards\\/KRMUvBkOT9zZJCvd.jpeg\",\"css\":null}},\"tabledata\":\"<table style=\\\"width:100%; border-collapse:collapse; table-layout:auto; border:none;\\\">\\n\\n    <tbody><tr>\\n        <td colspan=\\\"3\\\" style=\\\"padding:1px 0; font-family:Arial,sans-serif; font-size:13px; line-height:15px; color:#003399; font-weight:bold; text-align:center; border:none;\\\">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;ABDUL BURHAN\\n        <\\/td>\\n    <\\/tr>\\n\\n    <tr>\\n        <td style=\\\"width:1px; padding:0 4px 0 0; font-family:Arial,sans-serif; font-size:9px; line-height:11px; color:red; font-weight:bold; white-space:nowrap; border:none;\\\">\\n            Father\\n        <\\/td>\\n        <td style=\\\"width:1px; padding:0 4px 0 0; font-family:Arial,sans-serif; font-size:9px; line-height:11px; color:#000; font-weight:bold; border:none;\\\">\\n            :\\n        <\\/td>\\n        <td style=\\\"padding:0; font-family:Arial,sans-serif; font-size:9px; line-height:11px; color:#000; font-weight:bold; text-align:left; border:none;\\\">\\n            SIDDHIK KHAN\\n        <\\/td>\\n    <\\/tr>\\n\\n    <tr>\\n        <td style=\\\"width:1px; padding:0 4px 0 0; font-family:Arial,sans-serif; font-size:9px; line-height:11px; color:red; font-weight:bold; white-space:nowrap; border:none;\\\">\\n            Class\\n        <\\/td>\\n        <td style=\\\"width:1px; padding:0 4px 0 0; font-family:Arial,sans-serif; font-size:9px; line-height:11px; color:#000; font-weight:bold; border:none;\\\">\\n            :\\n        <\\/td>\\n        <td style=\\\"padding:0; font-family:Arial,sans-serif; font-size:9px; line-height:11px; color:#000; font-weight:bold; text-align:left; border:none;\\\">\\n            NURSERY\\n        <\\/td>\\n    <\\/tr>\\n\\n    <tr>\\n        <td style=\\\"width:1px; padding:0 4px 0 0; font-family:Arial,sans-serif; font-size:9px; line-height:11px; color:red; font-weight:bold; white-space:nowrap; border:none;\\\">\\n            DOB\\n        <\\/td>\\n        <td style=\\\"width:1px; padding:0 4px 0 0; font-family:Arial,sans-serif; font-size:9px; line-height:11px; color:#000; font-weight:bold; border:none;\\\">\\n            :\\n        <\\/td>\\n        <td style=\\\"padding:0; font-family:Arial,sans-serif; font-size:9px; line-height:11px; color:#000; font-weight:bold; text-align:left; border:none;\\\">\\n            28\\/11\\/2022\\n        <\\/td>\\n    <\\/tr>\\n\\n    <tr>\\n        <td style=\\\"width:1px; padding:0 4px 0 0; font-family:Arial,sans-serif; font-size:9px; line-height:11px; color:red; font-weight:bold; white-space:nowrap; border:none;\\\">\\n            Phone\\n        <\\/td>\\n        <td style=\\\"width:1px; padding:0 4px 0 0; font-family:Arial,sans-serif; font-size:9px; line-height:11px; color:#000; font-weight:bold; border:none;\\\">\\n            :\\n        <\\/td>\\n        <td style=\\\"padding:0; font-family:Arial,sans-serif; font-size:9px; line-height:11px; color:#000; font-weight:bold; text-align:left; border:none;\\\">\\n            7247558263\\n        <\\/td>\\n    <\\/tr>\\n\\n    <tr>\\n        <td style=\\\"width:1px; padding:0 4px 0 0; font-family:Arial,sans-serif; font-size:9px; line-height:11px; color:red; font-weight:bold; white-space:nowrap; border:none;\\\">\\n            Address\\n        <\\/td>\\n        <td style=\\\"width:1px; padding:0 4px 0 0; font-family:Arial,sans-serif; font-size:9px; line-height:11px; color:#000; font-weight:bold; border:none;\\\">\\n            :\\n        <\\/td>\\n        <!-- Expanded width on the Address value cell -->\\n        <td style=\\\"width:100%; padding:0; font-family:Arial,sans-serif; font-size:9px; line-height:11px; color:#000; font-weight:bold; text-align:left; word-wrap:break-word; border:none;\\\">\\n            84-85, SHAHI BAAG<br>KHAJRANA\\n        <\\/td>\\n    <\\/tr>\\n\\n<\\/tbody><\\/table>\",\"useval\":null,\"tablePosition\":{\"left\":9,\"top\":180,\"width\":170,\"height\":0}}', 1, NULL, NULL, '2026-09-10 08:58:17', '2026-09-10 08:58:17'),
+(13, 35, 'Default ID Card', 'horizontal', 317, 204, 'samples/35/36o1XR18X5CM1ws2C4qGhRA1FY5gfG4kgbRyJEbV.jpg', '{\"cardWidth\":317,\"cardHeight\":204,\"background\":\"url(\\\"https:\\/\\/dev.infotasks.com\\/storage\\/samples\\/35\\/36o1XR18X5CM1ws2C4qGhRA1FY5gfG4kgbRyJEbV.jpg\\\")\",\"fields\":{\"logo\":{\"label\":\"Logo\",\"x\":0,\"y\":9,\"visible\":true,\"width\":30,\"height\":30,\"type\":\"image\",\"src\":\"idcards\\/JJZMf0bjhdRZd3B6.jpeg\",\"css\":null},\"schoolName\":{\"label\":\"School Name\",\"x\":82,\"y\":8,\"visible\":true,\"text\":\"La Martiniere College\",\"fontSize\":12,\"color\":\"rgb(158, 27, 50)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"address\":{\"label\":\"Address\",\"x\":47,\"y\":23,\"visible\":true,\"text\":\"123 Education Lane, Varanasi, UP - 221001\",\"fontSize\":11,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"studentAddress\":{\"label\":\"Student Address\",\"x\":44,\"y\":178,\"visible\":true,\"text\":\"Address: 24, Green Park, Varanasi, UP - 221001\",\"fontSize\":11,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"session\":{\"label\":\"Session\",\"x\":5,\"y\":43,\"visible\":true,\"text\":\"Session: 2026-2027\",\"fontSize\":10,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"photo\":{\"label\":\"Photo\",\"x\":6,\"y\":71,\"visible\":true,\"width\":60,\"height\":78,\"borderRadius\":0,\"type\":\"image\",\"src\":\"idcards\\/YAhpjgXVlwszMm6m.jpeg\",\"css\":null},\"sign\":{\"label\":\"Sign\",\"x\":244,\"y\":145,\"visible\":true,\"width\":30,\"height\":30,\"color\":\"rgb(255, 255, 255)\",\"fontWeight\":\"700\",\"type\":\"image\",\"src\":\"idcards\\/Phrlb9mGzUUsx1ud.jpeg\",\"css\":null},\"qr\":{\"label\":\"Qr\",\"x\":285,\"y\":57,\"visible\":true,\"width\":25,\"height\":25,\"type\":\"image\",\"src\":\"https:\\/\\/api.qrserver.com\\/v1\\/create-qr-code\\/?size=200x200&data=MP-2026-0143\",\"css\":null},\"logo_copy_1789031418101_8391\":{\"cloneOf\":\"logo\",\"type\":\"image\",\"x\":289,\"y\":9,\"visible\":true,\"width\":30,\"height\":30,\"src\":\"idcards\\/rAiQuFfssjRlAegD.jpeg\"}},\"tabledata\":\"<table style=\\\"width: 100%; border-collapse: collapse; font-size: 9px;\\\">\\n    <tbody>\\n        <tr>\\n            <td style=\\\"width: 34%; font-weight: 400; color: red !important; background: transparent; border: 0; padding: 1px; text-align: left; vertical-align: top;\\\">\\n                Name :\\n            <\\/td>\\n            <td style=\\\"color: red !important; border: 0; padding: 1px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">\\n                Rahul Kumar\\n            <\\/td>\\n        <\\/tr>\\n\\n        <tr>\\n            <td style=\\\"width: 34%; font-weight: 400; color: red !important; background: transparent; border: 0; padding: 1px; text-align: left; vertical-align: top;\\\">\\n                Father :\\n            <\\/td>\\n            <td style=\\\"color: red !important; border: 0; padding: 1px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">\\n                Rajesh Kumar\\n            <\\/td>\\n        <\\/tr>\\n\\n        <tr>\\n            <td style=\\\"width: 34%; font-weight: 400; color: red !important; background: transparent; border: 0; padding: 1px; text-align: left; vertical-align: top;\\\">\\n                Class :\\n            <\\/td>\\n            <td style=\\\"color: red !important; border: 0; padding: 1px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">\\n                8-A\\n            <\\/td>\\n        <\\/tr>\\n\\n        <tr>\\n            <td style=\\\"width: 34%; font-weight: 400; color: red !important; background: transparent; border: 0; padding: 1px; text-align: left; vertical-align: top;\\\">\\n                DOB :\\n            <\\/td>\\n            <td style=\\\"color: red !important; border: 0; padding: 1px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">\\n                10\\/05\\/2012\\n            <\\/td>\\n        <\\/tr>\\n\\n        <tr>\\n            <td style=\\\"width: 34%; font-weight: 400; color: red !important; background: transparent; border: 0; padding: 1px; text-align: left; vertical-align: top;\\\">\\n                Adm. No. :\\n            <\\/td>\\n            <td style=\\\"color: red !important; border: 0; padding: 1px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">\\n                ADM001\\n            <\\/td>\\n        <\\/tr>\\n\\n        <tr>\\n            <td style=\\\"width: 34%; font-weight: 400; color: red !important; background: transparent; border: 0; padding: 1px; text-align: left; vertical-align: top;\\\">\\n                Blood :\\n            <\\/td>\\n            <td style=\\\"color: red !important; border: 0; padding: 1px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">\\n                O+\\n            <\\/td>\\n        <\\/tr>\\n    <\\/tbody>\\n<\\/table>\",\"useval\":null,\"tablePosition\":{\"left\":80,\"top\":70,\"width\":180,\"height\":0}}', 1, NULL, NULL, '2026-09-10 10:47:28', '2026-09-10 10:47:28');
 
 -- --------------------------------------------------------
 
@@ -204,7 +243,7 @@ INSERT INTO `schools` (`id`, `user_id`, `school_name`, `school_code`, `address`,
 (32, 32, 'littlech', NULL, '62\'ambikapuri main airport road', '9827526115', NULL, NULL, NULL, NULL, NULL, 1, 'Anubha sujit awasthi', 'schools/img_6a7e082f4c0ee9.87285459.jpg', '2026-08-13 09:27:32', '2026-09-02 11:04:04', 0),
 (33, 33, 'laxmi', NULL, 'laxmi', '9009315309, 9644222999', NULL, NULL, NULL, NULL, NULL, 1, 'laxmi', NULL, '2026-08-16 05:31:44', '2026-09-02 11:04:04', 0),
 (34, NULL, 'Demo School', 'Myschool', NULL, '9876543210', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, '2026-09-07 06:17:31', '2026-09-07 06:55:29', 1),
-(35, NULL, 'School', 'DEMO002', NULL, '9876543210', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, '2026-09-07 06:18:36', '2026-09-07 08:57:20', 0),
+(35, NULL, 'Test  School College Lucknow', 'DEMO002', '142 BARFANI NAGAR, INDORE, MP. 452010', '9876543210', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, '2026-09-07 06:18:36', '2026-09-10 09:59:27', 0),
 (36, NULL, 'School', 'DEMO0010', NULL, '9876543210', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, '2026-09-07 06:24:36', '2026-09-07 06:24:36', 0),
 (37, NULL, 'School1111', 'DEMO00112', NULL, '9700000001', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, '2026-09-07 06:26:36', '2026-09-07 06:26:36', 0),
 (38, NULL, 'New dynamic public school', '10001', 'docker build --no-cache -t your-image-name .', '9098129363', NULL, NULL, NULL, NULL, NULL, 1, NULL, 'schools/v7jsy4T8jCnmbT4o2FqdsSa0o8XsBFHnkSOO38Od.jpg', '2026-09-07 10:08:04', '2026-09-07 10:08:04', 0);
@@ -245,18 +284,17 @@ CREATE TABLE `selected_samples` (
   `sample_id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `orientation` enum('vertical','horizontal') DEFAULT NULL
+  `orientation` enum('vertical','horizontal') DEFAULT NULL,
+  `class_id` int(11) DEFAULT NULL,
+  `type` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `selected_samples`
 --
 
-INSERT INTO `selected_samples` (`id`, `school_id`, `sample_id`, `created_at`, `updated_at`, `orientation`) VALUES
-(1, 1, 46, '2026-09-04 08:35:06', '2026-09-04 08:35:58', 'horizontal'),
-(2, 8, 35, '2026-09-04 10:26:56', '2026-09-04 10:26:56', 'vertical'),
-(3, 38, 47, '2026-09-07 10:08:59', '2026-09-08 12:27:31', 'vertical'),
-(4, 38, 3, '2026-09-08 04:48:57', '2026-09-08 04:48:57', 'horizontal');
+INSERT INTO `selected_samples` (`id`, `school_id`, `sample_id`, `created_at`, `updated_at`, `orientation`, `class_id`, `type`) VALUES
+(1, 38, 51, '2026-09-10 07:11:00', '2026-09-10 07:11:00', 'vertical', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -278,9 +316,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('a6BIczrM3Ff126ooTnqLAbS4jNnxZ5dAHXVFx87G', 34, '49.43.1.243', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', 'YTo5OntzOjY6Il90b2tlbiI7czo0MDoidTc2ZXFBM1JyZTRvd2E5anNoaUhUUU1nd0lDYm5SYkljME1TdmtKRSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czozNzoiaHR0cHM6Ly9kZXYuaW5mb3Rhc2tzLmNvbS9pZGNhcmQtZ3JpZCI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjM3OiJodHRwczovL2Rldi5pbmZvdGFza3MuY29tL2lkY2FyZC1ncmlkIjtzOjU6InJvdXRlIjtzOjExOiJpZGNhcmQuZ3JpZCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjM0O3M6NzoidXNlcl9pZCI7aTozNDtzOjQ6InJvbGUiO3M6MTA6InN1cGVyYWRtaW4iO3M6OToic2Nob29sX2lkIjtOO3M6MTQ6InZpZXdpbmdfc2Nob29sIjtpOjM4O30=', 1788925499),
-('DWK8wfjJkJXMf7pMa7B9dDi6vyZjtUozLTdAHHF3', 34, '49.43.1.245', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', 'YTo4OntzOjY6Il90b2tlbiI7czo0MDoidFRMaVFwUUlZaWJadTh2cDBLUDJxS0NXcFh5UXl3eDNDSzl5ZU9VTyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDc6Imh0dHBzOi8vZGV2LmluZm90YXNrcy5jb20vY2FyZC8zOC92ZXJ0aWNhbC9lZGl0IjtzOjU6InJvdXRlIjtzOjE4OiJjYXJkLnRlbXBsYXRlLmVkaXQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozNDtzOjc6InVzZXJfaWQiO2k6MzQ7czo0OiJyb2xlIjtzOjEwOiJzdXBlcmFkbWluIjtzOjk6InNjaG9vbF9pZCI7TjtzOjE0OiJ2aWV3aW5nX3NjaG9vbCI7aTozODt9', 1788871889),
-('rJA3Wm4TUylug75JRBHv6TNS6s4BNiQ07erdDt6J', NULL, '91.134.35.95', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edge/91.0.864.48', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoibnlpZlNGdmlmOGFDbm9uYk1TM3V4QXBRbmp6WlpsMEpua3JHWGxxRCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjQ6Imh0dHA6Ly9kZXYuaW5mb3Rhc2tzLmNvbSI7czo1OiJyb3V0ZSI7czo1OiJsb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1788905035);
+('5mg4DeU9VysR7isFddq2pLjZFvElUODbRxUWBk5b', 34, '106.219.86.108', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', 'YTo5OntzOjY6Il90b2tlbiI7czo0MDoiaVB1S2NKUGgxcjFFWGo1UDZ1UFNRaGloWTZPeU9lVmhlZzd0UWY4QSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo0MDoiaHR0cHM6Ly9kZXYuaW5mb3Rhc2tzLmNvbS91cGxvYWQtc2FtcGxlcyI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjQ0OiJodHRwczovL2Rldi5pbmZvdGFza3MuY29tL3N0dWRlbnRzLzg0MjIvZWRpdCI7czo1OiJyb3V0ZSI7czoxMzoic3R1ZGVudHMuZWRpdCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjM0O3M6NzoidXNlcl9pZCI7aTozNDtzOjQ6InJvbGUiO3M6MTA6InN1cGVyYWRtaW4iO3M6OToic2Nob29sX2lkIjtOO3M6MTQ6InZpZXdpbmdfc2Nob29sIjtpOjM1O30=', 1789037630);
 
 -- --------------------------------------------------------
 
@@ -8765,6 +8801,9 @@ CREATE TABLE `upload_samples` (
   `name` varchar(255) NOT NULL,
   `file_path` varchar(255) NOT NULL,
   `caption` varchar(255) DEFAULT NULL,
+  `applicable_id` int(11) DEFAULT NULL,
+  `class_id` int(11) DEFAULT NULL,
+  `house_id` int(11) DEFAULT NULL,
   `orientation` enum('horizontal','vertical') NOT NULL DEFAULT 'horizontal',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -8774,54 +8813,55 @@ CREATE TABLE `upload_samples` (
 -- Dumping data for table `upload_samples`
 --
 
-INSERT INTO `upload_samples` (`id`, `school_id`, `name`, `file_path`, `caption`, `orientation`, `created_at`, `updated_at`) VALUES
-(1, NULL, '24.jpg', 'samples/b5TjhfnipslCQQVeCh3DxwFKQkFXoqkfUDqGdCuW.jpg', NULL, 'vertical', '2026-08-21 00:24:50', '2026-08-21 00:24:50'),
-(2, NULL, '41.jpg', 'samples/KhCwlpJ1hETHAUIoiyLeeTtYMisMFzOYnnpK9jfV.jpg', NULL, 'vertical', '2026-08-21 00:24:50', '2026-08-21 00:24:50'),
-(3, NULL, '7.jpg', 'samples/9UArsdKb6osCv5I1Xi4hsMyVFz39azgueZREIiVn.jpg', NULL, 'horizontal', '2026-08-21 00:24:50', '2026-08-21 00:24:50'),
-(4, NULL, '6.jpg', 'samples/qaG1o3I77PSwwp5Vu9xJbs72N0dqKeVcSbMRi4fH.jpg', NULL, 'horizontal', '2026-08-21 00:24:50', '2026-08-21 00:24:50'),
-(5, NULL, '40.jpg', 'samples/kKBQeKvc57dS2VgDXmO2a9QtZlaerfRYLCNi3DbO.jpg', NULL, 'vertical', '2026-08-21 00:24:50', '2026-08-21 00:24:50'),
-(6, NULL, 'arpna_sign.jpg', 'samples/i0N8NnnayaR0JTwkPISBOz90Os0tnf6JcQ0Rb0TS.jpg', NULL, '', '2026-08-21 00:25:14', '2026-08-21 00:25:14'),
-(7, NULL, 'background.jpg', 'samples/o9IgDsQw8TbDFsskP5xUH2gGy8fjI5bI0AlE92hJ.jpg', NULL, 'horizontal', '2026-08-21 00:25:14', '2026-08-21 00:25:14'),
-(8, NULL, '42.jpg', 'samples/M6ICL1ipUUh2ydjReZWzM4zir6cQNggZIjbY2wCK.jpg', NULL, 'vertical', '2026-08-21 00:25:14', '2026-08-21 00:25:14'),
-(9, NULL, 'atharv.jpg', 'samples/Wo32Z58ICIMVgNkNxebklvzDBs3Cm0Q4hsKyvHfF.jpg', NULL, 'vertical', '2026-08-21 00:25:14', '2026-08-21 00:25:14'),
-(10, NULL, 'backside2.jpg', 'samples/L9tRoG0zMBvaiVn2LB80FkwtqVMnAaMFz2X3AOjx.jpg', NULL, 'vertical', '2026-08-21 00:25:14', '2026-08-21 00:25:14'),
-(11, NULL, 'ganesh_sign.jpeg', 'samples/jpW8LkReOT4yjG8xtWkIKZ7vp5k6ban7BQA2UtMV.jpg', NULL, '', '2026-08-21 00:25:31', '2026-08-21 00:25:31'),
-(12, NULL, 'Gurunamdev.jpg', 'samples/etaO9k4rEpvzK5bC40Hp0eITxjS3EVXdEM0jugz9.jpg', NULL, 'horizontal', '2026-08-21 00:25:31', '2026-08-21 00:25:31'),
-(13, NULL, 'govtGirl.jpg', 'samples/4af8iwqLFaDRpSFqa1GrstgFzDEVn8mXXBsTknQf.jpg', NULL, 'horizontal', '2026-08-21 00:25:31', '2026-08-21 00:25:31'),
-(14, NULL, 'ganesh_school.jpg', 'samples/1sBGgYeYCo3kWGehmPwJizAVh2mX92ZpxFFW7sKN.jpg', NULL, 'vertical', '2026-08-21 00:25:31', '2026-08-21 00:25:31'),
-(15, NULL, 'Jagrati_school.jpg', 'samples/SfSS5d77mP1TJCcAYZiJzMu5AB5rIUVk6aWTerfR.jpg', NULL, 'vertical', '2026-08-21 00:25:31', '2026-08-21 00:25:31'),
-(16, NULL, 'Mahaveer.jpg', 'samples/MNj0d36vPERWV5K62HCaHH4o1WXPic78HLiHZhtc.jpg', NULL, 'horizontal', '2026-08-21 00:26:01', '2026-08-21 00:26:01'),
-(17, NULL, 'lining.jpg', 'samples/HWt7AuBqHu9SeqXRDyQFyoxtjSRsLVLq9FJyBLqy.jpg', NULL, 'horizontal', '2026-08-21 00:26:01', '2026-08-21 00:26:01'),
-(18, NULL, 'mahaveer_school.jpg', 'samples/hokBeE3k6M6mRELICsocfBbBZt6U3v2ONgF8TM8Y.jpg', NULL, 'horizontal', '2026-08-21 00:26:01', '2026-08-21 00:26:01'),
-(19, NULL, 'little_kids_planet.jpg', 'samples/lxaWnaxqRr2mHtgOZLfkZtf4sij24b6AcsWyLRc5.jpg', NULL, 'horizontal', '2026-08-21 00:26:01', '2026-08-21 00:26:01'),
-(20, NULL, 'little_kids_planet3.jpg', 'samples/kXRLnnGs6W0Id5XOo8DgTiQJe3hHHeETuB5fotvI.jpg', NULL, 'horizontal', '2026-08-21 00:26:01', '2026-08-21 00:26:01'),
-(21, NULL, 'mother_sign.jpg', 'samples/MEPU3gDlW0gVEBFWBLnfgSBGm9PBZV520gQgqJdO.jpg', NULL, '', '2026-08-21 00:26:57', '2026-08-21 00:26:57'),
-(22, NULL, 'mahaveer_school_kids.jpg', 'samples/1G6CsHWloY8rQuthFbR4mjZreOLsUckSPmUKRi90.jpg', NULL, 'horizontal', '2026-08-21 00:26:57', '2026-08-21 00:26:57'),
-(23, NULL, 'manawat.jpg', 'samples/sF80NzFpYnjfSfBo94oTEypFduNknbE1onkKq1cH.jpg', NULL, 'vertical', '2026-08-21 00:26:57', '2026-08-21 00:26:57'),
-(24, NULL, 'mother_signpng.png', 'samples/Ann8qnaHcFOMSx0puhvjAdFIUZC9d5dnk9HgwJiJ.png', NULL, '', '2026-08-21 00:26:57', '2026-08-21 00:26:57'),
-(25, NULL, 'megaMind_id.jpg', 'samples/yNCiX5pw1h3ZsJOVHs3qqjWP9W4sD6Oye0Lt8JQM.jpg', NULL, 'vertical', '2026-08-21 00:26:57', '2026-08-21 00:26:57'),
-(26, NULL, 'new_mejist.jpg', 'samples/z7TQKq4quIu1OI5k5dM0CRqztbAkGu3UQn9fmsrX.jpg', NULL, 'vertical', '2026-08-21 00:27:20', '2026-08-21 00:27:20'),
-(27, NULL, 'pranay.jpg', 'samples/DWiIrc34tgL1XOttHIhuTzr4fwWRLjx2XaUj5V4c.jpg', NULL, 'horizontal', '2026-08-21 00:27:20', '2026-08-21 00:27:20'),
-(28, NULL, 'new_hari.jpg', 'samples/3LQNJoJUZTahfQOHxbiTzbqLTpM6SCa8qLf4n3EL.jpg', NULL, 'vertical', '2026-08-21 00:27:20', '2026-08-21 00:27:20'),
-(29, NULL, 'mvpn.png', 'samples/Q7tj7WMyu0hIPLz4pggdIHEIU4EHaA9gzfoSnIZI.png', NULL, 'horizontal', '2026-08-21 00:27:20', '2026-08-21 00:27:20'),
-(30, NULL, 'new_star.jpg', 'samples/2uK6AreNfycR0sudQ1uL62j29snIDl3A4KfiqeVp.jpg', NULL, 'horizontal', '2026-08-21 00:27:20', '2026-08-21 00:27:20'),
-(31, NULL, 'Rahul_logo.png', 'samples/OoT6tIrKaCOUu5ifR8VcRL30vPJTrola7IloIGpn.png', NULL, '', '2026-08-21 00:27:58', '2026-08-21 00:27:58'),
-(32, NULL, 'Rahul_logo-removebg.png', 'samples/u3wTx4PJFb5viR5iKJlIi0zhY0H5Lz1CdAZtzsuO.png', NULL, '', '2026-08-21 00:27:58', '2026-08-21 00:27:58'),
-(33, NULL, 'shivKripa2.jpg', 'samples/rfr63Z35dJAQ7ms3Jvh3sqtHoctUtmZVBmKwb0rx.jpg', NULL, 'vertical', '2026-08-21 00:27:58', '2026-08-21 00:27:58'),
-(34, NULL, 'prefill.jpg', 'samples/Pcy6jPtj0vyeygaYtmv5btycdKCpH2EY4ZQA9OMt.jpg', NULL, 'horizontal', '2026-08-21 00:27:58', '2026-08-21 00:27:58'),
-(35, NULL, 'shivKripa.jpg', 'samples/4ekQBJdMcC3NM0WkZV3yARTj5ZiQHdI8zM8W13xj.jpg', NULL, 'vertical', '2026-08-21 00:27:58', '2026-08-21 00:27:58'),
-(36, NULL, 'sign.jpeg', 'samples/e00tIRiGkLTYwsTOfgUzLc2wesS7LZ7cvNofex5z.jpg', NULL, '', '2026-08-21 00:28:17', '2026-08-21 00:28:17'),
-(37, NULL, 'tq_sign.png', 'samples/LNtVna6Bvt0OiKLT3SvbWZabObDHjJXMUF8IFp5L.png', NULL, '', '2026-08-21 00:28:17', '2026-08-21 00:28:17'),
-(38, NULL, 'sign.png', 'samples/7mgHSPExE6yeY3t60yKCjn3XPpW5wlZPicxYdfQz.png', NULL, '', '2026-08-21 00:28:17', '2026-08-21 00:28:17'),
-(39, NULL, 'tanisq_final1.jpg', 'samples/3JVfIS1J2ZRs10OaUPiGYBi62YYP42LiO3F0LOil.jpg', NULL, 'vertical', '2026-08-21 00:28:17', '2026-08-21 00:28:17'),
-(40, NULL, 'unfill.jpg', 'samples/cDVDKuqvAgI0xUKrdYuSc4O7ko4xsGlrGRD8Pssy.jpg', NULL, 'horizontal', '2026-08-21 00:28:17', '2026-08-21 00:28:17'),
-(41, NULL, 'vidhaya.jpg', 'samples/wNVqBgSvF8EjLyCjhUuGq7bCIOzjKfBjU4JADvX6.jpg', NULL, 'horizontal', '2026-08-21 00:28:33', '2026-08-21 00:28:33'),
-(42, NULL, 'unfill22.jpg', 'samples/Eu5NRx6CbGNvJAiITxoMcNqUfQIW1tzyhySH62Vv.jpg', NULL, 'horizontal', '2026-08-21 00:28:33', '2026-08-21 00:28:33'),
-(43, NULL, 'vertical.jpeg', 'samples/oYFplefNZujX35OwQY6GD8HCIv7TmCYLPecHf9Q6.jpg', NULL, '', '2026-08-21 00:28:33', '2026-08-21 00:28:33'),
-(44, 1, 'QzONP5GTLig2V3d2v100EZTV9TbZH04XwCHWocrw.png', 'samples/1/sample_6a97e68744f1b.jpg', NULL, 'horizontal', '2026-09-02 09:04:07', '2026-09-02 09:04:07'),
-(45, 1, 'qaG1o3I77PSwwp5Vu9xJbs72N0dqKeVcSbMRi4fH.jpg', 'samples/1/sample_6a9a82bae7c43.jpg', NULL, 'horizontal', '2026-09-04 08:35:06', '2026-09-04 08:35:06'),
-(46, 1, 'cDVDKuqvAgI0xUKrdYuSc4O7ko4xsGlrGRD8Pssy.jpg', 'samples/1/sample_6a9a82ee67cad.jpg', NULL, 'horizontal', '2026-09-04 08:35:58', '2026-09-04 08:35:58'),
-(47, 38, 'new_dynamic.jpg', 'samples/38/sample_6a9e8d3b5e3aa.jpg', NULL, 'vertical', '2026-09-07 10:08:59', '2026-09-07 10:08:59');
+INSERT INTO `upload_samples` (`id`, `school_id`, `name`, `file_path`, `caption`, `applicable_id`, `class_id`, `house_id`, `orientation`, `created_at`, `updated_at`) VALUES
+(1, NULL, '24.jpg', 'samples/b5TjhfnipslCQQVeCh3DxwFKQkFXoqkfUDqGdCuW.jpg', NULL, NULL, NULL, NULL, 'vertical', '2026-08-21 00:24:50', '2026-08-21 00:24:50'),
+(2, NULL, '41.jpg', 'samples/KhCwlpJ1hETHAUIoiyLeeTtYMisMFzOYnnpK9jfV.jpg', NULL, NULL, NULL, NULL, 'vertical', '2026-08-21 00:24:50', '2026-08-21 00:24:50'),
+(3, NULL, '7.jpg', 'samples/9UArsdKb6osCv5I1Xi4hsMyVFz39azgueZREIiVn.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:24:50', '2026-08-21 00:24:50'),
+(4, NULL, '6.jpg', 'samples/qaG1o3I77PSwwp5Vu9xJbs72N0dqKeVcSbMRi4fH.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:24:50', '2026-08-21 00:24:50'),
+(5, NULL, '40.jpg', 'samples/kKBQeKvc57dS2VgDXmO2a9QtZlaerfRYLCNi3DbO.jpg', NULL, NULL, NULL, NULL, 'vertical', '2026-08-21 00:24:50', '2026-08-21 00:24:50'),
+(6, NULL, 'arpna_sign.jpg', 'samples/i0N8NnnayaR0JTwkPISBOz90Os0tnf6JcQ0Rb0TS.jpg', NULL, NULL, NULL, NULL, '', '2026-08-21 00:25:14', '2026-08-21 00:25:14'),
+(7, NULL, 'background.jpg', 'samples/o9IgDsQw8TbDFsskP5xUH2gGy8fjI5bI0AlE92hJ.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:25:14', '2026-08-21 00:25:14'),
+(8, NULL, '42.jpg', 'samples/M6ICL1ipUUh2ydjReZWzM4zir6cQNggZIjbY2wCK.jpg', NULL, NULL, NULL, NULL, 'vertical', '2026-08-21 00:25:14', '2026-08-21 00:25:14'),
+(9, NULL, 'atharv.jpg', 'samples/Wo32Z58ICIMVgNkNxebklvzDBs3Cm0Q4hsKyvHfF.jpg', NULL, NULL, NULL, NULL, 'vertical', '2026-08-21 00:25:14', '2026-08-21 00:25:14'),
+(10, NULL, 'backside2.jpg', 'samples/L9tRoG0zMBvaiVn2LB80FkwtqVMnAaMFz2X3AOjx.jpg', NULL, NULL, NULL, NULL, 'vertical', '2026-08-21 00:25:14', '2026-08-21 00:25:14'),
+(11, NULL, 'ganesh_sign.jpeg', 'samples/jpW8LkReOT4yjG8xtWkIKZ7vp5k6ban7BQA2UtMV.jpg', NULL, NULL, NULL, NULL, '', '2026-08-21 00:25:31', '2026-08-21 00:25:31'),
+(12, NULL, 'Gurunamdev.jpg', 'samples/etaO9k4rEpvzK5bC40Hp0eITxjS3EVXdEM0jugz9.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:25:31', '2026-08-21 00:25:31'),
+(13, NULL, 'govtGirl.jpg', 'samples/4af8iwqLFaDRpSFqa1GrstgFzDEVn8mXXBsTknQf.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:25:31', '2026-08-21 00:25:31'),
+(14, NULL, 'ganesh_school.jpg', 'samples/1sBGgYeYCo3kWGehmPwJizAVh2mX92ZpxFFW7sKN.jpg', NULL, NULL, NULL, NULL, 'vertical', '2026-08-21 00:25:31', '2026-08-21 00:25:31'),
+(15, NULL, 'Jagrati_school.jpg', 'samples/SfSS5d77mP1TJCcAYZiJzMu5AB5rIUVk6aWTerfR.jpg', NULL, NULL, NULL, NULL, 'vertical', '2026-08-21 00:25:31', '2026-08-21 00:25:31'),
+(16, NULL, 'Mahaveer.jpg', 'samples/MNj0d36vPERWV5K62HCaHH4o1WXPic78HLiHZhtc.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:26:01', '2026-08-21 00:26:01'),
+(17, NULL, 'lining.jpg', 'samples/HWt7AuBqHu9SeqXRDyQFyoxtjSRsLVLq9FJyBLqy.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:26:01', '2026-08-21 00:26:01'),
+(18, NULL, 'mahaveer_school.jpg', 'samples/hokBeE3k6M6mRELICsocfBbBZt6U3v2ONgF8TM8Y.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:26:01', '2026-08-21 00:26:01'),
+(19, NULL, 'little_kids_planet.jpg', 'samples/lxaWnaxqRr2mHtgOZLfkZtf4sij24b6AcsWyLRc5.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:26:01', '2026-08-21 00:26:01'),
+(20, NULL, 'little_kids_planet3.jpg', 'samples/kXRLnnGs6W0Id5XOo8DgTiQJe3hHHeETuB5fotvI.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:26:01', '2026-08-21 00:26:01'),
+(21, NULL, 'mother_sign.jpg', 'samples/MEPU3gDlW0gVEBFWBLnfgSBGm9PBZV520gQgqJdO.jpg', NULL, NULL, NULL, NULL, '', '2026-08-21 00:26:57', '2026-08-21 00:26:57'),
+(22, NULL, 'mahaveer_school_kids.jpg', 'samples/1G6CsHWloY8rQuthFbR4mjZreOLsUckSPmUKRi90.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:26:57', '2026-08-21 00:26:57'),
+(23, NULL, 'manawat.jpg', 'samples/sF80NzFpYnjfSfBo94oTEypFduNknbE1onkKq1cH.jpg', NULL, NULL, NULL, NULL, 'vertical', '2026-08-21 00:26:57', '2026-08-21 00:26:57'),
+(24, NULL, 'mother_signpng.png', 'samples/Ann8qnaHcFOMSx0puhvjAdFIUZC9d5dnk9HgwJiJ.png', NULL, NULL, NULL, NULL, '', '2026-08-21 00:26:57', '2026-08-21 00:26:57'),
+(25, NULL, 'megaMind_id.jpg', 'samples/yNCiX5pw1h3ZsJOVHs3qqjWP9W4sD6Oye0Lt8JQM.jpg', NULL, NULL, NULL, NULL, 'vertical', '2026-08-21 00:26:57', '2026-08-21 00:26:57'),
+(26, NULL, 'new_mejist.jpg', 'samples/z7TQKq4quIu1OI5k5dM0CRqztbAkGu3UQn9fmsrX.jpg', NULL, NULL, NULL, NULL, 'vertical', '2026-08-21 00:27:20', '2026-08-21 00:27:20'),
+(27, NULL, 'pranay.jpg', 'samples/DWiIrc34tgL1XOttHIhuTzr4fwWRLjx2XaUj5V4c.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:27:20', '2026-08-21 00:27:20'),
+(28, NULL, 'new_hari.jpg', 'samples/3LQNJoJUZTahfQOHxbiTzbqLTpM6SCa8qLf4n3EL.jpg', NULL, NULL, NULL, NULL, 'vertical', '2026-08-21 00:27:20', '2026-08-21 00:27:20'),
+(29, NULL, 'mvpn.png', 'samples/Q7tj7WMyu0hIPLz4pggdIHEIU4EHaA9gzfoSnIZI.png', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:27:20', '2026-08-21 00:27:20'),
+(30, NULL, 'new_star.jpg', 'samples/2uK6AreNfycR0sudQ1uL62j29snIDl3A4KfiqeVp.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:27:20', '2026-08-21 00:27:20'),
+(31, NULL, 'Rahul_logo.png', 'samples/OoT6tIrKaCOUu5ifR8VcRL30vPJTrola7IloIGpn.png', NULL, NULL, NULL, NULL, '', '2026-08-21 00:27:58', '2026-08-21 00:27:58'),
+(32, NULL, 'Rahul_logo-removebg.png', 'samples/u3wTx4PJFb5viR5iKJlIi0zhY0H5Lz1CdAZtzsuO.png', NULL, NULL, NULL, NULL, '', '2026-08-21 00:27:58', '2026-08-21 00:27:58'),
+(33, NULL, 'shivKripa2.jpg', 'samples/rfr63Z35dJAQ7ms3Jvh3sqtHoctUtmZVBmKwb0rx.jpg', NULL, NULL, NULL, NULL, 'vertical', '2026-08-21 00:27:58', '2026-08-21 00:27:58'),
+(34, NULL, 'prefill.jpg', 'samples/Pcy6jPtj0vyeygaYtmv5btycdKCpH2EY4ZQA9OMt.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:27:58', '2026-08-21 00:27:58'),
+(35, NULL, 'shivKripa.jpg', 'samples/4ekQBJdMcC3NM0WkZV3yARTj5ZiQHdI8zM8W13xj.jpg', NULL, NULL, NULL, NULL, 'vertical', '2026-08-21 00:27:58', '2026-08-21 00:27:58'),
+(36, NULL, 'sign.jpeg', 'samples/e00tIRiGkLTYwsTOfgUzLc2wesS7LZ7cvNofex5z.jpg', NULL, NULL, NULL, NULL, '', '2026-08-21 00:28:17', '2026-08-21 00:28:17'),
+(37, NULL, 'tq_sign.png', 'samples/LNtVna6Bvt0OiKLT3SvbWZabObDHjJXMUF8IFp5L.png', NULL, NULL, NULL, NULL, '', '2026-08-21 00:28:17', '2026-08-21 00:28:17'),
+(38, NULL, 'sign.png', 'samples/7mgHSPExE6yeY3t60yKCjn3XPpW5wlZPicxYdfQz.png', NULL, NULL, NULL, NULL, '', '2026-08-21 00:28:17', '2026-08-21 00:28:17'),
+(39, NULL, 'tanisq_final1.jpg', 'samples/3JVfIS1J2ZRs10OaUPiGYBi62YYP42LiO3F0LOil.jpg', NULL, NULL, NULL, NULL, 'vertical', '2026-08-21 00:28:17', '2026-08-21 00:28:17'),
+(40, NULL, 'unfill.jpg', 'samples/cDVDKuqvAgI0xUKrdYuSc4O7ko4xsGlrGRD8Pssy.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:28:17', '2026-08-21 00:28:17'),
+(41, NULL, 'vidhaya.jpg', 'samples/wNVqBgSvF8EjLyCjhUuGq7bCIOzjKfBjU4JADvX6.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:28:33', '2026-08-21 00:28:33'),
+(42, NULL, 'unfill22.jpg', 'samples/Eu5NRx6CbGNvJAiITxoMcNqUfQIW1tzyhySH62Vv.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-08-21 00:28:33', '2026-08-21 00:28:33'),
+(43, NULL, 'vertical.jpeg', 'samples/oYFplefNZujX35OwQY6GD8HCIv7TmCYLPecHf9Q6.jpg', NULL, NULL, NULL, NULL, '', '2026-08-21 00:28:33', '2026-08-21 00:28:33'),
+(44, 1, 'QzONP5GTLig2V3d2v100EZTV9TbZH04XwCHWocrw.png', 'samples/1/sample_6a97e68744f1b.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-09-02 09:04:07', '2026-09-02 09:04:07'),
+(45, 1, 'qaG1o3I77PSwwp5Vu9xJbs72N0dqKeVcSbMRi4fH.jpg', 'samples/1/sample_6a9a82bae7c43.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-09-04 08:35:06', '2026-09-04 08:35:06'),
+(46, 1, 'cDVDKuqvAgI0xUKrdYuSc4O7ko4xsGlrGRD8Pssy.jpg', 'samples/1/sample_6a9a82ee67cad.jpg', NULL, NULL, NULL, NULL, 'horizontal', '2026-09-04 08:35:58', '2026-09-04 08:35:58'),
+(51, 38, 'Template 1', 'samples/AhljTvnmMmdVMR0tyH3Kl2ToCXaqZUOF37hhnFLy.jpg', 'This is img', 2, NULL, 1, 'vertical', '2026-09-09 10:16:10', '2026-09-10 06:57:38'),
+(53, 35, 'Template 1', 'samples/35/36o1XR18X5CM1ws2C4qGhRA1FY5gfG4kgbRyJEbV.jpg', NULL, 1, NULL, 1, 'horizontal', '2026-09-10 09:02:40', '2026-09-10 09:02:40');
 
 -- --------------------------------------------------------
 
@@ -8890,6 +8930,12 @@ INSERT INTO `users` (`id`, `username`, `password`, `name`, `email`, `role`, `sch
 --
 
 --
+-- Indexes for table `applicable_user`
+--
+ALTER TABLE `applicable_user`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `cache`
 --
 ALTER TABLE `cache`
@@ -8902,6 +8948,12 @@ ALTER TABLE `cache`
 ALTER TABLE `cache_locks`
   ADD PRIMARY KEY (`key`),
   ADD KEY `cache_locks_expiration_index` (`expiration`);
+
+--
+-- Indexes for table `houses`
+--
+ALTER TABLE `houses`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `id_card_templates`
@@ -8992,6 +9044,18 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `applicable_user`
+--
+ALTER TABLE `applicable_user`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `houses`
+--
+ALTER TABLE `houses`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `id_card_templates`
 --
 ALTER TABLE `id_card_templates`
@@ -9007,7 +9071,7 @@ ALTER TABLE `id_card_template_fields`
 -- AUTO_INCREMENT for table `mainidcards`
 --
 ALTER TABLE `mainidcards`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `migrations`
@@ -9031,7 +9095,7 @@ ALTER TABLE `sections`
 -- AUTO_INCREMENT for table `selected_samples`
 --
 ALTER TABLE `selected_samples`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `students`
@@ -9055,7 +9119,7 @@ ALTER TABLE `teachers`
 -- AUTO_INCREMENT for table `upload_samples`
 --
 ALTER TABLE `upload_samples`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT for table `users`

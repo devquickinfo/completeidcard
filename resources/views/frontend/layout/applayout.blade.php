@@ -535,18 +535,18 @@
                             <i class="nav-icon fas fa-id-card"></i>
 
                             <p>
-                               Card Sample
+                               ID Card Templates
                             </p>
                         </a>
                         </li>
-                        <li class="nav-item">
+                       {{-- <li class="nav-item">
                         <a href="{{ route('idcard.grid') }}"
                         class="nav-link {{ request()->routeIs('idcard.grid.*') ? 'active' : '' }}">
 
                             <i class="nav-icon fas fa-layer-group"></i>
                             <p>ID Card Templates</p>
                         </a>
-                        </li>
+                        </li>--}}
                        {{---<li class="nav-item">
                         <a href="{{ route('idcard.editor') }}"
                         class="nav-link {{ request()->routeIs('idcard.editor.*') ? 'active' : '' }}">

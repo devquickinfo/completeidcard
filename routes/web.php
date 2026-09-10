@@ -123,7 +123,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/card/{schoolId}/{orientation}/edit', [MainidcardController::class, 'edit'])
     ->name('card.template.edit');
-    // Route::post('/card/{mainidcard}/layout', [MainidcardController::class, 'saveLayout'])
-    // ->name('card.template.layout.save');
+    Route::get('/cardsingle/{schoolId}/edit', [UploadSampleController::class, 'edit'])
+    ->name('card.templatesingle.edit');
+    Route::get('singlesample/{id}/delete', [UploadSampleController::class, 'singleDelete'])
+    ->name('singlesample.delete');
+    Route::post('upload-single', [UploadSampleController::class, 'singleStore'])
+    ->name('upload-single.store');
 
 });

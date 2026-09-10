@@ -84,32 +84,6 @@
     padding:14px 18px;
   }
   .group:last-child{border-bottom:none;}
-
-  .layout-tabs{
-    display:flex;
-    gap:8px;
-    margin-bottom:12px;
-    border-bottom:1px solid var(--line);
-    padding-bottom:10px;
-  }
-  .layout-tab-btn{
-    flex:1;
-    border:1px solid #d5d8dd;
-    background:#f8fafc;
-    color:var(--muted);
-    border-radius:6px;
-    padding:7px 10px;
-    font-size:12px;
-    font-weight:700;
-    cursor:pointer;
-  }
-  .layout-tab-btn.active{
-    background:var(--maroon);
-    border-color:var(--maroon);
-    color:#fff;
-  }
-  .layout-tab-panel{display:none;}
-  .layout-tab-panel.active{display:block;}
   .group-title{
     display:flex;
     align-items:center;
@@ -325,44 +299,8 @@
     background:#eee;
   }
   .el-text{
-    display:block;
-    white-space:normal;
-    word-break:break-word;
-    overflow-wrap:anywhere;
-    max-width:calc(100% - 20px);
+    white-space:nowrap;
     line-height:1.25;
-  }
-  .el-tabledata{
-    position:absolute;
-    z-index:3;
-    display:block;
-    background:transparent;
-    border:none;
-    border-radius:0;
-    padding:0;
-    box-shadow:none;
-    color:var(--ink);
-    font-size:12px;
-    line-height:1.25;
-    overflow:auto;
-    pointer-events:none;
-    width:auto;
-    min-width:0;
-    max-width:none;
-    box-sizing:border-box;
-  }
-  .el-tabledata table{
-    width:100%;
-    min-width:100%;
-    height:100%;
-    border-collapse:collapse;
-  }
-  .el-tabledata th,
-  .el-tabledata td{
-    border:1px solid rgba(31,36,48,0.35);
-    padding:3px 5px;
-    text-align:left;
-    vertical-align:top;
   }
   .el-qr{
     object-fit:contain;
@@ -643,127 +581,6 @@
                             style="font-size:11px;color:var(--muted);"
                             >
                             Add a rectangle over the background and control its X, Y, width, height and color.
-                            </div>
-                        </div>
-                        </div>
-
-                        <div class="group">
-                        <div class="group-title"><h3>Layout Data</h3><span class="chev">▾</span></div>
-                        <div class="group-body">
-                            <div class="layout-tabs">
-                                <button type="button" class="layout-tab-btn active" data-tab="table-tab">Table</button>
-                                <button type="button" class="layout-tab-btn" data-tab="inline-tab">Inline</button>
-                            </div>
-
-                            <div id="table-tab" class="layout-tab-panel active">
-
-                                <div class="field">
-                                    <label>Quick Build</label>
-                                    <div class="row4" style="align-items:flex-end;">
-                                        <div class="field" style="flex:0 0 64px;">
-                                            <label>Rows</label>
-                                            <input type="number" id="tableBuildRows" min="1" max="20" value="3">
-                                        </div>
-                                        <div class="field" style="flex:0 0 64px;">
-                                            <label>Cols</label>
-                                            <input type="number" id="tableBuildCols" min="1" max="10" value="2">
-                                        </div>
-                                        <div class="field" style="flex:1;">
-                                            <label>&nbsp;</label>
-                                            <button type="button" id="tableNewBtn" class="filebtn" style="border-style:solid;">＋ New Table</button>
-                                        </div>
-                                        <div class="field" style="flex:1;">
-                                            <label>&nbsp;</label>
-                                            <button type="button" id="tableLoadBtn" class="filebtn" style="border-style:solid;">↺ Load From HTML</button>
-                                        </div>
-                                    </div>
-                                    <button type="button" id="tablePresetStudentBtn" class="filebtn" style="border-style:solid;margin-top:8px;">🎓 Insert Student Info Table (Name / Father / Class / DOB / Adm. No.)</button>
-                                </div>
-
-                                <div class="field">
-                                    <label>Grid Controls</label>
-                                    <div class="row4">
-                                        <button type="button" id="tableAddRowBtn" class="filebtn" style="flex:1;border-style:solid;">+ Row</button>
-                                        <button type="button" id="tableDelRowBtn" class="filebtn" style="flex:1;border-style:solid;">− Row</button>
-                                        <button type="button" id="tableAddColBtn" class="filebtn" style="flex:1;border-style:solid;">+ Column</button>
-                                        <button type="button" id="tableDelColBtn" class="filebtn" style="flex:1;border-style:solid;">− Column</button>
-                                    </div>
-                                </div>
-
-                                <div class="field">
-                                    <label>Style</label>
-                                    <div class="row4">
-                                        <div class="field">
-                                            <label>Border Px</label>
-                                            <input type="number" id="tableBorderWidth" min="0" max="10" value="1">
-                                        </div>
-                                        <div class="field">
-                                            <label>Border Color</label>
-                                            <input type="color" id="tableBorderColor" value="#1f2430">
-                                        </div>
-                                        <div class="field">
-                                            <label>Padding</label>
-                                            <input type="number" id="tableCellPadding" min="0" max="20" value="3">
-                                        </div>
-                                        <div class="field">
-                                            <label>Font Px</label>
-                                            <input type="number" id="tableFontSize" min="6" max="30" value="12">
-                                        </div>
-                                    </div>
-                                    <div class="row2" style="margin-top:8px;align-items:center;">
-                                        <div class="field">
-                                            <label>Text Align</label>
-                                            <select id="tableTextAlign">
-                                                <option value="left">Left</option>
-                                                <option value="center">Center</option>
-                                                <option value="right">Right</option>
-                                            </select>
-                                        </div>
-                                        <div class="field" style="display:flex;align-items:center;gap:8px;flex:0 0 auto;">
-                                            <label style="margin:0;text-transform:none;">Header Row</label>
-                                            <label class="switch">
-                                                <input type="checkbox" id="tableHeaderToggle" checked>
-                                                <span class="slider"></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="field">
-                                    <label>Visual Editor <span style="font-weight:400;text-transform:none;color:var(--muted);">(click any cell to type)</span></label>
-                                    <div id="tableGridEditor" style="border:1px dashed #d5d8dd;border-radius:6px;padding:8px;overflow:auto;max-height:220px;background:#c1c3c4;"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label for="tabledataTextarea">Raw HTML / CSS (auto-synced with the visual editor above)</label>
-                                    <textarea id="tabledataTextarea" rows="6" placeholder="Enter HTML table layout and CSS here" style="resize:both">{{ isset($designcard->layout['tabledata']) ? $designcard->layout['tabledata'] : ($designcard->tabledata ?? '') }}</textarea>
-                                </div>
-
-                                <div class="row4">
-                                    <div class="field">
-                                        <label>Left</label>
-                                        <input type="number" id="tableLeft" value="{{ isset($designcard->layout['tablePosition']['left']) ? $designcard->layout['tablePosition']['left'] : 30 }}">
-                                    </div>
-                                    <div class="field">
-                                        <label>Top</label>
-                                        <input type="number" id="tableTop" value="{{ isset($designcard->layout['tablePosition']['top']) ? $designcard->layout['tablePosition']['top'] : 120 }}">
-                                    </div>
-                                    <div class="field">
-                                        <label>Width</label>
-                                        <input type="number" id="tableWidth" value="{{ isset($designcard->layout['tablePosition']['width']) ? $designcard->layout['tablePosition']['width'] : 180 }}">
-                                    </div>
-                                    <div class="field">
-                                        <label>Height</label>
-                                        <input type="number" id="tableHeight" value="{{ isset($designcard->layout['tablePosition']['height']) ? $designcard->layout['tablePosition']['height'] : 0 }}">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="inline-tab" class="layout-tab-panel">
-                                <div class="field">
-                                    <label for="usevalTextarea">Inline Value</label>
-                                    <textarea id="usevalTextarea" rows="8" placeholder="Enter inline layout / value here">{{ isset($designcard->layout['useval']) ? $designcard->layout['useval'] : ($designcard->useval ?? '') }}</textarea>
-                                </div>
                             </div>
                         </div>
                         </div>
@@ -1112,7 +929,6 @@
                             <img id="elPhoto" class="el el-photo"
                                 src="{{ isset($designcard->layout['fields']['photo']['src']) && $designcard->layout['fields']['photo']['src'] ? asset('storage/' . $designcard->layout['fields']['photo']['src']) : 'https://placehold.co/300x300/eeeeee/999999?text=Photo' }}" alt="Student Photo">
                             <div id="elStudentAddress" class="el el-text">Address: 24, Green Park, Varanasi, UP - 221001</div>
-                            <div id="elTableData" class="el el-tabledata"></div>
 
                             <div id="elName" class="el el-text">AARAV SHARMA</div>
                             <div id="elFather" class="el el-text">Father: Rakesh Sharma</div>
@@ -1204,370 +1020,7 @@
 
     // initial layout from server (may be empty)
     const initialLayout = @json($designcard->layout ?? (object)[]);
-
-    const tableDataTextarea = document.getElementById('tabledataTextarea');
-    const tableDataPreview = document.getElementById('elTableData');
-    const tableLeftInput = document.getElementById('tableLeft');
-    const tableTopInput = document.getElementById('tableTop');
-    const tableWidthInput = document.getElementById('tableWidth');
-    const tableHeightInput = document.getElementById('tableHeight');
-
-    function renderTableDataPreview() {
-        if (!tableDataPreview || !tableDataTextarea) {
-            return;
-        }
-
-        const rawValue = tableDataTextarea.value || '';
-        const left = parseFloat(tableLeftInput?.value || 30) || 30;
-        const top = parseFloat(tableTopInput?.value || 120) || 120;
-        const width = parseFloat(tableWidthInput?.value || Math.max(120, CARD_W - 60)) || Math.max(120, CARD_W - 60);
-        const height = parseFloat(tableHeightInput?.value || 0) || 0;
-
-        tableDataPreview.innerHTML = rawValue;
-        tableDataPreview.style.display = rawValue.trim() ? '' : 'none';
-        tableDataPreview.style.left = left + 'px';
-        tableDataPreview.style.top = top + 'px';
-        tableDataPreview.style.width = width + 'px';
-        tableDataPreview.style.height = height > 0 ? height + 'px' : 'auto';
-        tableDataPreview.style.minWidth = width + 'px';
-        tableDataPreview.style.minHeight = height > 0 ? height + 'px' : '0px';
-        tableDataPreview.style.maxWidth = 'none';
-        tableDataPreview.style.maxHeight = 'none';
-        tableDataPreview.style.overflowY = 'auto';
-        tableDataPreview.style.overflowX = 'auto';
-
-        const renderedTable = tableDataPreview.querySelector('table');
-        if (renderedTable) {
-            renderedTable.style.width = '100%';
-            renderedTable.style.height = height > 0 ? '100%' : 'auto';
-            renderedTable.style.minHeight = height > 0 ? height + 'px' : '0px';
-        }
-    }
-
-    [tableDataTextarea, tableLeftInput, tableTopInput, tableWidthInput, tableHeightInput].forEach(function (input) {
-        if (!input) {
-            return;
-        }
-
-        input.addEventListener('input', renderTableDataPreview);
-    });
-
-    renderTableDataPreview();
-
-
-    // =========================================================
-    // TABLE VISUAL BUILDER
-    // Drives the tabledataTextarea from a live editable <table>
-    // so the raw HTML box stays in sync automatically.
-    // =========================================================
-    (function () {
-
-        const gridEditor = document.getElementById('tableGridEditor');
-        const buildRowsInput = document.getElementById('tableBuildRows');
-        const buildColsInput = document.getElementById('tableBuildCols');
-        const newTableBtn = document.getElementById('tableNewBtn');
-        const loadHtmlBtn = document.getElementById('tableLoadBtn');
-        const addRowBtn = document.getElementById('tableAddRowBtn');
-        const delRowBtn = document.getElementById('tableDelRowBtn');
-        const addColBtn = document.getElementById('tableAddColBtn');
-        const delColBtn = document.getElementById('tableDelColBtn');
-        const borderWidthInput = document.getElementById('tableBorderWidth');
-        const borderColorInput = document.getElementById('tableBorderColor');
-        const cellPaddingInput = document.getElementById('tableCellPadding');
-        const fontSizeInput = document.getElementById('tableFontSize');
-        const textAlignInput = document.getElementById('tableTextAlign');
-        const headerToggleInput = document.getElementById('tableHeaderToggle');
-
-        if (!gridEditor || !tableDataTextarea) {
-            return;
-        }
-
-        function currentTable() {
-            return gridEditor.querySelector('table');
-        }
-
-        function styleSettings() {
-            return {
-                borderWidth: parseFloat(borderWidthInput?.value || 1) || 0,
-                borderColor: borderColorInput?.value || '#1f2430',
-                padding: parseFloat(cellPaddingInput?.value || 3) || 0,
-                fontSize: parseFloat(fontSizeInput?.value || 12) || 12,
-                align: textAlignInput?.value || 'left',
-                header: !!headerToggleInput?.checked
-            };
-        }
-
-        function applyStylesToTable(table) {
-            if (!table) {
-                return;
-            }
-
-            const s = styleSettings();
-
-            table.style.width = '100%';
-            table.style.borderCollapse = 'collapse';
-            table.style.fontSize = s.fontSize + 'px';
-
-            Array.from(table.rows).forEach(function (row, rIdx) {
-                Array.from(row.cells).forEach(function (cell) {
-                    cell.style.border = s.borderWidth + 'px solid ' + s.borderColor;
-                    cell.style.padding = s.padding + 'px';
-                    cell.style.textAlign = s.align;
-                    cell.style.verticalAlign = 'top';
-
-                    if (rIdx === 0 && s.header) {
-                        cell.style.fontWeight = '700';
-                        cell.style.background = 'rgba(158,27,50,0.08)';
-                    } else {
-                        cell.style.fontWeight = '400';
-                        cell.style.background = 'transparent';
-                    }
-                });
-            });
-        }
-
-        function attachCellEditing(table) {
-            if (!table) {
-                return;
-            }
-
-            Array.from(table.querySelectorAll('td, th')).forEach(function (cell) {
-                cell.setAttribute('contenteditable', 'true');
-                cell.addEventListener('input', syncTextareaFromGrid);
-                cell.addEventListener('blur', syncTextareaFromGrid);
-            });
-        }
-
-        function syncTextareaFromGrid() {
-            const table = currentTable();
-
-            if (!table) {
-                return;
-            }
-
-            const clone = table.cloneNode(true);
-
-            clone.removeAttribute('contenteditable');
-            Array.from(clone.querySelectorAll('[contenteditable]')).forEach(function (el) {
-                el.removeAttribute('contenteditable');
-            });
-
-            tableDataTextarea.value = clone.outerHTML;
-            tableDataTextarea.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-
-        function buildNewTable(rows, cols) {
-            rows = Math.max(1, Math.min(20, rows || 1));
-            cols = Math.max(1, Math.min(10, cols || 1));
-
-            const table = document.createElement('table');
-
-            for (let r = 0; r < rows; r++) {
-                const tr = table.insertRow();
-
-                for (let c = 0; c < cols; c++) {
-                    const cell = tr.insertCell();
-                    cell.textContent = r === 0 ? ('Header ' + (c + 1)) : '';
-                }
-            }
-
-            gridEditor.innerHTML = '';
-            gridEditor.appendChild(table);
-            applyStylesToTable(table);
-            attachCellEditing(table);
-            syncTextareaFromGrid();
-        }
-
-        function buildStudentInfoTable() {
-            const rowsData = [
-                ['Name', 'Rahul Kumar'],
-                ['Father', 'Rajesh Kumar'],
-                ['Class', '8-A'],
-                ['DOB', '10/05/2012'],
-                ['Adm. No.', 'ADM001'],
-                ['Blood', 'O+']
-            ];
-
-            const table = document.createElement('table');
-
-            rowsData.forEach(function (pair) {
-                const tr = table.insertRow();
-                const labelCell = tr.insertCell();
-                const valueCell = tr.insertCell();
-
-                labelCell.textContent = pair[0];
-                valueCell.textContent = pair[1];
-
-                labelCell.style.width = '34%';
-                labelCell.style.fontWeight = '700';
-                labelCell.style.color = '#4b5563';
-                labelCell.style.background = '#f5f6f8';
-            });
-
-            gridEditor.innerHTML = '';
-            gridEditor.appendChild(table);
-
-            // Force sane, consistent defaults so nothing looks patchy
-            // and nothing gets clipped by the card's overflow:hidden.
-            if (borderWidthInput) borderWidthInput.value = 1;
-            if (borderColorInput) borderColorInput.value = '#cbd0d6';
-            if (cellPaddingInput) cellPaddingInput.value = 4;
-            if (fontSizeInput) fontSizeInput.value = 11;
-            if (textAlignInput) textAlignInput.value = 'left';
-            if (headerToggleInput) headerToggleInput.checked = false;
-
-            applyStylesToTable(table);
-            attachCellEditing(table);
-            syncTextareaFromGrid();
-
-            // Auto height so long content is never cropped by the card edge.
-            if (tableHeightInput) {
-                tableHeightInput.value = 0;
-                tableHeightInput.dispatchEvent(new Event('input', { bubbles: true }));
-            }
-        }
-
-        function loadFromTextarea() {
-            const raw = tableDataTextarea.value || '';
-            const temp = document.createElement('div');
-
-            temp.innerHTML = raw;
-
-            const table = temp.querySelector('table');
-
-            if (!table) {
-                alert('No <table> found in the HTML box. Use "New Table" to start one.');
-                return;
-            }
-
-            gridEditor.innerHTML = '';
-            gridEditor.appendChild(table);
-            attachCellEditing(table);
-            syncTextareaFromGrid();
-        }
-
-        if (newTableBtn) {
-            newTableBtn.addEventListener('click', function () {
-                buildNewTable(
-                    parseInt(buildRowsInput?.value, 10) || 3,
-                    parseInt(buildColsInput?.value, 10) || 2
-                );
-            });
-        }
-
-        if (loadHtmlBtn) {
-            loadHtmlBtn.addEventListener('click', loadFromTextarea);
-        }
-
-        const presetStudentBtn = document.getElementById('tablePresetStudentBtn');
-
-        if (presetStudentBtn) {
-            presetStudentBtn.addEventListener('click', buildStudentInfoTable);
-        }
-
-        if (addRowBtn) {
-            addRowBtn.addEventListener('click', function () {
-                const table = currentTable();
-
-                if (!table) {
-                    return;
-                }
-
-                const cols = table.rows.length ? table.rows[0].cells.length : 1;
-                const tr = table.insertRow();
-
-                for (let c = 0; c < cols; c++) {
-                    tr.insertCell().textContent = '';
-                }
-
-                applyStylesToTable(table);
-                attachCellEditing(table);
-                syncTextareaFromGrid();
-            });
-        }
-
-        if (delRowBtn) {
-            delRowBtn.addEventListener('click', function () {
-                const table = currentTable();
-
-                if (!table || table.rows.length <= 1) {
-                    return;
-                }
-
-                table.deleteRow(table.rows.length - 1);
-                syncTextareaFromGrid();
-            });
-        }
-
-        if (addColBtn) {
-            addColBtn.addEventListener('click', function () {
-                const table = currentTable();
-
-                if (!table) {
-                    return;
-                }
-
-                Array.from(table.rows).forEach(function (row) {
-                    row.insertCell().textContent = '';
-                });
-
-                applyStylesToTable(table);
-                attachCellEditing(table);
-                syncTextareaFromGrid();
-            });
-        }
-
-        if (delColBtn) {
-            delColBtn.addEventListener('click', function () {
-                const table = currentTable();
-
-                if (!table || !table.rows.length || table.rows[0].cells.length <= 1) {
-                    return;
-                }
-
-                Array.from(table.rows).forEach(function (row) {
-                    row.deleteCell(row.cells.length - 1);
-                });
-
-                syncTextareaFromGrid();
-            });
-        }
-
-        [borderWidthInput, borderColorInput, cellPaddingInput, fontSizeInput, textAlignInput, headerToggleInput].forEach(function (input) {
-            if (!input) {
-                return;
-            }
-
-            input.addEventListener('input', function () {
-                const table = currentTable();
-
-                if (!table) {
-                    return;
-                }
-
-                applyStylesToTable(table);
-                syncTextareaFromGrid();
-            });
-
-            input.addEventListener('change', function () {
-                const table = currentTable();
-
-                if (!table) {
-                    return;
-                }
-
-                applyStylesToTable(table);
-                syncTextareaFromGrid();
-            });
-        });
-
-        // Load whatever is already saved so the visual editor
-        // isn't empty on page load if a table already exists.
-        if ((tableDataTextarea.value || '').trim()) {
-            loadFromTextarea();
-        }
-
-    })();
+  
 
 
     // =========================================================
@@ -2433,29 +1886,6 @@
     // FIELD CONFIGURATION
     // =========================================================
 
-    function getFieldLabel(key) {
-
-        if (!key) {
-            return '';
-        }
-
-        const label = key
-            .replace(/([a-z])([A-Z])/g, '$1 $2')
-            .replace(/[_-]+/g, ' ')
-            .trim();
-
-        return label
-            .split(' ')
-            .map(function (word) {
-                if (!word) {
-                    return '';
-                }
-                return word.charAt(0).toUpperCase() + word.slice(1);
-            })
-            .join(' ');
-    }
-
-
     const fields = [
 
         {
@@ -2881,31 +2311,6 @@
 
         wireField(f);
 
-    });
-
-    document.querySelectorAll('.layout-tab-btn').forEach(function (button) {
-        button.addEventListener('click', function () {
-            const tab = button.dataset.tab;
-
-            document.querySelectorAll('.layout-tab-btn').forEach(function (item) {
-                item.classList.toggle('active', item === button);
-            });
-
-            document.querySelectorAll('.layout-tab-panel').forEach(function (panel) {
-                const isActive = panel.id === tab;
-                panel.classList.toggle('active', isActive);
-                panel.style.display = isActive ? 'block' : 'none';
-            });
-
-            const inlinePanel = document.getElementById('inline-tab');
-            const inlineTextarea = document.getElementById('usevalTextarea');
-            if (inlineTextarea) {
-                inlineTextarea.disabled = tab !== 'inline-tab';
-            }
-            if (inlinePanel) {
-                inlinePanel.style.display = tab === 'inline-tab' ? 'block' : 'none';
-            }
-        });
     });
 
     // Create small CSS textarea under each group and wire it
@@ -3952,10 +3357,6 @@
 
     if (zoom) {
 
-        zoom.value = 100;
-        zoomVal.textContent = '100%';
-        card.style.transform = 'scale(1)';
-
         zoom.addEventListener(
             'input',
             function () {
@@ -4057,39 +3458,7 @@
             background:
                 card.style.backgroundImage || '',
 
-            fields: {},
-
-            tabledata:
-                document.getElementById('tabledataTextarea')
-                    ? document.getElementById('tabledataTextarea').value
-                    : '',
-
-            useval:
-                document.getElementById('usevalTextarea')
-                    ? document.getElementById('usevalTextarea').value
-                    : '',
-
-            tablePosition: {
-                left:
-                    parseFloat(
-                        document.getElementById('tableLeft')?.value
-                    ) || 30,
-
-                top:
-                    parseFloat(
-                        document.getElementById('tableTop')?.value
-                    ) || 120,
-
-                width:
-                    parseFloat(
-                        document.getElementById('tableWidth')?.value
-                    ) || Math.max(120, CARD_W - 60),
-
-                height:
-                    parseFloat(
-                        document.getElementById('tableHeight')?.value
-                    ) || 0
-            }
+            fields: {}
 
         };
 
@@ -4129,9 +3498,6 @@
 
 
             const item = {
-
-                label:
-                    getFieldLabel(f.key),
 
                 x:
                     parseFloat(

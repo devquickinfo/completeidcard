@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use App\Models\SelectedSample;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\StudentClass;
+use App\Models\ApplicableUser;
+use App\Models\House;
 class UploadSampleController extends Controller
 {
     /**
@@ -60,14 +62,13 @@ class UploadSampleController extends Controller
      */
     public function create()
     {
-        return view('schools.createuploadsample');
+        $classes=StudentClass::all();
+        $applicables=ApplicableUser::all();
+        $houses=House::all();
+        return view('schools.createuploadsample',compact('classes','applicables','houses'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     
-   
     public function store(Request $request)
     {
         $request->validate([
@@ -76,13 +77,16 @@ class UploadSampleController extends Controller
             'caption'        => 'nullable|string|max:255',
             'orientation'    => 'required|in:horizontal,vertical',
         ]);
-        $file = $request->file('upload_samples');
-        $path = $file->store('samples', 'public');
 
-        $schoolId = session('role') === 'school'
-            ? Auth::user()->school_id
-            : null;
-
+        if (session('role') === 'school' || session('viewing_school')) {
+            $schoolId = Auth::user()->school_id ?? session('viewing_school');
+            $path = $request->file('upload_samples')
+                ->store('samples/' . $schoolId, 'public');
+        } else {
+            $schoolId = null;
+            $path = $request->file('upload_samples')
+                ->store('samples', 'public');
+        }
         UploadSample::create([
             'school_id'   => $schoolId,
             'name'        => $request->input('image_name'),
@@ -90,14 +94,12 @@ class UploadSampleController extends Controller
             'caption'     => $request->input('caption'),
             'orientation' => $request->input('orientation'),
         ]);
-
         return response()->json([
             'success'  => true,
             'message'  => 'Sample uploaded successfully.',
             'redirect' => route('upload-samples.index'),
         ]);
     }
-
 
 
     /**
@@ -111,9 +113,13 @@ class UploadSampleController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(UploadSample $uploadSample)
+    public function edit( $uploadSample)
     {
-        //
+         $classes = StudentClass::all();
+         $applicables = ApplicableUser::all();
+         $houses = House::all();
+         $singleSample=UploadSample::find($uploadSample);
+         return view('schools.createuploadsample',compact('singleSample', 'classes', 'applicables', 'houses'));
     }
 
     /**
@@ -174,5 +180,88 @@ class UploadSampleController extends Controller
         return redirect()
             ->route('upload-samples.index')
             ->with('success', 'All samples deleted successfully.');
+    }
+    public function singleDelete($id)
+    {
+        $sample = UploadSample::findOrFail($id);
+
+        if ($sample->file_path && Storage::disk('public')->exists($sample->file_path)) {
+            Storage::disk('public')->delete($sample->file_path);
+        }
+
+        $sample->delete();
+
+        return redirect()->back()->with('success', 'Sample deleted successfully.');
+    }
+    public function singleStore(Request $request)
+    {
+        $request->validate([
+            'name'         => 'required|string|max:255',
+            'applicable_id' => 'required',
+            'orientation'  => 'required|in:horizontal,vertical',
+            'sampleupload' => $request->filled('id')
+            ? 'nullable|image|mimes:jpg,jpeg,png,webp|max:40960'
+            : 'required|image|mimes:jpg,jpeg,png,webp|max:40960',
+        ]);
+
+        // Get school ID
+        if (session('role') === 'school') {
+            $schoolId = Auth::user()->school_id;
+        } elseif (session('viewing_school')) {
+            $schoolId = session('viewing_school');
+        } else {
+            $schoolId = null;
+        }
+
+        // Insert or update
+        $id = $request->input('id');
+
+        if ($id) {
+            $singleSample = UploadSample::findOrFail($id);
+        } else {
+            $singleSample = new UploadSample();
+        }
+
+        // Upload image
+        if ($request->hasFile('sampleupload')) {
+
+            // Delete old image when updating
+            if (
+                $singleSample->exists &&
+                $singleSample->file_path &&
+                Storage::disk('public')->exists($singleSample->file_path)
+            ) {
+                Storage::disk('public')->delete($singleSample->file_path);
+            }
+
+            // School folder or superadmin samples folder
+            $folder = $schoolId
+                ? 'samples/' . $schoolId
+                : 'samples';
+
+            $path = $request->file('sampleupload')
+                ->store($folder, 'public');
+
+            $singleSample->file_path = $path;
+        }
+
+        // Save fields
+        $singleSample->school_id    = $schoolId;
+        $singleSample->name         = $request->name;
+        $singleSample->applicable_id = $request->applicable_id;
+        $singleSample->class_id     = $request->class_id;
+        $singleSample->orientation  = $request->orientation;
+        $singleSample->house_id     = $request->house_id;
+
+        $singleSample->save();
+
+        return redirect()
+            ->back()
+            ->with(
+                'success',
+                $id
+                    ? 'Template updated successfully.'
+                    : 'Template uploaded successfully.'
+            );
     }
 }
