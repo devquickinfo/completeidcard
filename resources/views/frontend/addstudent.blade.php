@@ -726,22 +726,6 @@
                                                                             @endif
                                                                         </div>
                                                                     </div>
-                                                                    @if($hasTableData)
-                                                                        <div
-                                                                            style="
-                                                                                position:absolute;
-                                                                                left:{{ $tableLeft }}px;
-                                                                                top:{{ $tableTop }}px;
-                                                                                width:{{ $tableWidth }}px;
-                                                                                @if($tableHeight > 0) height:{{ $tableHeight }}px; @endif
-                                                                                z-index:10;
-                                                                                overflow:hidden;
-                                                                                box-sizing:border-box;
-                                                                            "
-                                                                        >
-                                                                            {!! $tabledataHtml !!}
-                                                                        </div>
-                                                                    @endif
                                                                     @elseif(@$verticalSample)
                                                                     <div class="text-center">
 
@@ -1182,11 +1166,6 @@
 
                                                                     @endforeach
 
-                                                                        </div>
-
-                                                                    </div>
-
-
                                                                     @if($hasTableData)
                                                                         <div
                                                                             style="
@@ -1203,6 +1182,10 @@
                                                                             {!! $tabledataHtml !!}
                                                                         </div>
                                                                     @endif
+
+                                                                        </div>
+
+                                                                    </div>
                                                                     @elseif(@$horizontalSample)
 
                                                                     <div class="text-center">
