@@ -358,21 +358,23 @@
                                                                 ? 'width:' . (int)$field['width'] . 'px;'
                                                                 : '';
 
-                                                            $height = isset($field['height'])
+                                                            $height =isset($field['height'])
                                                                 ? 'height:' . (int)$field['height'] . 'px;'
                                                                 : '';
 
                                                             $zIndex = $type === 'shape'
                                                                 ? 1
                                                                 : 10;
+                                                            $borderRadius = isset($field['borderRadius'] ?? 0);
 
                                                             $style = " position:absolute; left:{$left}px; top:{$top}px;
-                                                        z-index:{$zIndex}; {$width} {$height} ";
+                                                        z-index:{$zIndex}; {$width} {$height} border-radius:{$borderRadius}%;
+                                                            box-sizing:border-box; ";
 
                                                             if (!($field['visible'] ?? true)) {
                                                                 $style .= 'display:none;';
                                                             }
-
+                                                      
                                                         @endphp
 
 
@@ -444,7 +446,7 @@
 
                                                                 <img
                                                                     src=" {{ $imageUrl }}" alt="{{ $fieldType }}"
-                                                        style="{{ $style }}object-fit:contain;">
+                                                        style="{{ $style }} object-fit:contain;">
 
                                                         @endif
 

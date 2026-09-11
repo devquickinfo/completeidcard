@@ -292,6 +292,8 @@
                                                         ? 1
                                                         : 10;
 
+                                                        $borderRadius = (int)($field['borderRadius'] ?? 0);
+
                                                         $style = "
                                                         position:absolute;
                                                         left:{$left}px;
@@ -305,6 +307,11 @@
 
                                                         if ($height) {
                                                         $style .= "height:{$height}px;";
+                                                        }
+                                                         
+                                                        if($borderRadius){
+                                                        $style .= "border-radius:{$borderRadius}%;";
+
                                                         }
 
                                                         if (!$visible) {
@@ -335,7 +342,7 @@
 
                                                         @if($src)
                                                         <img src="{{ $src }}" alt="{{ $key }}"
-                                                            style="{{ $style }}object-fit:contain;" class="img-thumbnail">
+                                                            style="{{ $style }}">
                                                         @endif
 
 

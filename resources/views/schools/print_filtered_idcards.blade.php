@@ -426,26 +426,11 @@
     @else
 
 
-        {{-- ============================================================ --}}
-        {{-- STUDENT PAGES --}}
-        {{-- ============================================================ --}}
+       
 
         @foreach($students->chunk($cardsPerPage) as $pageStudents)
-
             <div class="a4-page orientation-{{ $orientation }}">
-
-
-                {{-- ==================================================== --}}
-                {{-- STUDENTS --}}
-                {{-- ==================================================== --}}
-
                 @foreach($pageStudents as $student)
-
-
-                    {{-- ================================================= --}}
-                    {{-- PHYSICAL CARD --}}
-                    {{-- ================================================= --}}
-
                     <div
                         class="id-card-container"
                         style="
@@ -453,12 +438,6 @@
                             height: {{ $printHeightMm }}mm;
                         "
                     >
-
-
-                        {{-- ============================================= --}}
-                        {{-- EDITOR CANVAS --}}
-                        {{-- ============================================= --}}
-
                         <div
                             class="id-card"
                             style="
@@ -469,18 +448,10 @@
                                     scale({{ $scale }});
                             "
                         >
-
-
-                            {{-- ========================================= --}}
-                            {{-- BACKGROUND --}}
-                            {{-- ========================================= --}}
-
                             @if($bgUrl)
-
                                 <div
                                     style="
                                         position:absolute;
-
                                         left:0;
                                         top:0;
 
@@ -555,6 +526,9 @@
                                     $height = isset($field['height'])
                                         ? (float) $field['height']
                                         : null;
+                                    $borderRadius = isset($field['borderRadius'])
+                                    ? (int) $field['borderRadius']
+                                    : null;
 
                                     $visible =
                                         $field['visible'] ?? true;
@@ -584,10 +558,18 @@
                                             width:{$width}px;
                                         ";
                                     }
+                                   
                                     if ($height !== null) {
 
                                         $style .= "
                                             height:{$height}px;
+                                        ";
+                                    }
+
+                                    if ($borderRadius !== null) {
+
+                                        $style .= "
+                                            border-radius:{$borderRadius}%;
                                         ";
                                     }
 
@@ -603,16 +585,7 @@
                                         $field['text'] ?? '';
                                     $matched = false;
 
-                                    /*
-                                    |--------------------------------------------------------------------------
-                                    | NOTE ON "address" vs "studentAddress":
-                                    |
-                                    | "address"        -> ALWAYS school address ($school->address)
-                                    | "studentAddress" -> ALWAYS student address ($student->address)
-                                    |
-                                    | These are deliberately two separate cases so they never collide.
-                                    |--------------------------------------------------------------------------
-                                    */
+                                   
 
                                     switch ($fieldKeyBase) {
 
@@ -748,11 +721,7 @@
                                             break;
 
 
-                                        /*
-                                        |--------------------------------------------------------------------------
-                                        | STUDENT ADDRESS — always $student->address
-                                        |--------------------------------------------------------------------------
-                                        */
+                                       
 
                                         case 'studentaddress':
                                         case 'student_address':
@@ -764,11 +733,6 @@
                                             break;
 
 
-                                        /*
-                                        |--------------------------------------------------------------------------
-                                        | SCHOOL ADDRESS — always $school->address, never the student's
-                                        |--------------------------------------------------------------------------
-                                        */
 
                                         case 'address':
                                         case 'schooladdress':
@@ -1373,21 +1337,7 @@
 
                                         } elseif ($usesAlign) {
 
-                                            /*
-                                            |--------------------------------------------------------------------------
-                                            | No explicit width, but center/right alignment is used.
-                                            |
-                                            | Without a real width, the box shrink-wraps to the text, so
-                                            | "centered" text only looks centered by coincidence (e.g. long
-                                            | placeholder text in the editor). Real, shorter DB values then
-                                            | appear to drift left because there's no actual box to align
-                                            | inside of.
-                                            |
-                                            | Fix: give it a real fixed-width box from its X position out
-                                            | to near the card's right edge, so alignment is stable no
-                                            | matter how long or short the value is.
-                                            |--------------------------------------------------------------------------
-                                            */
+                                           
 
                                             $autoWidth = max(0, $editorWidth - $left - 6);
 
