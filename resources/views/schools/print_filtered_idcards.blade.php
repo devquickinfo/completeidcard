@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,17 +6,34 @@
     <title>Filtered ID Cards - Print</title>
 
     <style>
-        * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        }
+        @php
+            $isVertical = strtolower(trim($orientation)) === 'vertical';
+        @endphp
+
+        /* =========================================================
+           PRINT PAGE
+           Vertical ID cards = A4 Landscape
+           Horizontal ID cards = A4 Portrait
+           ========================================================= */
 
         @page {
-            size: {{ $orientation === 'vertical' ? 'A4 landscape' : 'A4 portrait' }};
-            margin: 5mm;
+            size: A4 {{ $isVertical ? 'landscape' : 'portrait' }};
+            margin: 0;
+        }
+
+        /* =========================================================
+           GLOBAL RESET
+           ========================================================= */
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         html,
@@ -33,34 +47,47 @@
             font-family: Arial, Helvetica, sans-serif;
         }
 
+        /* =========================================================
+           PRINT BUTTON
+           ========================================================= */
+
         .print-button {
             display: block;
+
             margin: 15px auto;
             padding: 10px 25px;
+
             border: 0;
             border-radius: 5px;
+
             background: #147abb;
             color: #fff;
+
             cursor: pointer;
+
             font-size: 14px;
         }
 
+        /* =========================================================
+           PRINT INFORMATION
+           ========================================================= */
+
         .print-info {
             text-align: center;
+
             margin: 10px auto;
+
             font-size: 13px;
             color: #666;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | A4 PAGE
-        |--------------------------------------------------------------------------
-        */
+        /* =========================================================
+           A4 PAGE
+           ========================================================= */
 
         .a4-page {
-            width: 210mm;
-            height: 297mm;
+            width: {{ $isVertical ? '297mm' : '210mm' }};
+            height: {{ $isVertical ? '210mm' : '297mm' }};
 
             margin: 5mm auto;
             padding: 5mm;
@@ -81,35 +108,59 @@
             break-after: page;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | HORIZONTAL
-        |--------------------------------------------------------------------------
-        */
-
-        .a4-page.orientation-horizontal {
-            grid-template-columns: repeat(2, 98mm);
-            grid-template-rows: repeat(5, 55mm);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | VERTICAL
-        |--------------------------------------------------------------------------
-        */
+        /* =========================================================
+           VERTICAL ID CARD
+           
+           Card size:
+           Width  = 54mm
+           Height = 84mm
+           
+           A4 Landscape:
+           297mm × 210mm
+           
+           Printable area:
+           287mm × 200mm
+           
+           5 × 54mm = 270mm
+           4 × 3mm  = 12mm
+           Total    = 282mm
+           
+           2 × 84mm = 168mm
+           1 × 3mm  = 3mm
+           Total    = 171mm
+           ========================================================= */
 
         .a4-page.orientation-vertical {
-            grid-template-columns: repeat(3, 54mm);
-            grid-template-rows: repeat(3, 84mm);
+            width: 297mm;
+            height: 210mm;
+
+            padding: 5mm;
+
+            display: grid;
+
+            grid-template-columns: repeat(5, 54mm);
+            grid-template-rows: repeat(2, 84mm);
+
+            column-gap: 3mm;
+            row-gap: 3mm;
+
+            align-content: start;
+            justify-content: start;
+
+            overflow: hidden;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | PHYSICAL CARD CONTAINER
-        |--------------------------------------------------------------------------
-        */
+        /* Explicit size is IMPORTANT */
+        .a4-page.orientation-vertical .id-card-container {
+            width: 54mm;
+            height: 84mm;
 
-        .id-card-container {
+            min-width: 54mm;
+            max-width: 54mm;
+
+            min-height: 84mm;
+            max-height: 84mm;
+
             position: relative;
 
             overflow: hidden;
@@ -118,11 +169,70 @@
             break-inside: avoid;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | EDITOR CANVAS
-        |--------------------------------------------------------------------------
-        */
+        /* =========================================================
+           HORIZONTAL ID CARD
+           
+           Card size:
+           Width  = 98mm
+           Height = 55mm
+           
+           A4 Portrait:
+           210mm × 297mm
+           
+           Printable area:
+           200mm × 287mm
+           
+           2 × 98mm = 196mm
+           1 × 3mm  = 3mm
+           Total    = 199mm
+           
+           5 × 55mm = 275mm
+           4 × 3mm  = 12mm
+           Total    = 287mm
+           ========================================================= */
+
+        .a4-page.orientation-horizontal {
+            width: 210mm;
+            height: 297mm;
+
+            padding: 5mm;
+
+            display: grid;
+
+            grid-template-columns: repeat(2, 98mm);
+            grid-template-rows: repeat(5, 55mm);
+
+            column-gap: 3mm;
+            row-gap: 3mm;
+
+            align-content: start;
+            justify-content: start;
+
+            overflow: hidden;
+        }
+
+        /* Explicit size is IMPORTANT */
+        .a4-page.orientation-horizontal .id-card-container {
+            width: 98mm;
+            height: 55mm;
+
+            min-width: 98mm;
+            max-width: 98mm;
+
+            min-height: 55mm;
+            max-height: 55mm;
+
+            position: relative;
+
+            overflow: hidden;
+
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        /* =========================================================
+           ID CARD
+           ========================================================= */
 
         .id-card {
             position: absolute;
@@ -133,48 +243,74 @@
             overflow: hidden;
 
             transform-origin: top left;
+
+            page-break-inside: avoid;
+            break-inside: avoid;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | NO STUDENTS
-        |--------------------------------------------------------------------------
-        */
+        /* =========================================================
+           NO STUDENTS
+           ========================================================= */
 
         .no-students {
             padding: 40px;
+
             text-align: center;
+
             background: #fff;
+
             margin: 20px auto;
+
             border-radius: 5px;
+
             max-width: 600px;
-            box-shadow: 0 0 8px rgba(0, 0, 0, .15);
+
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
         }
 
         .no-students h3 {
             color: #d9534f;
+
             margin: 0 0 10px 0;
         }
 
         .no-students p {
             color: #666;
+
             margin: 0;
         }
 
+        /* =========================================================
+           SCREEN VIEW
+           ========================================================= */
+
         @media screen {
+
             .a4-page {
-                box-shadow: 0 0 8px rgba(0, 0, 0, .15);
+                box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
             }
+
         }
+
+        /* =========================================================
+           PRINT
+           ========================================================= */
 
         @media print {
 
+            @page {
+                size: A4 {{ $isVertical ? 'landscape' : 'portrait' }};
+                margin: 0;
+            }
+
             html,
             body {
-                width: 210mm;
-                height: 297mm;
-                margin: 0;
-                padding: 0;
+                width: {{ $isVertical ? '297mm' : '210mm' }};
+                height: {{ $isVertical ? '210mm' : '297mm' }};
+
+                margin: 0 !important;
+                padding: 0 !important;
+
                 background: #fff;
             }
 
@@ -183,17 +319,133 @@
                 display: none !important;
             }
 
-            .a4-page {
-                width: 210mm;
-                height: 297mm;
-                margin: 0;
-                padding: 5mm;
+            /* -----------------------------------------
+               A4 PAGE - PRINT
+               ----------------------------------------- */
 
-                box-shadow: none;
+            .a4-page {
+                width: {{ $isVertical ? '297mm' : '210mm' }} !important;
+                height: {{ $isVertical ? '210mm' : '297mm' }} !important;
+
+                margin: 0 !important;
+                padding: 5mm !important;
+
+                box-shadow: none !important;
 
                 page-break-after: always;
                 break-after: page;
+
+                overflow: hidden !important;
             }
+
+            /* -----------------------------------------
+               VERTICAL - PRINT
+               ----------------------------------------- */
+
+            .a4-page.orientation-vertical {
+                width: 297mm !important;
+                height: 210mm !important;
+
+                padding: 5mm !important;
+
+                display: grid !important;
+
+                grid-template-columns:
+                    54mm 54mm 54mm 54mm 54mm !important;
+
+                grid-template-rows:
+                    84mm 84mm !important;
+
+                column-gap: 3mm !important;
+                row-gap: 3mm !important;
+
+                align-content: start !important;
+                justify-content: start !important;
+
+                overflow: hidden !important;
+            }
+
+            .a4-page.orientation-vertical .id-card-container {
+                width: 54mm !important;
+                height: 84mm !important;
+
+                min-width: 54mm !important;
+                max-width: 54mm !important;
+
+                min-height: 84mm !important;
+                max-height: 84mm !important;
+
+                position: relative !important;
+
+                overflow: hidden !important;
+
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            /* -----------------------------------------
+               HORIZONTAL - PRINT
+               ----------------------------------------- */
+
+            .a4-page.orientation-horizontal {
+                width: 210mm !important;
+                height: 297mm !important;
+
+                padding: 5mm !important;
+
+                display: grid !important;
+
+                grid-template-columns:
+                    98mm 98mm !important;
+
+                grid-template-rows:
+                    55mm 55mm 55mm 55mm 55mm !important;
+
+                column-gap: 3mm !important;
+                row-gap: 3mm !important;
+
+                align-content: start !important;
+                justify-content: start !important;
+
+                overflow: hidden !important;
+            }
+
+            .a4-page.orientation-horizontal .id-card-container {
+                width: 98mm !important;
+                height: 55mm !important;
+
+                min-width: 98mm !important;
+                max-width: 98mm !important;
+
+                min-height: 55mm !important;
+                max-height: 55mm !important;
+
+                position: relative !important;
+
+                overflow: hidden !important;
+
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            /* -----------------------------------------
+               CARD
+               ----------------------------------------- */
+
+            .id-card {
+                position: absolute !important;
+
+                top: 0 !important;
+                left: 0 !important;
+
+                overflow: hidden !important;
+
+                transform-origin: top left !important;
+
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
         }
     </style>
 </head>
@@ -244,7 +496,7 @@
 
         if ($orientation === 'vertical') {
 
-            $cardsPerPage = 9;
+            $cardsPerPage = 10;
 
             $printWidthMm = 54;
             $printHeightMm = 84;
@@ -375,7 +627,6 @@
         */
 
         $tabledataHtmlRaw = $layout['tabledata'] ?? '';
-        
         $tablePos = $layout['tablePosition'] ?? [];
 
         $tableLeft   = isset($tablePos['left'])   ? (float) $tablePos['left']   : 30;
@@ -384,7 +635,6 @@
         $tableHeight = isset($tablePos['height']) ? (float) $tablePos['height'] : 0;
 
         $hasTableLayout = is_string($tabledataHtmlRaw) && trim(strip_tags($tabledataHtmlRaw)) !== '';
-
 
     @endphp
 
@@ -1143,6 +1393,8 @@
                                                 {{ $style }}
 
                                                 
+
+                                               
                                             "
                                         >
 
@@ -1483,7 +1735,7 @@
                                             'blood group' => 'blood_group',
                                             'student address' => 'student_address',
                                             'school address' => 'school_address',
-                                            'address' => 'school_address',
+                                            'address' => 'student_address',
                                             'school name' => 'school_name',
                                         ];
 

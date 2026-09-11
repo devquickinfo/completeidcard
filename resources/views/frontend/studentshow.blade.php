@@ -298,7 +298,7 @@
                                                     'blood group' => 'blood_group',
                                                     'student address' => 'student_address',
                                                     'school address' => 'school_address',
-                                                    'address' => 'school_address',
+                                                    'address' => 'student_address',
                                                     'school name' => 'school_name',
                                                 ];
 
@@ -312,34 +312,30 @@
                                                 $table = $dom->getElementsByTagName('table')->item(0);
 
                                                 if ($table) {
-                                                    $cells = $table->getElementsByTagName('td');
-                                                    $cellCount = $cells->length;
+                                                    $rows = $table->getElementsByTagName('tr');
 
-                                                    if ($cellCount === 1) {
-                                                        $cells->item(0)->nodeValue = $tablePlaceholderValues['student_name'] ?? '-';
-                                                    } else {
+                                                    foreach ($rows as $row) {
+                                                        $cells = $row->getElementsByTagName('td');
+                                                        $cellCount = $cells->length;
+
+                                                        if ($cellCount === 1) {
+                                                            $cells->item(0)->nodeValue = $tablePlaceholderValues['student_name'] ?? '-';
+                                                            continue;
+                                                        }
+
                                                         for ($i = 0; $i < $cellCount; $i++) {
                                                             $cell = $cells->item($i);
-
-                                                            if (!$cell) {
-                                                                continue;
-                                                            }
+                                                            if (!$cell) continue;
 
                                                             $cellText = $normalizeTableText($cell->textContent ?? '');
-
-                                                            if (!isset($labelMap[$cellText])) {
-                                                                continue;
-                                                            }
+                                                            if (!isset($labelMap[$cellText])) continue;
 
                                                             $mappedKey = $labelMap[$cellText];
                                                             $replacement = $tablePlaceholderValues[$mappedKey] ?? '';
 
                                                             for ($j = $i + 1; $j < $cellCount; $j++) {
                                                                 $valueCell = $cells->item($j);
-
-                                                                if (!$valueCell) {
-                                                                    continue;
-                                                                }
+                                                                if (!$valueCell) continue;
 
                                                                 $valueText = $normalizeTableText($valueCell->textContent ?? '');
 
@@ -806,30 +802,34 @@
                                                 $table = $dom->getElementsByTagName('table')->item(0);
 
                                                 if ($table) {
-                                                    $rows = $table->getElementsByTagName('tr');
+                                                    $cells = $table->getElementsByTagName('td');
+                                                    $cellCount = $cells->length;
 
-                                                    foreach ($rows as $row) {
-                                                        $cells = $row->getElementsByTagName('td');
-                                                        $cellCount = $cells->length;
-
-                                                        if ($cellCount === 1) {
-                                                            $cells->item(0)->nodeValue = $tablePlaceholderValues['student_name'] ?? '-';
-                                                            continue;
-                                                        }
-
+                                                    if ($cellCount === 1) {
+                                                        $cells->item(0)->nodeValue = $tablePlaceholderValues['student_name'] ?? '-';
+                                                    } else {
                                                         for ($i = 0; $i < $cellCount; $i++) {
                                                             $cell = $cells->item($i);
-                                                            if (!$cell) continue;
+
+                                                            if (!$cell) {
+                                                                continue;
+                                                            }
 
                                                             $cellText = $normalizeTableText($cell->textContent ?? '');
-                                                            if (!isset($labelMap[$cellText])) continue;
+
+                                                            if (!isset($labelMap[$cellText])) {
+                                                                continue;
+                                                            }
 
                                                             $mappedKey = $labelMap[$cellText];
                                                             $replacement = $tablePlaceholderValues[$mappedKey] ?? '';
 
                                                             for ($j = $i + 1; $j < $cellCount; $j++) {
                                                                 $valueCell = $cells->item($j);
-                                                                if (!$valueCell) continue;
+
+                                                                if (!$valueCell) {
+                                                                    continue;
+                                                                }
 
                                                                 $valueText = $normalizeTableText($valueCell->textContent ?? '');
 

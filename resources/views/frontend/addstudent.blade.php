@@ -371,7 +371,7 @@
                                                                         'blood group' => 'blood_group',
                                                                         'student address' => 'student_address',
                                                                         'school address' => 'school_address',
-                                                                        'address' => 'school_address',
+                                                                        'address' => 'student_address',
                                                                         'school name' => 'school_name',
                                                                     ];
 
