@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 11, 2026 at 09:56 AM
+-- Generation Time: Sep 11, 2026 at 12:22 PM
 -- Server version: 11.4.13-MariaDB
 -- PHP Version: 8.4.24
 
@@ -64,6 +64,32 @@ CREATE TABLE `cache_locks` (
   `owner` varchar(255) NOT NULL,
   `expiration` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `history`
+--
+
+CREATE TABLE `history` (
+  `id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `change` varchar(255) DEFAULT NULL,
+  `description` mediumtext DEFAULT NULL,
+  `class_id` int(11) DEFAULT NULL,
+  `school_id` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL,
+  `updated_at` timestamp NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `history`
+--
+
+INSERT INTO `history` (`id`, `student_id`, `change`, `description`, `class_id`, `school_id`, `created_at`, `updated_at`) VALUES
+(1, 8442, 'Photo Updated', 'Date: 2026-09-11 11:53:57\nPhoto: Updated\nOld Photo: (empty)\nNew Photo: students/38/student_8442_1789127637_6aa3ebd5c5333.jpg', 1, 38, '2026-09-11 11:53:57', '2026-09-11 11:53:57'),
+(2, 8442, 'Student Updated', 'Date: 2026-09-11 12:09:15\nDate of Birth: 2022-11-28 00:00:00 → 2022-11-28\nBlood Group: (empty) → A+', 1, 38, '2026-09-11 12:09:15', '2026-09-11 12:09:15'),
+(3, 8442, 'Photo Updated', 'Date: 2026-09-11 12:20:41\nPhoto: Updated\nOld Photo: students/38/student_8442_1789127637_6aa3ebd5c5333.jpg\nNew Photo: students/38/student_8442_1789129241_6aa3f21920361.jpg', 1, 38, '2026-09-11 12:20:41', '2026-09-11 12:20:41');
 
 -- --------------------------------------------------------
 
@@ -310,8 +336,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('2ibiAujqVUo0KgnNL3d9JlZlSOLNoWgYTkyU3uLJ', NULL, '34.150.174.58', 'Mozilla/5.0 (compatible; CMS-Checker/1.0; +https://example.com)', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiTkRDTzdCRXRDS1c4MEZsREk0a0NtMkJ3SnR1bjRCYWlVRFg4VUQ4YyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjQ6Imh0dHA6Ly9kZXYuaW5mb3Rhc2tzLmNvbSI7czo1OiJyb3V0ZSI7czo1OiJsb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1789120397),
-('dJbrL7vYc3ou4Z53fpHgZVm4MXvREjLh4AYjnPeM', 34, '49.43.1.129', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', 'YTo5OntzOjY6Il90b2tlbiI7czo0MDoiNGhSRlFRdkdVZEFqVkFYcFRIQWxweHBnc3ZiMnN6MlBYR2pFdkljVCI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czoxNDM6Imh0dHBzOi8vZGV2LmluZm90YXNrcy5jb20vaWRjYXJkL3ByaW50LWZpbHRlcmVkP2NsYXNzX2lkPSZvcmllbnRhdGlvbj12ZXJ0aWNhbCZwZXJfcGFnZT0xMCZwaG90bz1hdmFpbGFibGUmcHJpbnRlZD0mc2VjdGlvbl9pZD0mc3R1ZGVudF9zZWFyY2g9Ijt9czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzg6Imh0dHBzOi8vZGV2LmluZm90YXNrcy5jb20vc3R1ZGVudC9saXN0IjtzOjU6InJvdXRlIjtzOjEyOiJzdHVkZW50Lmxpc3QiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozNDtzOjc6InVzZXJfaWQiO2k6MzQ7czo0OiJyb2xlIjtzOjEwOiJzdXBlcmFkbWluIjtzOjk6InNjaG9vbF9pZCI7TjtzOjE0OiJ2aWV3aW5nX3NjaG9vbCI7aTozODt9', 1789120228);
+('dJbrL7vYc3ou4Z53fpHgZVm4MXvREjLh4AYjnPeM', 34, '49.43.1.129', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', 'YTo5OntzOjY6Il90b2tlbiI7czo0MDoiNGhSRlFRdkdVZEFqVkFYcFRIQWxweHBnc3ZiMnN6MlBYR2pFdkljVCI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czoxNDM6Imh0dHBzOi8vZGV2LmluZm90YXNrcy5jb20vaWRjYXJkL3ByaW50LWZpbHRlcmVkP2NsYXNzX2lkPSZvcmllbnRhdGlvbj12ZXJ0aWNhbCZwZXJfcGFnZT0xMCZwaG90bz1hdmFpbGFibGUmcHJpbnRlZD0mc2VjdGlvbl9pZD0mc3R1ZGVudF9zZWFyY2g9Ijt9czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDc6Imh0dHBzOi8vZGV2LmluZm90YXNrcy5jb20vc3R1ZGVudHMvODQ0Mi9oaXN0b3J5IjtzOjU6InJvdXRlIjtzOjE1OiJzdHVkZW50Lmhpc3RvcnkiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozNDtzOjc6InVzZXJfaWQiO2k6MzQ7czo0OiJyb2xlIjtzOjEwOiJzdXBlcmFkbWluIjtzOjk6InNjaG9vbF9pZCI7TjtzOjE0OiJ2aWV3aW5nX3NjaG9vbCI7aTozODt9', 1789129245),
+('iJ4hJat1EGSpAQ0sROVfdbqEXBSeKlCpFwrsbhZe', NULL, '34.86.182.77', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiT0ZjSnFIVHFvTGJocm9iYVE2TGE1ZmFnbHRVSndQOWdpc3p0YWVBcCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjQ6Imh0dHA6Ly9kZXYuaW5mb3Rhc2tzLmNvbSI7czo1OiJyb3V0ZSI7czo1OiJsb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1789127578);
 
 -- --------------------------------------------------------
 
@@ -8599,7 +8625,7 @@ INSERT INTO `students` (`id`, `school_id`, `admission_no`, `first_name`, `last_n
 (8439, 35, 'ADM1788783438284', 'TAHIR MANSURI', NULL, 'SAMEER MANSURI', '', '2022-09-09', 1, 1, NULL, NULL, NULL, '7976774056, 9753798859', '7, SHAHI BAG COLONY, KHAJRANA', NULL, '2026-09-07 12:17:18', 0, 0, NULL, NULL, NULL, NULL, 'no', '2026-09-07 12:17:18'),
 (8440, 35, 'ADM1788783438784', 'WAFIYA FATMA ANSARI', NULL, 'MOHMMED IMRAN ANSARI', '', '2023-05-11', 1, 1, NULL, NULL, NULL, '9752938778, 8516023565', '36,SHAHI BAG, COLONY, KHAJRANA', NULL, '2026-09-07 12:17:18', 0, 0, NULL, NULL, NULL, NULL, 'no', '2026-09-07 12:17:18'),
 (8441, 35, 'ADM1788783438803', 'AJLAN KHAN', NULL, 'HAFIJ KHAN', '', '2022-02-24', 1, 1, NULL, NULL, NULL, '7869460234', '4, TANJEEM NAGAR, KHAJRANA', NULL, '2026-09-07 12:17:18', 0, 0, NULL, NULL, NULL, NULL, 'no', '2026-09-07 12:17:18'),
-(8442, 38, 'ADM178878811378', 'ABDUL BURHAN', NULL, 'SIDDHIK KHAN', '', '2022-11-28', 1, 1, NULL, NULL, NULL, '7247558263', '84-85,SHAHI BAAG KHAJRANA', NULL, '2026-09-07 13:35:13', 0, 0, NULL, NULL, NULL, NULL, 'no', '2026-09-07 13:35:13'),
+(8442, 38, 'ADM178878811378', 'ABDUL BURHAN', NULL, 'SIDDHIK KHAN', NULL, '2022-11-28', 1, 1, NULL, NULL, 'A+', '7247558263', '84-85,SHAHI BAAG KHAJRANA', 'students/38/student_8442_1789129241_6aa3f21920361.jpg', '2026-09-07 13:35:13', 0, 0, NULL, 'Mother', NULL, NULL, 'yes', '2026-09-11 12:20:41'),
 (8443, 38, 'ADM178878811366', 'AKLEEMA MANSURI', NULL, 'JUNED HUSSAIN', '', '2022-12-30', 1, 1, NULL, NULL, NULL, '9174417267, 7697267232', 'MAMTA COLONY, KHAJRANA', NULL, '2026-09-07 13:35:13', 0, 0, NULL, NULL, NULL, NULL, 'no', '2026-09-07 13:35:13'),
 (8444, 38, 'ADM178878811395', 'ANAYA BI', NULL, 'ANISH KHA MANSURI', '', '2023-06-20', 1, 1, NULL, NULL, NULL, NULL, 'SHAHI BAG COLONY, KHAJRANA', NULL, '2026-09-07 13:35:13', 0, 0, NULL, NULL, NULL, NULL, 'no', '2026-09-07 13:35:13'),
 (8445, 38, 'ADM178878811373', 'ATIF', NULL, 'ARBAAZ MOHAMMED', '', NULL, 1, 1, NULL, NULL, NULL, '9588819450, 7568930010', 'SHAHI BAG COLONY, KHAJRANA', NULL, '2026-09-07 13:35:13', 0, 0, NULL, NULL, NULL, NULL, 'no', '2026-09-07 13:35:13'),
@@ -8943,6 +8969,12 @@ ALTER TABLE `cache_locks`
   ADD KEY `cache_locks_expiration_index` (`expiration`);
 
 --
+-- Indexes for table `history`
+--
+ALTER TABLE `history`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `houses`
 --
 ALTER TABLE `houses`
@@ -9040,6 +9072,12 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `applicable_user`
 --
 ALTER TABLE `applicable_user`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `history`
+--
+ALTER TABLE `history`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
