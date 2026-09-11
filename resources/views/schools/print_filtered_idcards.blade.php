@@ -5,26 +5,14 @@
     <meta charset="UTF-8">
     <title>Filtered ID Cards - Print</title>
 
-    <style>
+     <style>
         @php
             $isVertical = strtolower(trim($orientation)) === 'vertical';
         @endphp
-
-        /* =========================================================
-           PRINT PAGE
-           Vertical ID cards = A4 Landscape
-           Horizontal ID cards = A4 Portrait
-           ========================================================= */
-
         @page {
             size: A4 {{ $isVertical ? 'landscape' : 'portrait' }};
             margin: 0;
         }
-
-        /* =========================================================
-           GLOBAL RESET
-           ========================================================= */
-
         *,
         *::before,
         *::after {
@@ -46,32 +34,17 @@
             background: #eeeeee;
             font-family: Arial, Helvetica, sans-serif;
         }
-
-        /* =========================================================
-           PRINT BUTTON
-           ========================================================= */
-
         .print-button {
             display: block;
-
             margin: 15px auto;
             padding: 10px 25px;
-
             border: 0;
             border-radius: 5px;
-
             background: #147abb;
             color: #fff;
-
             cursor: pointer;
-
             font-size: 14px;
         }
-
-        /* =========================================================
-           PRINT INFORMATION
-           ========================================================= */
-
         .print-info {
             text-align: center;
 
@@ -80,116 +53,63 @@
             font-size: 13px;
             color: #666;
         }
-
-        /* =========================================================
-           A4 PAGE
-           ========================================================= */
-
         .a4-page {
             width: {{ $isVertical ? '297mm' : '210mm' }};
             height: {{ $isVertical ? '210mm' : '297mm' }};
-
             margin: 5mm auto;
             padding: 5mm;
-
             display: grid;
-
             column-gap: 3mm;
             row-gap: 3mm;
-
             align-content: start;
             justify-content: start;
-
             background: #fff;
-
             overflow: hidden;
-
             page-break-after: always;
             break-after: page;
         }
 
-        /* =========================================================
-           VERTICAL ID CARD
-           
-           Card size:
-           Width  = 54mm
-           Height = 84mm
-           
-           A4 Landscape:
-           297mm × 210mm
-           
-           Printable area:
-           287mm × 200mm
-           
-           5 × 54mm = 270mm
-           4 × 3mm  = 12mm
-           Total    = 282mm
-           
-           2 × 84mm = 168mm
-           1 × 3mm  = 3mm
-           Total    = 171mm
-           ========================================================= */
+        
 
         .a4-page.orientation-vertical {
-            width: 297mm;
-            height: 210mm;
+            width: 297mm !important;
+            height: 210mm !important;
 
-            padding: 5mm;
+            margin: 0 !important;
+            padding: 14mm 7.5mm !important;
 
-            display: grid;
+            display: grid !important;
 
-            grid-template-columns: repeat(5, 54mm);
-            grid-template-rows: repeat(2, 84mm);
+            grid-template-columns: repeat(5, 54mm) !important;
+            grid-template-rows: repeat(2, 84mm) !important;
 
-            column-gap: 3mm;
-            row-gap: 3mm;
+            column-gap: 3mm !important;
+            row-gap: 14mm !important;
 
-            align-content: start;
-            justify-content: start;
+            align-content: start !important;
+            justify-content: start !important;
 
-            overflow: hidden;
+            overflow: hidden !important;
         }
 
-        /* Explicit size is IMPORTANT */
         .a4-page.orientation-vertical .id-card-container {
-            width: 54mm;
-            height: 84mm;
+            width: 54mm !important;
+            height: 84mm !important;
 
-            min-width: 54mm;
-            max-width: 54mm;
+            min-width: 54mm !important;
+            max-width: 54mm !important;
 
-            min-height: 84mm;
-            max-height: 84mm;
+            min-height: 84mm !important;
+            max-height: 84mm !important;
 
-            position: relative;
+            position: relative !important;
 
-            overflow: hidden;
+            overflow: hidden !important;
 
-            page-break-inside: avoid;
-            break-inside: avoid;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
         }
-
-        /* =========================================================
-           HORIZONTAL ID CARD
-           
-           Card size:
-           Width  = 98mm
-           Height = 55mm
-           
-           A4 Portrait:
-           210mm × 297mm
-           
-           Printable area:
-           200mm × 287mm
-           
-           2 × 98mm = 196mm
-           1 × 3mm  = 3mm
-           Total    = 199mm
-           
-           5 × 55mm = 275mm
-           4 × 3mm  = 12mm
-           Total    = 287mm
-           ========================================================= */
+       
 
         .a4-page.orientation-horizontal {
             width: 210mm;
@@ -211,7 +131,7 @@
             overflow: hidden;
         }
 
-        /* Explicit size is IMPORTANT */
+    
         .a4-page.orientation-horizontal .id-card-container {
             width: 98mm;
             height: 55mm;
@@ -230,9 +150,7 @@
             break-inside: avoid;
         }
 
-        /* =========================================================
-           ID CARD
-           ========================================================= */
+        
 
         .id-card {
             position: absolute;
@@ -248,9 +166,7 @@
             break-inside: avoid;
         }
 
-        /* =========================================================
-           NO STUDENTS
-           ========================================================= */
+        
 
         .no-students {
             padding: 40px;
@@ -280,9 +196,7 @@
             margin: 0;
         }
 
-        /* =========================================================
-           SCREEN VIEW
-           ========================================================= */
+       
 
         @media screen {
 
@@ -292,9 +206,7 @@
 
         }
 
-        /* =========================================================
-           PRINT
-           ========================================================= */
+        
 
         @media print {
 
@@ -319,9 +231,7 @@
                 display: none !important;
             }
 
-            /* -----------------------------------------
-               A4 PAGE - PRINT
-               ----------------------------------------- */
+          
 
             .a4-page {
                 width: {{ $isVertical ? '297mm' : '210mm' }} !important;
@@ -338,26 +248,22 @@
                 overflow: hidden !important;
             }
 
-            /* -----------------------------------------
-               VERTICAL - PRINT
-               ----------------------------------------- */
+            
 
             .a4-page.orientation-vertical {
                 width: 297mm !important;
                 height: 210mm !important;
 
-                padding: 5mm !important;
+                margin: 0 !important;
+                padding: 14mm 7.5mm !important;
 
                 display: grid !important;
 
-                grid-template-columns:
-                    54mm 54mm 54mm 54mm 54mm !important;
-
-                grid-template-rows:
-                    84mm 84mm !important;
+                grid-template-columns: repeat(5, 54mm) !important;
+                grid-template-rows: repeat(2, 84mm) !important;
 
                 column-gap: 3mm !important;
-                row-gap: 3mm !important;
+                row-gap: 14mm !important;
 
                 align-content: start !important;
                 justify-content: start !important;
@@ -383,9 +289,7 @@
                 break-inside: avoid !important;
             }
 
-            /* -----------------------------------------
-               HORIZONTAL - PRINT
-               ----------------------------------------- */
+          
 
             .a4-page.orientation-horizontal {
                 width: 210mm !important;
@@ -428,9 +332,7 @@
                 break-inside: avoid !important;
             }
 
-            /* -----------------------------------------
-               CARD
-               ----------------------------------------- */
+           
 
             .id-card {
                 position: absolute !important;
