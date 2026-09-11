@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,11 +10,15 @@
 
     <style>
         * {
-            box-sizing: border-box;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
         }
 
         @page {
-            size: A4 portrait;
+            size: {{ $orientation === 'vertical' ? 'A4 landscape' : 'A4 portrait' }};
             margin: 5mm;
         }
 
@@ -368,6 +375,7 @@
         */
 
         $tabledataHtmlRaw = $layout['tabledata'] ?? '';
+        
         $tablePos = $layout['tablePosition'] ?? [];
 
         $tableLeft   = isset($tablePos['left'])   ? (float) $tablePos['left']   : 30;
@@ -376,6 +384,7 @@
         $tableHeight = isset($tablePos['height']) ? (float) $tablePos['height'] : 0;
 
         $hasTableLayout = is_string($tabledataHtmlRaw) && trim(strip_tags($tabledataHtmlRaw)) !== '';
+
 
     @endphp
 
@@ -1488,34 +1497,30 @@
                                         $table = $dom->getElementsByTagName('table')->item(0);
 
                                         if ($table) {
-                                            $cells = $table->getElementsByTagName('td');
-                                            $cellCount = $cells->length;
+                                            $rows = $table->getElementsByTagName('tr');
 
-                                            if ($cellCount === 1) {
-                                                $cells->item(0)->nodeValue = $tablePlaceholderValues['student_name'] ?? '-';
-                                            } else {
+                                            foreach ($rows as $row) {
+                                                $cells = $row->getElementsByTagName('td');
+                                                $cellCount = $cells->length;
+
+                                                if ($cellCount === 1) {
+                                                    $cells->item(0)->nodeValue = $tablePlaceholderValues['student_name'] ?? '-';
+                                                    continue;
+                                                }
+
                                                 for ($i = 0; $i < $cellCount; $i++) {
                                                     $cell = $cells->item($i);
-
-                                                    if (!$cell) {
-                                                        continue;
-                                                    }
+                                                    if (!$cell) continue;
 
                                                     $cellText = $normalizeTableText($cell->textContent ?? '');
-
-                                                    if (!isset($labelMap[$cellText])) {
-                                                        continue;
-                                                    }
+                                                    if (!isset($labelMap[$cellText])) continue;
 
                                                     $mappedKey = $labelMap[$cellText];
                                                     $replacement = $tablePlaceholderValues[$mappedKey] ?? '';
 
                                                     for ($j = $i + 1; $j < $cellCount; $j++) {
                                                         $valueCell = $cells->item($j);
-
-                                                        if (!$valueCell) {
-                                                            continue;
-                                                        }
+                                                        if (!$valueCell) continue;
 
                                                         $valueText = $normalizeTableText($valueCell->textContent ?? '');
 
