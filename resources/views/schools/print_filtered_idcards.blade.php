@@ -1133,9 +1133,7 @@
                                             style="
                                                 {{ $style }}
 
-                                                object-fit:contain;
-
-                                                object-position:center;
+                                                
                                             "
                                         >
 
