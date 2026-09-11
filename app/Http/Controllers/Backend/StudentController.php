@@ -15,6 +15,7 @@ use App\Models\SelectedSample;
 use App\Models\UploadSample;
 use App\Models\Mainidcard;
 use App\Helpers\ImageHelper;
+use App\Models\History;
 
 
 class StudentController extends Controller
@@ -273,9 +274,102 @@ class StudentController extends Controller
      * Update the specified resource in storage.
      */
     
+    // public function update(Request $request, string $id)
+    // {
+    //     $student = Student::findOrFail($id);
+    //     $validator = Validator::make($request->all(), [
+    //         //'admission_no'  => 'required',
+    //         'first_name'    => 'required',
+    //         'father_name'   => 'required',
+    //         'date_of_birth' => 'required|date',
+    //         //'gender'        => 'required',
+    //         'class_id'      => 'required',
+    //         'section_id'    => 'required',
+    //         'photo'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return redirect()->back()->withErrors($validator)->withInput();
+    //     }
+    //     $school_id = $student->school_id ?? Auth::user()->school_id ?? session('viewing_school');
+    //     if (!$school_id) {
+    //         return redirect()->back()->with('error', 'School ID not found.')->withInput();
+    //     }
+    //     $photo = $student->photo;
+    //     if ($request->filled('photo_data')) {
+    //     if (
+    //         $photo &&
+    //         Storage::disk('public')->exists($photo)
+    //     ) {
+    //         Storage::disk('public')->delete($photo);
+    //     }
+
+    //         try {
+    //             $photo = ImageHelper::saveImageAsJpg(
+    //                 $request->input('photo_data'),
+    //                 "students/{$school_id}",
+    //                 "student_{$student->id}"
+    //             );
+    //         } catch (\Exception $e) {
+    //             return redirect()
+    //                 ->back()
+    //                 ->with('error', 'Invalid camera image.')
+    //                 ->withInput();
+    //         }
+    //     }
+    //     elseif ($request->hasFile('photo')) {
+    //         if (
+    //             $photo &&
+    //             Storage::disk('public')->exists($photo)
+    //         ) {
+    //             Storage::disk('public')->delete($photo);
+    //         }
+    //         $uploadedFile = $request->file('photo');
+    //         $imageName = time() . '_' . uniqid() . '.' .
+    //             $uploadedFile->getClientOriginalExtension();
+    //         $imagePath = "students/$school_id/$imageName";
+    //         $uploadedFile->storeAs(
+    //             "students/$school_id",
+    //             $imageName,
+    //             'public'
+    //         );
+    //         $photo = $imagePath;
+    //     }
+    //     $className=StudentClass::where('id',$request->class_id)->value('name');
+    //     $SectionName=Section::where('id',$request->section_id)->value('name');
+    //     $student->update([
+    //         'admission_no'  => $request->admission_no,
+    //         'first_name'    => $request->first_name,
+    //         'last_name'     => $request->last_name,
+    //         'father_name'   => $request->father_name,
+    //         'address'       => $request->address,
+    //         'gender'        => $request->gender,
+    //         'date_of_birth' => $request->date_of_birth,
+    //         'blood_group'   => $request->blood_group,
+    //         'phone'         => $request->phone,
+    //         'class_id'      => $request->class_id,
+    //         'section_id'    => $request->section_id,
+    //         'photo'         => $photo,
+    //         'mother_name'   => $request->mother_name,
+    //         'class_name'    => $className,
+    //         'section'       => $SectionName,
+    //     ]);
+    //     return redirect()->route('schools.classes.students', [
+    //                'school' => $student->school_id
+    //                 ?? Auth::user()->school_id
+    //                 ?? session('viewing_school'),
+    //             'class' => $student->class_id,
+    //     ])->with('success', 'Student updated successfully.');
+    // }
     public function update(Request $request, string $id)
     {
         $student = Student::findOrFail($id);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Validation
+        |--------------------------------------------------------------------------
+        */
         $validator = Validator::make($request->all(), [
             //'admission_no'  => 'required',
             'first_name'    => 'required',
@@ -288,54 +382,275 @@ class StudentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-        $school_id = $student->school_id ?? Auth::user()->school_id ?? session('viewing_school');
-        if (!$school_id) {
-            return redirect()->back()->with('error', 'School ID not found.')->withInput();
-        }
-        $photo = $student->photo;
-        if ($request->filled('photo_data')) {
-        if (
-            $photo &&
-            Storage::disk('public')->exists($photo)
-        ) {
-            Storage::disk('public')->delete($photo);
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
         }
 
-            try {
-                $photo = ImageHelper::saveImageAsJpg(
-                    $request->input('photo_data'),
-                    "students/{$school_id}",
-                    "student_{$student->id}"
-                );
-            } catch (\Exception $e) {
-                return redirect()
-                    ->back()
-                    ->with('error', 'Invalid camera image.')
-                    ->withInput();
-            }
+        /*
+        |--------------------------------------------------------------------------
+        | School ID
+        |--------------------------------------------------------------------------
+        */
+        $school_id = $student->school_id
+            ?? Auth::user()->school_id
+            ?? session('viewing_school');
+
+        if (!$school_id) {
+            return redirect()
+                ->back()
+                ->with('error', 'School ID not found.')
+                ->withInput();
         }
-        elseif ($request->hasFile('photo')) {
+
+        /*
+        |--------------------------------------------------------------------------
+        | IMPORTANT:
+        | Check whether ID card was already printed BEFORE update
+        |--------------------------------------------------------------------------
+        */
+        $wasIdCardPrinted = strtolower(trim((string) $student->idcardprinted)) === 'yes';
+
+        /*
+        |--------------------------------------------------------------------------
+        | Get OLD class and section
+        |--------------------------------------------------------------------------
+        */
+        $oldClassId = $student->class_id;
+        $oldSectionId = $student->section_id;
+
+        $oldClassName = StudentClass::where('id', $oldClassId)
+            ->value('name');
+
+        $oldSectionName = Section::where('id', $oldSectionId)
+            ->value('name');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Get NEW class and section
+        |--------------------------------------------------------------------------
+        */
+        $className = StudentClass::where('id', $request->class_id)
+            ->value('name');
+
+        $SectionName = Section::where('id', $request->section_id)
+            ->value('name');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Prepare changes
+        |--------------------------------------------------------------------------
+        */
+        $changes = [];
+
+        /*
+        |--------------------------------------------------------------------------
+        | Helper - add only changed values
+        |--------------------------------------------------------------------------
+        */
+        $addChange = function ($label, $oldValue, $newValue) use (&$changes) {
+
+            $oldValue = $oldValue ?? '';
+            $newValue = $newValue ?? '';
+
+            if ((string) $oldValue !== (string) $newValue) {
+
+                $oldDisplay = $oldValue === ''
+                    ? '(empty)'
+                    : $oldValue;
+
+                $newDisplay = $newValue === ''
+                    ? '(empty)'
+                    : $newValue;
+
+                $changes[] = "{$label}: {$oldDisplay} → {$newDisplay}";
+            }
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Compare Student Fields
+        |--------------------------------------------------------------------------
+        */
+        $addChange(
+            'Admission No',
+            $student->admission_no,
+            $request->admission_no
+        );
+
+        $addChange(
+            'First Name',
+            $student->first_name,
+            $request->first_name
+        );
+
+        $addChange(
+            'Last Name',
+            $student->last_name,
+            $request->last_name
+        );
+
+        $addChange(
+            'Father Name',
+            $student->father_name,
+            $request->father_name
+        );
+
+        $addChange(
+            'Mother Name',
+            $student->mother_name,
+            $request->mother_name
+        );
+
+        $addChange(
+            'Address',
+            $student->address,
+            $request->address
+        );
+
+        $addChange(
+            'Gender',
+            $student->gender,
+            $request->gender
+        );
+
+        $addChange(
+            'Date of Birth',
+            $student->date_of_birth,
+            $request->date_of_birth
+        );
+
+        $addChange(
+            'Blood Group',
+            $student->blood_group,
+            $request->blood_group
+        );
+
+        $addChange(
+            'Phone',
+            $student->phone,
+            $request->phone
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Class
+        |--------------------------------------------------------------------------
+        */
+        if ((string) $oldClassId !== (string) $request->class_id) {
+
+            $oldDisplay = $oldClassName ?: ($oldClassId ?: '(empty)');
+            $newDisplay = $className ?: ($request->class_id ?: '(empty)');
+
+            $changes[] = "Class: {$oldDisplay} → {$newDisplay}";
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Section
+        |--------------------------------------------------------------------------
+        */
+        if ((string) $oldSectionId !== (string) $request->section_id) {
+
+            $oldDisplay = $oldSectionName ?: ($oldSectionId ?: '(empty)');
+            $newDisplay = $SectionName ?: ($request->section_id ?: '(empty)');
+
+            $changes[] = "Section: {$oldDisplay} → {$newDisplay}";
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Existing Photo
+        |--------------------------------------------------------------------------
+        */
+        $photo = $student->photo;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Camera Photo
+        |--------------------------------------------------------------------------
+        */
+        if ($request->filled('photo_data')) {
+
+            /*
+            | Delete old photo
+            */
             if (
                 $photo &&
                 Storage::disk('public')->exists($photo)
             ) {
                 Storage::disk('public')->delete($photo);
             }
+
+            try {
+
+                $photo = ImageHelper::saveImageAsJpg(
+                    $request->input('photo_data'),
+                    "students/{$school_id}",
+                    "student_{$student->id}"
+                );
+
+            } catch (\Exception $e) {
+
+                return redirect()
+                    ->back()
+                    ->with('error', 'Invalid camera image.')
+                    ->withInput();
+            }
+
+            /*
+            | Track photo change
+            */
+            $changes[] = "Photo: Updated";
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Uploaded Photo
+        |--------------------------------------------------------------------------
+        */
+        elseif ($request->hasFile('photo')) {
+
+            /*
+            | Delete old photo
+            */
+            if (
+                $photo &&
+                Storage::disk('public')->exists($photo)
+            ) {
+                Storage::disk('public')->delete($photo);
+            }
+
             $uploadedFile = $request->file('photo');
-            $imageName = time() . '_' . uniqid() . '.' .
-                $uploadedFile->getClientOriginalExtension();
+
+            $imageName = time()
+                . '_'
+                . uniqid()
+                . '.'
+                . $uploadedFile->getClientOriginalExtension();
+
             $imagePath = "students/$school_id/$imageName";
+
             $uploadedFile->storeAs(
                 "students/$school_id",
                 $imageName,
                 'public'
             );
+
             $photo = $imagePath;
+
+            /*
+            | Track photo change
+            */
+            $changes[] = "Photo: Updated";
         }
-        $className=StudentClass::where('id',$request->class_id)->value('name');
-        $SectionName=Section::where('id',$request->section_id)->value('name');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Update Student
+        |--------------------------------------------------------------------------
+        */
         $student->update([
             'admission_no'  => $request->admission_no,
             'first_name'    => $request->first_name,
@@ -353,11 +668,43 @@ class StudentController extends Controller
             'class_name'    => $className,
             'section'       => $SectionName,
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Save History
+        |
+        | ONLY if:
+        | 1. ID card was already printed
+        | 2. Something actually changed
+        |--------------------------------------------------------------------------
+        */
+        if ($wasIdCardPrinted && !empty($changes)) {
+
+            $description =
+                "Date: " . now()->format('Y-m-d H:i:s') . "\n" .
+                implode("\n", $changes);
+
+            History::create([
+                'student_id'  => $student->id,
+                'change'      => 'Student Updated',
+                'description' => $description,
+                'class_id'    => $student->class_id,
+                'school_id'   => $school_id,
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Redirect
+        |--------------------------------------------------------------------------
+        */
         return redirect()->route('schools.classes.students', [
-                   'school' => $student->school_id
-                    ?? Auth::user()->school_id
-                    ?? session('viewing_school'),
-                'class' => $student->class_id,
+            'school' => $student->school_id
+                ?? Auth::user()->school_id
+                ?? session('viewing_school'),
+
+            'class' => $student->class_id,
+
         ])->with('success', 'Student updated successfully.');
     }
 
@@ -486,55 +833,61 @@ class StudentController extends Controller
         );
     }
    
+    
     // public function capturePhoto(Request $request, string $id)
     // {
     //     $student = Student::findOrFail($id);
+
     //     $request->validate([
     //         'photo_data' => 'required|string',
     //     ]);
+
     //     $school_id = $student->school_id
     //         ?? Auth::user()->school_id
     //         ?? session('viewing_school');
+
     //     if (!$school_id) {
     //         return response()->json([
     //             'success' => false,
     //             'message' => 'School ID not found.'
     //         ], 422);
     //     }
-    //     if (
-    //         $student->photo &&
-    //         Storage::disk('public')->exists($student->photo)
-    //     ) {
-    //         Storage::disk('public')->delete($student->photo);
-    //     }
-    //     $image = $request->input('photo_data');
-    //     $image = preg_replace(
-    //         '/^data:image\/\w+;base64,/',
-    //         '',
-    //         $image
-    //     );
-    //     $image = str_replace(' ', '+', $image);
-    //     $imageData = base64_decode($image, true);
-    //     if ($imageData === false) {
+
+    //     try {
+
+    //         // Save as JPG and <= 1 MB
+    //         $imagePath =  ImageHelper::saveImageAsJpg(
+    //             $request->input('photo_data'),
+    //             "students/{$school_id}",
+    //             "student_{$student->id}"
+    //         );
+
+    //         // Delete old photo
+    //         if (
+    //             $student->photo &&
+    //             Storage::disk('public')->exists($student->photo)
+    //         ) {
+    //             Storage::disk('public')->delete($student->photo);
+    //         }
+
+    //         // Update student
+    //         $student->update([
+    //             'photo' => $imagePath,
+    //         ]);
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Photo captured successfully.',
+    //             'photo' => asset('storage/' . $imagePath),
+    //         ]);
+
+    //     } catch (\Exception $e) {
+
     //         return response()->json([
     //             'success' => false,
-    //             'message' => 'Invalid camera image.'
+    //             'message' => $e->getMessage(),
     //         ], 422);
     //     }
-    //     $imageName = time() . '_' . $student->id . '_' . uniqid() . '.png';
-    //     $imagePath = "students/$school_id/$imageName";
-    //     Storage::disk('public')->put(
-    //         $imagePath,
-    //         $imageData
-    //     );
-    //     $student->update([
-    //         'photo' => $imagePath,
-    //     ]);
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Photo captured successfully.',
-    //         'photo'   => asset('storage/' . $imagePath),
-    //     ]);
     // }
     public function capturePhoto(Request $request, string $id)
     {
@@ -555,32 +908,83 @@ class StudentController extends Controller
             ], 422);
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Check ID card printed status BEFORE updating
+        |--------------------------------------------------------------------------
+        */
+        $wasIdCardPrinted = strtolower(
+            trim((string) $student->idcardprinted)
+        ) === 'yes';
+
+        /*
+        |--------------------------------------------------------------------------
+        | Keep old photo
+        |--------------------------------------------------------------------------
+        */
+        $oldPhoto = $student->photo;
+
         try {
 
-            // Save as JPG and <= 1 MB
-            $imagePath =  ImageHelper::saveImageAsJpg(
+            /*
+            |--------------------------------------------------------------------------
+            | Save new photo as JPG
+            |--------------------------------------------------------------------------
+            */
+            $imagePath = ImageHelper::saveImageAsJpg(
                 $request->input('photo_data'),
                 "students/{$school_id}",
                 "student_{$student->id}"
             );
 
-            // Delete old photo
+            /*
+            |--------------------------------------------------------------------------
+            | Delete old photo
+            |--------------------------------------------------------------------------
+            */
             if (
-                $student->photo &&
-                Storage::disk('public')->exists($student->photo)
+                $oldPhoto &&
+                Storage::disk('public')->exists($oldPhoto)
             ) {
-                Storage::disk('public')->delete($student->photo);
+                Storage::disk('public')->delete($oldPhoto);
             }
 
-            // Update student
+            /*
+            |--------------------------------------------------------------------------
+            | Update student photo
+            |--------------------------------------------------------------------------
+            */
             $student->update([
                 'photo' => $imagePath,
             ]);
 
+            /*
+            |--------------------------------------------------------------------------
+            | Create history ONLY when ID card was already printed
+            |--------------------------------------------------------------------------
+            */
+            if ($wasIdCardPrinted) {
+
+                $description = implode("\n", [
+                    'Date: ' . now()->format('Y-m-d H:i:s'),
+                    'Photo: Updated',
+                    'Old Photo: ' . ($oldPhoto ?: '(empty)'),
+                    'New Photo: ' . $imagePath,
+                ]);
+
+                History::create([
+                    'student_id'  => $student->id,
+                    'change'      => 'Photo Updated',
+                    'description' => $description,
+                    'class_id'    => $student->class_id,
+                    'school_id'   => $school_id,
+                ]);
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Photo captured successfully.',
-                'photo' => asset('storage/' . $imagePath),
+                'photo'   => asset('storage/' . $imagePath),
             ]);
 
         } catch (\Exception $e) {
@@ -591,6 +995,8 @@ class StudentController extends Controller
             ], 422);
         }
     }
+
+
     public function cardStatus(string $id)
     {
         $schooleditid=Student::where('id',$id)->value('school_id');
@@ -708,6 +1114,20 @@ class StudentController extends Controller
         }
 
         return view('frontend.studentpartials.id-card-preview', compact('student', 'orientation'));
+    }
+
+    public function history(string $id)
+    {
+        $student = Student::findOrFail($id);
+
+        $histories = History::where('student_id', $student->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('frontend.history', compact(
+            'student',
+            'histories'
+        ));
     }
 
 

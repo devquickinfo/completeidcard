@@ -114,11 +114,7 @@ Route::middleware('auth')->group(function () {
     Route::get('idcard-grid', [IdCardController::class, 'IdCardGrid'])->name('idcard.grid');
 
 
-
-
-
-
-
+    Route::get('/students/{id}/history',[StudentController::class, 'history'])->name('student.history');
 
 
     Route::get('/card/{schoolId}/{orientation}/edit', [MainidcardController::class, 'edit'])

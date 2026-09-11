@@ -34,9 +34,15 @@
             background: #eeeeee;
             font-family: Arial, Helvetica, sans-serif;
         }
-        .print-button {
-            display: block;
+         .print-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
             margin: 15px auto;
+        }
+
+        .print-button {
             padding: 10px 25px;
             border: 0;
             border-radius: 5px;
@@ -44,6 +50,12 @@
             color: #fff;
             cursor: pointer;
             font-size: 14px;
+        }
+
+        @media print {
+            .print-buttons {
+                display: none;
+            }
         }
         .print-info {
             text-align: center;
@@ -354,9 +366,17 @@
 
 <body>
 
-<button class="print-button" onclick="window.print()">
-    🖨 Print ID Cards
-</button>
+<div class="print-buttons">
+
+    <button type="button" class="print-button" onclick="window.print()">
+        🖨 Print ID Cards
+    </button>
+
+    <button type="button" class="print-button" onclick="">
+        🖨 Mark All Printed
+    </button>
+
+</div>
 
 <div class="print-info">
 
