@@ -318,6 +318,134 @@
 
                     @endforeach
 
+                    {{-- =====================================================
+                         TABLE DATA (vertical) — independent of $fields loop
+                         ===================================================== --}}
+
+                    @php
+                        $tabledataHtmlRaw = $layout['tabledata'] ?? '';
+                        $tablePos = $layout['tablePosition'] ?? [];
+
+                        $tableLeft   = isset($tablePos['left'])   ? (float) $tablePos['left']   : 30;
+                        $tableTop    = isset($tablePos['top'])    ? (float) $tablePos['top']    : 120;
+                        $tableWidth  = isset($tablePos['width'])  ? (float) $tablePos['width']  : max(120, $cardWidth - 60);
+                        $tableHeight = isset($tablePos['height']) ? (float) $tablePos['height'] : 0;
+
+                        $hasTableLayout = is_string($tabledataHtmlRaw) && trim(strip_tags($tabledataHtmlRaw)) !== '';
+                    @endphp
+
+                    @if($hasTableLayout)
+                        @php
+                            $tablePlaceholderValues = [
+                                'student_name'    => trim(($student->first_name ?? '') . ' ' . ($student->last_name ?? '')),
+                                'first_name'      => $student->first_name ?? '',
+                                'last_name'       => $student->last_name ?? '',
+                                'father_name'     => $student->father_name ?? '-',
+                                'mother_name'     => $student->mother_name ?? '-',
+                                'class'           => optional($student->studentClass)->name ?? '-',
+                                'section'         => $student->section ?? '-',
+                                'admission_no'    => $student->admission_no ?? '-',
+                                'date_of_birth'   => $student->date_of_birth ? $student->date_of_birth->format('d-m-Y') : '-',
+                                'phone'           => $student->phone ?? '-',
+                                'blood_group'     => $student->blood_group ?? '-',
+                                'address'         => $school->address ?? '-',
+                                'school_address'  => $school->address ?? '',
+                                'student_address' => $student->address ?? '-',
+                                'school_name'     => $school->school_name ?? 'School Name',
+                                'school_phone'    => $school->phone ?? '',
+                                'session'         => $school->session ?? '2026-27',
+                            ];
+
+                            $tabledataHtml = preg_replace_callback(
+                                '/\{\{\s*([A-Za-z0-9_]+)\s*\}\}/',
+                                function ($matches) use ($tablePlaceholderValues) {
+                                    $rawKey = strtolower(trim($matches[1]));
+                                    $normalizedKey = trim(preg_replace('/_+/', '_', preg_replace('/[^a-z0-9]+/', '_', $rawKey)), '_');
+                                    return $tablePlaceholderValues[$normalizedKey] ?? $matches[0];
+                                },
+                                $tabledataHtmlRaw
+                            );
+
+                            $containsTablePlaceholders = (bool) preg_match('/\{\{\s*[A-Za-z0-9_]+\s*\}\}/', $tabledataHtmlRaw);
+
+                            if (!$containsTablePlaceholders && preg_match('/<table\b/i', $tabledataHtml)) {
+
+                                $normalizeTableText = function ($value) {
+                                    $value = html_entity_decode(preg_replace('/<[^>]+>/', ' ', (string) $value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                    return trim(preg_replace('/[^a-z0-9]+/', ' ', strtolower(trim(preg_replace('/\s+/', ' ', $value)))));
+                                };
+
+                                $labelMap = [
+                                    'student name' => 'student_name', 'name' => 'student_name',
+                                    'father' => 'father_name', 'father name' => 'father_name',
+                                    'mother' => 'mother_name', 'mother name' => 'mother_name',
+                                    'class' => 'class', 'section' => 'section',
+                                    'admission' => 'admission_no', 'admission no' => 'admission_no',
+                                    'roll' => 'admission_no', 'roll no' => 'admission_no',
+                                    'dob' => 'date_of_birth', 'date of birth' => 'date_of_birth',
+                                    'phone' => 'phone', 'contact' => 'phone', 'contact no' => 'phone',
+                                    'blood group' => 'blood_group',
+                                    'student address' => 'student_address',
+                                    'school address' => 'school_address', 'address' => 'student_address',
+                                    'school name' => 'school_name',
+                                ];
+
+                                $dom = new \DOMDocument();
+                                libxml_use_internal_errors(true);
+                                $dom->loadHTML('<?xml encoding="UTF-8">' . $tabledataHtml, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                                $table = $dom->getElementsByTagName('table')->item(0);
+
+                                if ($table) {
+                                    foreach ($table->getElementsByTagName('tr') as $row) {
+                                        $cells = $row->getElementsByTagName('td');
+                                        $cellCount = $cells->length;
+
+                                        if ($cellCount === 1) {
+                                            $cells->item(0)->nodeValue = $tablePlaceholderValues['student_name'] ?? '-';
+                                            continue;
+                                        }
+
+                                        for ($i = 0; $i < $cellCount; $i++) {
+                                            $cell = $cells->item($i);
+                                            if (!$cell) continue;
+
+                                            $cellText = $normalizeTableText($cell->textContent ?? '');
+                                            if (!isset($labelMap[$cellText])) continue;
+
+                                            $replacement = $tablePlaceholderValues[$labelMap[$cellText]] ?? '';
+
+                                            for ($j = $i + 1; $j < $cellCount; $j++) {
+                                                $valueCell = $cells->item($j);
+                                                if (!$valueCell) continue;
+
+                                                $valueText = $normalizeTableText($valueCell->textContent ?? '');
+                                                if ($valueText === '' || in_array($valueText, ['colon', 'dash'], true)) continue;
+                                                if (in_array($valueText, ['student','school','father','mother','class','section','admission','dob','phone','address'], true)) continue;
+
+                                                $valueCell->nodeValue = $replacement;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    $tabledataHtml = $dom->saveHTML($table);
+                                }
+                            }
+                        @endphp
+
+                        <div style="
+                            position:absolute;
+                            left:{{ $tableLeft }}px;
+                            top:{{ $tableTop }}px;
+                            width:{{ $tableWidth }}px;
+                            @if($tableHeight > 0) height:{{ $tableHeight }}px; @endif
+                            z-index:10;
+                            overflow:hidden;
+                            box-sizing:border-box;
+                        ">
+                            {!! $tabledataHtml !!}
+                        </div>
+                    @endif
+
                 </div>
 
             </div>
@@ -649,6 +777,134 @@
 
                     @endforeach
 
+                    {{-- =====================================================
+                         TABLE DATA (horizontal) — independent of $fields loop
+                         ===================================================== --}}
+
+                    @php
+                        $tabledataHtmlRaw = $layout['tabledata'] ?? '';
+                        $tablePos = $layout['tablePosition'] ?? [];
+
+                        $tableLeft   = isset($tablePos['left'])   ? (float) $tablePos['left']   : 30;
+                        $tableTop    = isset($tablePos['top'])    ? (float) $tablePos['top']    : 120;
+                        $tableWidth  = isset($tablePos['width'])  ? (float) $tablePos['width']  : max(120, $cardWidth - 60);
+                        $tableHeight = isset($tablePos['height']) ? (float) $tablePos['height'] : 0;
+
+                        $hasTableLayout = is_string($tabledataHtmlRaw) && trim(strip_tags($tabledataHtmlRaw)) !== '';
+                    @endphp
+
+                    @if($hasTableLayout)
+                        @php
+                            $tablePlaceholderValues = [
+                                'student_name'    => trim(($student->first_name ?? '') . ' ' . ($student->last_name ?? '')),
+                                'first_name'      => $student->first_name ?? '',
+                                'last_name'       => $student->last_name ?? '',
+                                'father_name'     => $student->father_name ?? '-',
+                                'mother_name'     => $student->mother_name ?? '-',
+                                'class'           => optional($student->studentClass)->name ?? '-',
+                                'section'         => $student->section ?? '-',
+                                'admission_no'    => $student->admission_no ?? '-',
+                                'date_of_birth'   => $student->date_of_birth ? $student->date_of_birth->format('d-m-Y') : '-',
+                                'phone'           => $student->phone ?? '-',
+                                'blood_group'     => $student->blood_group ?? '-',
+                                'address'         => $school->address ?? '-',
+                                'school_address'  => $school->address ?? '',
+                                'student_address' => $student->address ?? '-',
+                                'school_name'     => $school->school_name ?? 'School Name',
+                                'school_phone'    => $school->phone ?? '',
+                                'session'         => $school->session ?? '2026-27',
+                            ];
+
+                            $tabledataHtml = preg_replace_callback(
+                                '/\{\{\s*([A-Za-z0-9_]+)\s*\}\}/',
+                                function ($matches) use ($tablePlaceholderValues) {
+                                    $rawKey = strtolower(trim($matches[1]));
+                                    $normalizedKey = trim(preg_replace('/_+/', '_', preg_replace('/[^a-z0-9]+/', '_', $rawKey)), '_');
+                                    return $tablePlaceholderValues[$normalizedKey] ?? $matches[0];
+                                },
+                                $tabledataHtmlRaw
+                            );
+
+                            $containsTablePlaceholders = (bool) preg_match('/\{\{\s*[A-Za-z0-9_]+\s*\}\}/', $tabledataHtmlRaw);
+
+                            if (!$containsTablePlaceholders && preg_match('/<table\b/i', $tabledataHtml)) {
+
+                                $normalizeTableText = function ($value) {
+                                    $value = html_entity_decode(preg_replace('/<[^>]+>/', ' ', (string) $value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                    return trim(preg_replace('/[^a-z0-9]+/', ' ', strtolower(trim(preg_replace('/\s+/', ' ', $value)))));
+                                };
+
+                                $labelMap = [
+                                    'student name' => 'student_name', 'name' => 'student_name',
+                                    'father' => 'father_name', 'father name' => 'father_name',
+                                    'mother' => 'mother_name', 'mother name' => 'mother_name',
+                                    'class' => 'class', 'section' => 'section',
+                                    'admission' => 'admission_no', 'admission no' => 'admission_no',
+                                    'roll' => 'admission_no', 'roll no' => 'admission_no',
+                                    'dob' => 'date_of_birth', 'date of birth' => 'date_of_birth',
+                                    'phone' => 'phone', 'contact' => 'phone', 'contact no' => 'phone',
+                                    'blood group' => 'blood_group',
+                                    'student address' => 'student_address',
+                                    'school address' => 'school_address', 'address' => 'student_address',
+                                    'school name' => 'school_name',
+                                ];
+
+                                $dom = new \DOMDocument();
+                                libxml_use_internal_errors(true);
+                                $dom->loadHTML('<?xml encoding="UTF-8">' . $tabledataHtml, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                                $table = $dom->getElementsByTagName('table')->item(0);
+
+                                if ($table) {
+                                    foreach ($table->getElementsByTagName('tr') as $row) {
+                                        $cells = $row->getElementsByTagName('td');
+                                        $cellCount = $cells->length;
+
+                                        if ($cellCount === 1) {
+                                            $cells->item(0)->nodeValue = $tablePlaceholderValues['student_name'] ?? '-';
+                                            continue;
+                                        }
+
+                                        for ($i = 0; $i < $cellCount; $i++) {
+                                            $cell = $cells->item($i);
+                                            if (!$cell) continue;
+
+                                            $cellText = $normalizeTableText($cell->textContent ?? '');
+                                            if (!isset($labelMap[$cellText])) continue;
+
+                                            $replacement = $tablePlaceholderValues[$labelMap[$cellText]] ?? '';
+
+                                            for ($j = $i + 1; $j < $cellCount; $j++) {
+                                                $valueCell = $cells->item($j);
+                                                if (!$valueCell) continue;
+
+                                                $valueText = $normalizeTableText($valueCell->textContent ?? '');
+                                                if ($valueText === '' || in_array($valueText, ['colon', 'dash'], true)) continue;
+                                                if (in_array($valueText, ['student','school','father','mother','class','section','admission','dob','phone','address'], true)) continue;
+
+                                                $valueCell->nodeValue = $replacement;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    $tabledataHtml = $dom->saveHTML($table);
+                                }
+                            }
+                        @endphp
+
+                        <div style="
+                            position:absolute;
+                            left:{{ $tableLeft }}px;
+                            top:{{ $tableTop }}px;
+                            width:{{ $tableWidth }}px;
+                            @if($tableHeight > 0) height:{{ $tableHeight }}px; @endif
+                            z-index:10;
+                            overflow:hidden;
+                            box-sizing:border-box;
+                        ">
+                            {!! $tabledataHtml !!}
+                        </div>
+                    @endif
+
                 </div>
 
             </div>
@@ -679,5 +935,3 @@
     </div>
 
 </div>
-
-       
