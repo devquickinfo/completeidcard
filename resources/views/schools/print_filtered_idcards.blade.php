@@ -394,170 +394,58 @@
 
 
 @if($students->count() > 0)
-
     @php
-
-        /*
-        |--------------------------------------------------------------------------
-        | NORMALIZE ORIENTATION
-        |--------------------------------------------------------------------------
-        */
-
         $orientation = strtolower($orientation ?? 'horizontal');
-
         if (!in_array($orientation, ['horizontal', 'vertical'])) {
             $orientation = 'horizontal';
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | PHYSICAL PRINT SIZE
-        |--------------------------------------------------------------------------
-        */
-
         if ($orientation === 'vertical') {
-
             $cardsPerPage = 10;
-
-            $printWidthMm = 54;
+            $printWidthMm =  54;
             $printHeightMm = 84;
 
         } else {
-
             $cardsPerPage = 10;
-
             $printWidthMm = 98;
             $printHeightMm = 55;
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | SAVED EDITOR LAYOUT
-        |--------------------------------------------------------------------------
-        */
-
         if (is_string($layout)) {
             $layout = json_decode($layout, true) ?? [];
         }
-
         if (!is_array($layout)) {
             $layout = [];
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | IMPORTANT:
-        |
-        | Your actual saved layout is:
-        |
-        | cardWidth  = 317
-        | cardHeight = 204
-        |
-        |--------------------------------------------------------------------------
-        */
-
         $editorWidth = (float) ($layout['cardWidth'] ?? 317);
         $editorHeight = (float) ($layout['cardHeight'] ?? 204);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | FIELDS
-        |--------------------------------------------------------------------------
-        */
-
         $fields = $layout['fields'] ?? [];
-
         if (!is_array($fields)) {
             $fields = [];
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | SCALE
-        |--------------------------------------------------------------------------
-        |
-        | We need to convert the editor's 317x204 canvas
-        | into the physical 98x55mm card.
-        |
-        | IMPORTANT:
-        |
-        | Do NOT scale X and Y independently.
-        |
-        | One uniform scale keeps:
-        |
-        | x
-        | y
-        | width
-        | height
-        |
-        | exactly proportional to the editor.
-        |--------------------------------------------------------------------------
-        */
-
         $pxPerMm = 96 / 25.4;
-
         $printWidthPx = $printWidthMm * $pxPerMm;
         $printHeightPx = $printHeightMm * $pxPerMm;
-
         $scaleX = $printWidthPx / $editorWidth;
         $scaleY = $printHeightPx / $editorHeight;
-
         $scale = min($scaleX, $scaleY);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | BACKGROUND
-        |--------------------------------------------------------------------------
-        */
-
         if (!empty($design->background)) {
-
             $bgUrl = asset(
                 'storage/' . ltrim($design->background, '/')
             );
-
         } elseif ($sample && !empty($sample->file_path)) {
-
             $bgUrl = asset(
                 'storage/' . ltrim($sample->file_path, '/')
             );
-
         } else {
-
             $bgUrl = '';
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | LAYOUT CHECK
-        |--------------------------------------------------------------------------
-        */
-
         $hasLayout = count($fields) > 0;
-
-        /*
-        |--------------------------------------------------------------------------
-        | TABLE DATA (unrelated to $fields — same key names/tokens are reused)
-        |--------------------------------------------------------------------------
-        */
-
         $tabledataHtmlRaw = $layout['tabledata'] ?? '';
         $tablePos = $layout['tablePosition'] ?? [];
-
         $tableLeft   = isset($tablePos['left'])   ? (float) $tablePos['left']   : 30;
         $tableTop    = isset($tablePos['top'])    ? (float) $tablePos['top']    : 120;
         $tableWidth  = isset($tablePos['width'])  ? (float) $tablePos['width']  : max(120, $editorWidth - 60);
         $tableHeight = isset($tablePos['height']) ? (float) $tablePos['height'] : 0;
-
         $hasTableLayout = is_string($tabledataHtmlRaw) && trim(strip_tags($tabledataHtmlRaw)) !== '';
-
     @endphp
 
 
@@ -612,59 +500,31 @@
         @foreach($students->chunk($cardsPerPage) as $pageStudents)
             <div class="a4-page orientation-{{ $orientation }}">
                 @foreach($pageStudents as $student)
-                    <div
-                        class="id-card-container"
-                        style="
-                            width: {{ $printWidthMm }}mm;
-                            height: {{ $printHeightMm }}mm;
-                        "
-                    >
-                        <div
-                            class="id-card"
-                            style="
-                                width: {{ $editorWidth }}px;
-                                height: {{ $editorHeight }}px;
-
-                                transform:
-                                    scale({{ $scale }});
-                            "
-                        >
+                    <div class="id-card-container" style=" width: {{ $printWidthMm }}mm; height: {{ $printHeightMm }}mm;">
+                        <div class="id-card" style="width:{{ $editorWidth }}px; height:{{ $editorHeight }}px; transform:scale({{ $scale }});">
                             @if($bgUrl)
                                 <div
                                     style="
                                         position:absolute;
                                         left:0;
                                         top:0;
-
                                         width:100%;
                                         height:100%;
-
                                         background-image:url('{{ $bgUrl }}');
-
                                         background-size:100% 100%;
-
                                         background-position:0 0;
-
                                         background-repeat:no-repeat;
-
-                                        z-index:0;
-                                    "
-                                ></div>
-
+                                        z-index:0;">
+                                </div>
                             @else
-
                                 <div
                                     style="
                                         position:absolute;
-
                                         left:0;
                                         top:0;
-
                                         width:100%;
                                         height:100%;
-
                                         background:#f5f5f5;
-
                                         z-index:0;
                                     "
                                 ></div>

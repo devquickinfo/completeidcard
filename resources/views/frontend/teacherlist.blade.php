@@ -106,7 +106,11 @@
                                 <tr>
                                     <td>
                                         @if(!empty($teacher->photo))
-                                            <img src="{{ asset('storage/' . $teacher->photo) }}" width="50" height="50" style="object-fit: cover;">
+                                        <a href="javascript:void(0)"
+                                                 data-toggle="modal" data-target="#photoModal"
+                                                data-student-id="{{ $teacher->id }}">
+                                            <img src="{{ asset('storage/' . $teacher->photo) }}" width="80" height="80" class="img-thumbnail">
+                                        </a>
                                         @else
                                             <span class="text-muted">No Photo</span>
                                         @endif
@@ -151,6 +155,86 @@
         </div>
     </section>
 </div>
+<div class="modal fade" id="photoModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Capture Teacher Photo
+                </h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="modalPhotoContent">
+                    @include('frontend.studentpartials.commoncaptureteacher')
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    $('#save-capture-photo').on('click', function () {
+    let studentId = $('#photoModal #student_id').val();
+    console.log('Student ID:', studentId);
+    if (!studentId) {
+        alert('Student ID missing');
+        return;
+    }
+    let photoData = $('#photo_data').val();
+    let background = $('#camera-bg').val();
+
+    if (!photoData) {
+        alert('Please capture a photo first');
+        return;
+    }
+    let url = "{{ route('student.capture-photo', ':student') }}";
+    url = url.replace(':student', studentId);
+    console.log('POST URL:', url);
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            photo_data: photoData,
+            capture_background: background
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        console.log(data);
+
+        if (data.success) {
+
+            $('#photoModal').modal('hide');
+
+            toastr.success(data.message, 'Success');
+
+            setTimeout(function () {
+                location.reload();
+            }, 1000);
+
+        } else {
+
+            alert(data.message || 'Photo could not be saved');
+
+        }
+
+    })
+    .catch(error => {
+
+        console.error(error);
+        alert('Error while saving photo.');
+
+    });
+    });
+</script>
 
 <script>
     let searchTimer;

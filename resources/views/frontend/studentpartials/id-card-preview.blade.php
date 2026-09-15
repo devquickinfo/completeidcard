@@ -207,9 +207,12 @@
                                                 $zIndex = $type === 'shape'
                                                     ? 1
                                                     : 10;
+                                                $borderRadius = isset($field['borderRadius'])
+                                                                ? 'border-radius:' .(int) $field['borderRadius'] . '%;'
+                                                                : null;
 
                                                 $style = " position:absolute; left:{$left}px; top:{$top}px;
-                    z-index:{$zIndex}; {$width} {$height} ";
+                    z-index:{$zIndex}; {$width} {$height} {$borderRadius} ";
 
                                                 if (!($field['visible'] ?? true)) {
                                                     $style .= 'display:none;';
@@ -285,7 +288,7 @@
 
                                                     <img
                                                         src=" {{ $imageUrl }}" alt="{{ $fieldType }}"
-                    style="{{ $style }}object-fit:contain;">
+                    style="{{ $style }}">
 
                     @endif
 

@@ -2,13 +2,25 @@
 @section('title', 'ID Card Editor — ' . ucwords($school->school_name ?? ''))
 @section('content')
 @php
+  //echo '<pre>'; print_r($selectedSample); die;
   $editorBackground = $designcard->background ?? ($selectedSample->file_path ?? null);
   $editorBackgroundUrl = $editorBackground
       ? (preg_match('/^https?:\\/\\//', $editorBackground)
           ? $editorBackground
           : asset('storage/' . $editorBackground))
       : '';
-@endphp
+
+
+    $mmToPx = 96 / 25.4;
+
+	$cardWidth = !empty($selectedSample->width)
+	    ? round($selectedSample->width * $mmToPx)
+	    : ($orientation === 'vertical' ? 204 : 317);
+
+	$cardHeight = !empty($selectedSample->height)
+	    ? round($selectedSample->height * $mmToPx)
+	    : ($orientation === 'vertical' ? 317 : 204);
+	@endphp
 <style>
   :root{
     --maroon:#9e1b32;
@@ -702,14 +714,49 @@
                                             <input type="color" id="tableBorderColor" value="#1f2430">
                                         </div>
                                         <div class="field">
-                                            <label>Padding</label>
-                                            <input type="number" id="tableCellPadding" min="0" max="20" value="3">
-                                        </div>
-                                        <div class="field">
                                             <label>Font Px</label>
                                             <input type="number" id="tableFontSize" min="6" max="30" value="12">
                                         </div>
                                     </div>
+
+                                    <div class="row4" style="margin-top:8px;">
+                                        <div class="field">
+                                            <label>Padding Top</label>
+                                            <input type="number" id="tablePaddingTop" min="0" max="60" value="3">
+                                        </div>
+                                        <div class="field">
+                                            <label>Padding Right</label>
+                                            <input type="number" id="tablePaddingRight" min="0" max="60" value="3">
+                                        </div>
+                                        <div class="field">
+                                            <label>Padding Bottom</label>
+                                            <input type="number" id="tablePaddingBottom" min="0" max="60" value="3">
+                                        </div>
+                                        <div class="field">
+                                            <label>Padding Left</label>
+                                            <input type="number" id="tablePaddingLeft" min="0" max="60" value="3">
+                                        </div>
+                                    </div>
+
+                                    <div class="row4" style="margin-top:8px;">
+                                        <div class="field">
+                                            <label>Margin Top</label>
+                                            <input type="number" id="tableMarginTop" min="0" max="60" value="0">
+                                        </div>
+                                        <div class="field">
+                                            <label>Margin Right</label>
+                                            <input type="number" id="tableMarginRight" min="0" max="60" value="0">
+                                        </div>
+                                        <div class="field">
+                                            <label>Margin Bottom</label>
+                                            <input type="number" id="tableMarginBottom" min="0" max="60" value="0">
+                                        </div>
+                                        <div class="field">
+                                            <label>Margin Left</label>
+                                            <input type="number" id="tableMarginLeft" min="0" max="60" value="0">
+                                        </div>
+                                    </div>
+
                                     <div class="row2" style="margin-top:8px;align-items:center;">
                                         <div class="field">
                                             <label>Text Align</label>
@@ -730,7 +777,7 @@
                                 </div>
 
                                 <div class="field">
-                                    <label>Visual Editor <span style="font-weight:400;text-transform:none;color:var(--muted);">(click any cell to type)</span></label>
+                                    <label>Visual Editor <span style="font-weight:400;text-transform:none;color:var(--muted);">(click any block to select it, then edit its text or style — a div and a table can both live here at once)</span></label>
                                     <div id="tableGridEditor" style="border:1px dashed #d5d8dd;border-radius:6px;padding:8px;overflow:auto;max-height:220px;background:#c1c3c4;"></div>
                                 </div>
 
@@ -1114,7 +1161,7 @@
                             <div id="elStudentAddress" class="el el-text">Address: 24, Green Park, Varanasi, UP - 221001</div>
                             <div id="elTableData" class="el el-tabledata"></div>
 
-                            <div id="elName" class="el el-text">AARAV SHARMA</div>
+                            <div id="elName" class="el el-text" style="{{$designcard->layout['fields']['name']['css']}}">AARAV SHARMA</div>
                             <div id="elFather" class="el el-text">Father: Rakesh Sharma</div>
                             <div id="elMother" class="el el-text">Mother: Anita Sharma</div>
                             <div id="elClass" class="el el-text">Class: V - B</div>
@@ -1154,10 +1201,18 @@
 
     const card = document.getElementById('idCard');
 
-    const HORIZONTAL_CARD_W = 317;
-    const HORIZONTAL_CARD_H = 204;
-    const VERTICAL_CARD_W = 204;
-    const VERTICAL_CARD_H = 317;
+    // const HORIZONTAL_CARD_W = 317;
+    // const HORIZONTAL_CARD_H = 204;
+    // const VERTICAL_CARD_W = 204;
+    // const VERTICAL_CARD_H = 317;
+
+    const HORIZONTAL_CARD_W = {{ $cardWidth }};
+    const HORIZONTAL_CARD_H = {{ $cardHeight }};
+
+    const VERTICAL_CARD_W = {{ $cardWidth }};
+    const VERTICAL_CARD_H = {{ $cardHeight }};
+
+
 
     let CARD_W = HORIZONTAL_CARD_W;
     let CARD_H = HORIZONTAL_CARD_H;
@@ -1273,86 +1328,221 @@
         const delColBtn = document.getElementById('tableDelColBtn');
         const borderWidthInput = document.getElementById('tableBorderWidth');
         const borderColorInput = document.getElementById('tableBorderColor');
-        const cellPaddingInput = document.getElementById('tableCellPadding');
         const fontSizeInput = document.getElementById('tableFontSize');
         const textAlignInput = document.getElementById('tableTextAlign');
         const headerToggleInput = document.getElementById('tableHeaderToggle');
+
+        // Individual per-side padding / margin controls (Top / Right / Bottom / Left)
+        const paddingTopInput = document.getElementById('tablePaddingTop');
+        const paddingRightInput = document.getElementById('tablePaddingRight');
+        const paddingBottomInput = document.getElementById('tablePaddingBottom');
+        const paddingLeftInput = document.getElementById('tablePaddingLeft');
+        const marginTopInput = document.getElementById('tableMarginTop');
+        const marginRightInput = document.getElementById('tableMarginRight');
+        const marginBottomInput = document.getElementById('tableMarginBottom');
+        const marginLeftInput = document.getElementById('tableMarginLeft');
 
         if (!gridEditor || !tableDataTextarea) {
             return;
         }
 
+        // The grid editor can now hold MORE THAN ONE top-level block at once
+        // (e.g. a <div> heading AND a <table> below it). `activeElement` is
+        // whichever block is currently selected — that's what the Style
+        // panel (border/padding/margin/etc.) and the row/column buttons
+        // act on. Click any block in the visual editor to select it.
+        let activeElement = null;
+
+        function highlightActiveElement() {
+            Array.from(gridEditor.children).forEach(function (child) {
+                child.style.outline = (child === activeElement)
+                    ? '2px dashed var(--accent, #2f6fed)'
+                    : 'none';
+                child.style.outlineOffset = '2px';
+            });
+        }
+
+        function selectElement(el) {
+            if (!el || el.parentElement !== gridEditor) {
+                return;
+            }
+
+            activeElement = el;
+            highlightActiveElement();
+        }
+
+        // Click delegation: figure out which top-level child of the grid
+        // editor was clicked (even if the click landed on a nested cell or
+        // text node inside it) and make that the active element.
+        gridEditor.addEventListener('click', function (e) {
+            let node = e.target;
+
+            while (node && node.parentElement !== gridEditor) {
+                node = node.parentElement;
+            }
+
+            if (node) {
+                selectElement(node);
+            }
+        });
+
+        // Returns the block the Style panel / row-column buttons should
+        // act on: the one the user selected, falling back to the last
+        // block in the editor if nothing is selected yet (or the
+        // selection was removed).
+        function currentElement() {
+            if (activeElement && activeElement.parentElement === gridEditor) {
+                return activeElement;
+            }
+
+            return gridEditor.lastElementChild;
+        }
+
+        // Kept for any old callers/readability — table-specific code
+        // paths still ask for this explicitly.
         function currentTable() {
-            return gridEditor.querySelector('table');
+            const el = currentElement();
+            return el && el.tagName === 'TABLE' ? el : null;
+        }
+
+        function currentDiv() {
+            const el = currentElement();
+            return el && el.tagName !== 'TABLE' ? el : null;
         }
 
         function styleSettings() {
             return {
                 borderWidth: parseFloat(borderWidthInput?.value || 1) || 0,
                 borderColor: borderColorInput?.value || '#1f2430',
-                padding: parseFloat(cellPaddingInput?.value || 3) || 0,
+                paddingTop: parseFloat(paddingTopInput?.value ?? 3) || 0,
+                paddingRight: parseFloat(paddingRightInput?.value ?? 3) || 0,
+                paddingBottom: parseFloat(paddingBottomInput?.value ?? 3) || 0,
+                paddingLeft: parseFloat(paddingLeftInput?.value ?? 3) || 0,
+                marginTop: parseFloat(marginTopInput?.value ?? 0) || 0,
+                marginRight: parseFloat(marginRightInput?.value ?? 0) || 0,
+                marginBottom: parseFloat(marginBottomInput?.value ?? 0) || 0,
+                marginLeft: parseFloat(marginLeftInput?.value ?? 0) || 0,
                 fontSize: parseFloat(fontSizeInput?.value || 12) || 12,
                 align: textAlignInput?.value || 'left',
                 header: !!headerToggleInput?.checked
             };
         }
 
-        function applyStylesToTable(table) {
-            if (!table) {
+        function applyPaddingMargin(target, s) {
+            target.style.paddingTop = s.paddingTop + 'px';
+            target.style.paddingRight = s.paddingRight + 'px';
+            target.style.paddingBottom = s.paddingBottom + 'px';
+            target.style.paddingLeft = s.paddingLeft + 'px';
+        }
+
+        // Applies the Style panel to either a <table> (per-cell, like before)
+        // or a plain <div>/box (directly on the element itself), so padding,
+        // margin, border, font size and alignment all work the same way
+        // no matter which element type is currently loaded.
+        function applyStylesToElement(el) {
+            if (!el) {
                 return;
             }
 
             const s = styleSettings();
 
-            table.style.width = '100%';
-            table.style.borderCollapse = 'collapse';
-            table.style.fontSize = s.fontSize + 'px';
+            if (el.tagName === 'TABLE') {
+                el.style.width = '100%';
+                el.style.borderCollapse = 'collapse';
+                el.style.fontSize = s.fontSize + 'px';
+                el.style.marginTop = s.marginTop + 'px';
+                el.style.marginRight = s.marginRight + 'px';
+                el.style.marginBottom = s.marginBottom + 'px';
+                el.style.marginLeft = s.marginLeft + 'px';
 
-            Array.from(table.rows).forEach(function (row, rIdx) {
-                Array.from(row.cells).forEach(function (cell) {
-                    cell.style.border = s.borderWidth + 'px solid ' + s.borderColor;
-                    cell.style.padding = s.padding + 'px';
-                    cell.style.textAlign = s.align;
-                    cell.style.verticalAlign = 'top';
+                Array.from(el.rows).forEach(function (row, rIdx) {
+                    Array.from(row.cells).forEach(function (cell) {
+                        cell.style.border = s.borderWidth + 'px solid ' + s.borderColor;
+                        applyPaddingMargin(cell, s);
+                        cell.style.textAlign = s.align;
+                        cell.style.verticalAlign = 'top';
 
-                    if (rIdx === 0 && s.header) {
-                        cell.style.fontWeight = '700';
-                        cell.style.background = 'rgba(158,27,50,0.08)';
-                    } else {
-                        cell.style.fontWeight = '400';
-                        cell.style.background = 'transparent';
-                    }
+                        if (rIdx === 0 && s.header) {
+                            cell.style.fontWeight = '700';
+                            cell.style.background = 'rgba(158,27,50,0.08)';
+                        } else {
+                            cell.style.fontWeight = '400';
+                            cell.style.background = 'transparent';
+                        }
+                    });
                 });
-            });
-        }
 
-        function attachCellEditing(table) {
-            if (!table) {
                 return;
             }
 
-            Array.from(table.querySelectorAll('td, th')).forEach(function (cell) {
-                cell.setAttribute('contenteditable', 'true');
-                cell.addEventListener('input', syncTextareaFromGrid);
-                cell.addEventListener('blur', syncTextareaFromGrid);
-            });
+            // Generic element (div, p, section, etc.)
+            el.style.border = s.borderWidth + 'px solid ' + s.borderColor;
+            el.style.fontSize = s.fontSize + 'px';
+            el.style.textAlign = s.align;
+            el.style.boxSizing = 'border-box';
+            applyPaddingMargin(el, s);
+            el.style.marginTop = s.marginTop + 'px';
+            el.style.marginRight = s.marginRight + 'px';
+            el.style.marginBottom = s.marginBottom + 'px';
+            el.style.marginLeft = s.marginLeft + 'px';
+
+            if (s.header) {
+                el.style.fontWeight = '700';
+                el.style.background = 'rgba(158,27,50,0.08)';
+            } else {
+                el.style.fontWeight = '400';
+            }
+        }
+
+        // Backwards-compatible alias — same behaviour, new name.
+        const applyStylesToTable = applyStylesToElement;
+
+        function attachCellEditing(el) {
+            if (!el) {
+                return;
+            }
+
+            if (el.tagName === 'TABLE') {
+                Array.from(el.querySelectorAll('td, th')).forEach(function (cell) {
+                    cell.setAttribute('contenteditable', 'true');
+                    cell.addEventListener('input', syncTextareaFromGrid);
+                    cell.addEventListener('blur', syncTextareaFromGrid);
+                });
+
+                return;
+            }
+
+            // A plain div/box is made directly editable.
+            el.setAttribute('contenteditable', 'true');
+            el.addEventListener('input', syncTextareaFromGrid);
+            el.addEventListener('blur', syncTextareaFromGrid);
         }
 
         function syncTextareaFromGrid() {
-            const table = currentTable();
+            const blocks = Array.from(gridEditor.children);
 
-            if (!table) {
+            if (!blocks.length) {
                 return;
             }
 
-            const clone = table.cloneNode(true);
+            // Serialize EVERY block currently in the editor (not just one),
+            // so a <div> and a <table> living side by side both survive
+            // every keystroke instead of the second one wiping the first.
+            const html = blocks.map(function (el) {
+                const clone = el.cloneNode(true);
 
-            clone.removeAttribute('contenteditable');
-            Array.from(clone.querySelectorAll('[contenteditable]')).forEach(function (el) {
-                el.removeAttribute('contenteditable');
-            });
+                clone.removeAttribute('contenteditable');
+                clone.style.outline = '';
+                clone.style.outlineOffset = '';
 
-            tableDataTextarea.value = clone.outerHTML;
+                Array.from(clone.querySelectorAll('[contenteditable]')).forEach(function (node) {
+                    node.removeAttribute('contenteditable');
+                });
+
+                return clone.outerHTML;
+            }).join('\n\n');
+
+            tableDataTextarea.value = html;
             tableDataTextarea.dispatchEvent(new Event('input', { bubbles: true }));
         }
 
@@ -1373,7 +1563,8 @@
 
             gridEditor.innerHTML = '';
             gridEditor.appendChild(table);
-            applyStylesToTable(table);
+            selectElement(table);
+            applyStylesToElement(table);
             attachCellEditing(table);
             syncTextareaFromGrid();
         }
@@ -1406,17 +1597,21 @@
 
             gridEditor.innerHTML = '';
             gridEditor.appendChild(table);
+            selectElement(table);
 
             // Force sane, consistent defaults so nothing looks patchy
             // and nothing gets clipped by the card's overflow:hidden.
             if (borderWidthInput) borderWidthInput.value = 1;
             if (borderColorInput) borderColorInput.value = '#cbd0d6';
-            if (cellPaddingInput) cellPaddingInput.value = 4;
+            if (paddingTopInput) paddingTopInput.value = 4;
+            if (paddingRightInput) paddingRightInput.value = 4;
+            if (paddingBottomInput) paddingBottomInput.value = 4;
+            if (paddingLeftInput) paddingLeftInput.value = 4;
             if (fontSizeInput) fontSizeInput.value = 11;
             if (textAlignInput) textAlignInput.value = 'left';
             if (headerToggleInput) headerToggleInput.checked = false;
 
-            applyStylesToTable(table);
+            applyStylesToElement(table);
             attachCellEditing(table);
             syncTextareaFromGrid();
 
@@ -1433,16 +1628,35 @@
 
             temp.innerHTML = raw;
 
-            const table = temp.querySelector('table');
+            // Load EVERY top-level element in the box — a <div> AND a
+            // <table> together, several divs, etc. — not just the first
+            // one. This is what was silently dropping your <div>: only
+            // one block was ever kept, and every edit re-saved just that
+            // one, erasing the rest.
+            const blocks = Array.from(temp.children);
 
-            if (!table) {
-                alert('No <table> found in the HTML box. Use "New Table" to start one.');
+            if (!blocks.length) {
+                alert('No HTML element found in the box. Type or paste a <table> and/or <div> (or click "New Table") and try again.');
                 return;
             }
 
             gridEditor.innerHTML = '';
-            gridEditor.appendChild(table);
-            attachCellEditing(table);
+
+            let firstTable = null;
+
+            blocks.forEach(function (el) {
+                gridEditor.appendChild(el);
+                attachCellEditing(el);
+
+                if (!firstTable && el.tagName === 'TABLE') {
+                    firstTable = el;
+                }
+            });
+
+            // Default the Style panel / row-column buttons to the table if
+            // there is one (matches old behaviour), otherwise the last
+            // block loaded. Click any block to select a different one.
+            selectElement(firstTable || gridEditor.lastElementChild);
             syncTextareaFromGrid();
         }
 
@@ -1533,36 +1747,50 @@
             });
         }
 
-        [borderWidthInput, borderColorInput, cellPaddingInput, fontSizeInput, textAlignInput, headerToggleInput].forEach(function (input) {
+        [
+            borderWidthInput,
+            borderColorInput,
+            paddingTopInput,
+            paddingRightInput,
+            paddingBottomInput,
+            paddingLeftInput,
+            marginTopInput,
+            marginRightInput,
+            marginBottomInput,
+            marginLeftInput,
+            fontSizeInput,
+            textAlignInput,
+            headerToggleInput
+        ].forEach(function (input) {
             if (!input) {
                 return;
             }
 
             input.addEventListener('input', function () {
-                const table = currentTable();
+                const el = currentElement();
 
-                if (!table) {
+                if (!el) {
                     return;
                 }
 
-                applyStylesToTable(table);
+                applyStylesToElement(el);
                 syncTextareaFromGrid();
             });
 
             input.addEventListener('change', function () {
-                const table = currentTable();
+                const el = currentElement();
 
-                if (!table) {
+                if (!el) {
                     return;
                 }
 
-                applyStylesToTable(table);
+                applyStylesToElement(el);
                 syncTextareaFromGrid();
             });
         });
 
         // Load whatever is already saved so the visual editor
-        // isn't empty on page load if a table already exists.
+        // isn't empty on page load if a table or div already exists.
         if ((tableDataTextarea.value || '').trim()) {
             loadFromTextarea();
         }

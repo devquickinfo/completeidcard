@@ -48,14 +48,14 @@
                             Student History
                         </h3>
 
-                        <span class="text-muted">
+                        <span class="alert alert-danger">
                             {{ $student->first_name }}
                             {{ $student->last_name }}
                         </span>
                     </div>
 
                     <a
-                        href="{{ route('students.index') }}"
+                        href="{{ route('student.list') }}"
                         class="btn btn-sm btn-primary ml-auto"
                     >
                         Back

@@ -426,11 +426,26 @@
     @else
 
 
-       
+        {{-- ============================================================ --}}
+        {{-- STUDENT PAGES --}}
+        {{-- ============================================================ --}}
 
         @foreach($students->chunk($cardsPerPage) as $pageStudents)
+
             <div class="a4-page orientation-{{ $orientation }}">
+
+
+                {{-- ==================================================== --}}
+                {{-- STUDENTS --}}
+                {{-- ==================================================== --}}
+
                 @foreach($pageStudents as $student)
+
+
+                    {{-- ================================================= --}}
+                    {{-- PHYSICAL CARD --}}
+                    {{-- ================================================= --}}
+
                     <div
                         class="id-card-container"
                         style="
@@ -438,6 +453,12 @@
                             height: {{ $printHeightMm }}mm;
                         "
                     >
+
+
+                        {{-- ============================================= --}}
+                        {{-- EDITOR CANVAS --}}
+                        {{-- ============================================= --}}
+
                         <div
                             class="id-card"
                             style="
@@ -448,10 +469,18 @@
                                     scale({{ $scale }});
                             "
                         >
+
+
+                            {{-- ========================================= --}}
+                            {{-- BACKGROUND --}}
+                            {{-- ========================================= --}}
+
                             @if($bgUrl)
+
                                 <div
                                     style="
                                         position:absolute;
+
                                         left:0;
                                         top:0;
 
@@ -526,9 +555,6 @@
                                     $height = isset($field['height'])
                                         ? (float) $field['height']
                                         : null;
-                                    $borderRadius = isset($field['borderRadius'])
-                                    ? (int) $field['borderRadius']
-                                    : null;
 
                                     $visible =
                                         $field['visible'] ?? true;
@@ -558,18 +584,10 @@
                                             width:{$width}px;
                                         ";
                                     }
-                                   
                                     if ($height !== null) {
 
                                         $style .= "
                                             height:{$height}px;
-                                        ";
-                                    }
-
-                                    if ($borderRadius !== null) {
-
-                                        $style .= "
-                                            border-radius:{$borderRadius}%;
                                         ";
                                     }
 
@@ -585,7 +603,16 @@
                                         $field['text'] ?? '';
                                     $matched = false;
 
-                                   
+                                    /*
+                                    |--------------------------------------------------------------------------
+                                    | NOTE ON "address" vs "studentAddress":
+                                    |
+                                    | "address"        -> ALWAYS school address ($school->address)
+                                    | "studentAddress" -> ALWAYS student address ($student->address)
+                                    |
+                                    | These are deliberately two separate cases so they never collide.
+                                    |--------------------------------------------------------------------------
+                                    */
 
                                     switch ($fieldKeyBase) {
 
@@ -721,7 +748,11 @@
                                             break;
 
 
-                                       
+                                        /*
+                                        |--------------------------------------------------------------------------
+                                        | STUDENT ADDRESS — always $student->address
+                                        |--------------------------------------------------------------------------
+                                        */
 
                                         case 'studentaddress':
                                         case 'student_address':
@@ -733,6 +764,11 @@
                                             break;
 
 
+                                        /*
+                                        |--------------------------------------------------------------------------
+                                        | SCHOOL ADDRESS — always $school->address, never the student's
+                                        |--------------------------------------------------------------------------
+                                        */
 
                                         case 'address':
                                         case 'schooladdress':
@@ -1133,9 +1169,9 @@
                                             style="
                                                 {{ $style }}
 
-                                                
+                                                object-fit:contain;
 
-                                                
+                                                object-position:center;
                                             "
                                         >
 
@@ -1323,26 +1359,9 @@
 
 
 
-                                        $fieldCss = strtolower((string) ($field['css'] ?? ''));
-                                        $usesAlign = (bool) preg_match('/text-align\s*:\s*(center|right)/', $fieldCss);
-
                                         if ($width !== null) {
 
-                                            // explicit width was saved — always use a real box
                                             $style .= "
-                                                white-space:pre-wrap;
-                                                word-wrap:break-word;
-                                                overflow:hidden;
-                                            ";
-
-                                        } elseif ($usesAlign) {
-
-                                           
-
-                                            $autoWidth = max(0, $editorWidth - $left - 6);
-
-                                            $style .= "
-                                                width:{$autoWidth}px;
                                                 white-space:pre-wrap;
                                                 word-wrap:break-word;
                                                 overflow:hidden;
@@ -1350,7 +1369,6 @@
 
                                         } else {
 
-                                            // left-aligned text with no width — shrink-wrap is fine here
                                             $maxWidth = max(0, $editorWidth - $left);
 
                                             $style .= "
@@ -1383,160 +1401,38 @@
 
                                 @php
 
-                                    $tablePlaceholderValues = [
-                                        'student_name'    => trim(($student->first_name ?? '') . ' ' . ($student->last_name ?? '')),
-                                        'first_name'      => $student->first_name ?? '',
-                                        'last_name'       => $student->last_name ?? '',
-                                        'father_name'     => $student->father_name ?? '-',
-                                        'mother_name'     => $student->mother_name ?? '-',
-                                        'class'           => optional($student->studentClass)->name ?? '-',
-                                        'section'         => optional($student->section)->name ?? '-',
-                                        'admission_no'    => $student->admission_no ?? '-',
-                                        'date_of_birth'   => $student->date_of_birth
-                                                                ? \Carbon\Carbon::parse($student->date_of_birth)->format('d-m-Y')
-                                                                : '-',
-                                        'phone'           => $student->phone ?? '-',
-                                        'blood_group'     => $student->blood_group ?? '-',
+                                    $tablePlaceholders = [
+                                        '{{student_name}}'    => trim(($student->first_name ?? '') . ' ' . ($student->last_name ?? '')),
+                                        '{{first_name}}'      => $student->first_name ?? '',
+                                        '{{last_name}}'       => $student->last_name ?? '',
+                                        '{{father_name}}'     => $student->father_name ?? '-',
+                                        '{{mother_name}}'     => $student->mother_name ?? '-',
+                                        '{{class}}'           => optional($student->studentClass)->name ?? '-',
+                                        '{{section}}'         => optional($student->section)->name ?? '-',
+                                        '{{admission_no}}'    => $student->admission_no ?? '-',
+                                        '{{date_of_birth}}'   => $student->date_of_birth
+                                                                    ? \Carbon\Carbon::parse($student->date_of_birth)->format('d-m-Y')
+                                                                    : '-',
+                                        '{{phone}}'           => $student->phone ?? '-',
+                                        '{{blood_group}}'     => $student->blood_group ?? '-',
 
                                         // School address only
-                                        'address'         => $school->address ?? '-',
-                                        'school_address'  => $school->address ?? '',
+                                        '{{address}}'         => $school->address ?? '-',
+                                        '{{school_address}}'  => $school->address ?? '',
 
                                         // Student address only
-                                        'student_address' => $student->address ?? '-',
+                                        '{{student_address}}' => $student->address ?? '-',
 
-                                        'school_name'     => $school->school_name ?? 'School Name',
-                                        'school_phone'    => $school->phone ?? '',
-                                        'session'         => $school->session ?? '2026-27',
+                                        '{{school_name}}'     => $school->school_name ?? 'School Name',
+                                        '{{school_phone}}'    => $school->phone ?? '',
+                                        '{{session}}'         => $school->session ?? '2026-27',
                                     ];
 
-                                    $tabledataHtml = preg_replace_callback(
-                                        '/\{\{\s*([A-Za-z0-9_]+)\s*\}\}/',
-                                        function ($matches) use ($tablePlaceholderValues) {
-                                            $rawKey = strtolower(trim($matches[1]));
-
-                                            $normalizedKey = preg_replace('/[^a-z0-9]+/', '_', $rawKey);
-                                            $normalizedKey = trim($normalizedKey, '_');
-                                            $normalizedKey = preg_replace('/_+/', '_', $normalizedKey);
-
-                                            if (isset($tablePlaceholderValues[$normalizedKey])) {
-                                                return (string) $tablePlaceholderValues[$normalizedKey];
-                                            }
-
-                                            $camelCaseKey = strtolower(
-                                                preg_replace('/(?<!^)([A-Z])/', '_$1', $rawKey)
-                                            );
-                                            $camelCaseKey = preg_replace('/[^a-z0-9]+/', '_', $camelCaseKey);
-                                            $camelCaseKey = trim($camelCaseKey, '_');
-                                            $camelCaseKey = preg_replace('/_+/', '_', $camelCaseKey);
-
-                                            if (isset($tablePlaceholderValues[$camelCaseKey])) {
-                                                return (string) $tablePlaceholderValues[$camelCaseKey];
-                                            }
-
-                                            return $matches[0];
-                                        },
+                                    $tabledataHtml = str_replace(
+                                        array_keys($tablePlaceholders),
+                                        array_values($tablePlaceholders),
                                         $tabledataHtmlRaw
                                     );
-
-                                    $containsTablePlaceholders = (bool) preg_match('/\{\{\s*[A-Za-z0-9_]+\s*\}\}/', $tabledataHtmlRaw);
-
-                                    if (!$containsTablePlaceholders && preg_match('/<table\b/i', $tabledataHtml)) {
-
-                                        $normalizeTableText = function ($value) {
-                                            $value = preg_replace('/<[^>]+>/', ' ', (string) $value);
-                                            $value = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                            $value = preg_replace('/\s+/', ' ', $value);
-                                            $value = trim($value);
-                                            $value = strtolower($value);
-                                            $value = preg_replace('/[^a-z0-9]+/', ' ', $value);
-                                            $value = trim($value);
-
-                                            return $value;
-                                        };
-
-                                        $labelMap = [
-                                            'student name' => 'student_name',
-                                            'name' => 'student_name',
-                                            'father' => 'father_name',
-                                            'father name' => 'father_name',
-                                            'mother' => 'mother_name',
-                                            'mother name' => 'mother_name',
-                                            'class' => 'class',
-                                            'section' => 'section',
-                                            'admission' => 'admission_no',
-                                            'admission no' => 'admission_no',
-                                            'roll' => 'admission_no',
-                                            'roll no' => 'admission_no',
-                                            'dob' => 'date_of_birth',
-                                            'date of birth' => 'date_of_birth',
-                                            'phone' => 'phone',
-                                            'contact' => 'phone',
-                                            'contact no' => 'phone',
-                                            'blood group' => 'blood_group',
-                                            'student address' => 'student_address',
-                                            'school address' => 'school_address',
-                                            'address' => 'school_address',
-                                            'school name' => 'school_name',
-                                        ];
-
-                                        $dom = new DOMDocument();
-                                        libxml_use_internal_errors(true);
-                                        $dom->loadHTML(
-                                            '<?xml encoding="UTF-8">' . $tabledataHtml,
-                                            LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
-                                        );
-
-                                        $table = $dom->getElementsByTagName('table')->item(0);
-
-                                        if ($table) {
-                                            $rows = $table->getElementsByTagName('tr');
-
-                                            foreach ($rows as $rowIndex => $row) {
-                                                $cells = [];
-
-                                                foreach ($row->childNodes as $childNode) {
-                                                    if ($childNode instanceof DOMElement && in_array(strtolower($childNode->nodeName), ['td', 'th'], true)) {
-                                                        $cells[] = $childNode;
-                                                    }
-                                                }
-
-                                                if ($rowIndex === 0 && count($cells) === 1) {
-                                                    $cells[0]->nodeValue = $tablePlaceholderValues['student_name'] ?? '-';
-                                                    continue;
-                                                }
-
-                                                foreach ($cells as $cellIndex => $cell) {
-                                                    $cellText = $normalizeTableText($cell->textContent ?? '');
-
-                                                    if (!isset($labelMap[$cellText])) {
-                                                        continue;
-                                                    }
-
-                                                    $mappedKey = $labelMap[$cellText];
-                                                    $replacement = $tablePlaceholderValues[$mappedKey] ?? '';
-
-                                                    for ($j = $cellIndex + 1; $j < count($cells); $j++) {
-                                                        $valueCell = $cells[$j];
-                                                        $valueText = $normalizeTableText($valueCell->textContent ?? '');
-
-                                                        if ($valueText === '' || in_array($valueText, ['colon', 'dash', 'ndash', 'mdash'], true)) {
-                                                            continue;
-                                                        }
-
-                                                        if (in_array($valueText, ['student', 'school', 'father', 'mother', 'class', 'section', 'admission', 'dob', 'phone', 'address'], true)) {
-                                                            continue;
-                                                        }
-
-                                                        $valueCell->nodeValue = $replacement;
-                                                        break;
-                                                    }
-                                                }
-                                            }
-
-                                            $tabledataHtml = $dom->saveHTML($table);
-                                        }
-                                    }
 
                                 @endphp
 

@@ -116,6 +116,31 @@
                                         @enderror
                                     </div>
                                 </div>
+                                 <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="template_name">Height (mm)</label>
+                                        <input type="number"
+                                               name="height"
+                                               id="height"
+                                               class="form-control"
+                                               placeholder="Enter Height"
+                                               value="{{ old('height', $singleSample->height ?? '') }}"
+                                               >
+                                       
+                                    </div>
+                                </div>
+                                 <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="template_name">Width (mm)</label>
+                                        <input type="number"
+                                               name="width"
+                                               id="width"
+                                               class="form-control"
+                                               placeholder="Enter Width"
+                                               value="{{ old('width', $singleSample->width ?? '') }}"
+                                               >
+                                    </div>
+                                </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="house_id">House</label>

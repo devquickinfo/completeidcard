@@ -126,4 +126,6 @@ Route::middleware('auth')->group(function () {
     Route::post('upload-single', [UploadSampleController::class, 'singleStore'])
     ->name('upload-single.store');
 
+    Route::get('singlesample/{id}/status', [UploadSampleController::class, 'singleDefault'])
+    ->name('singlesample.status');
 });

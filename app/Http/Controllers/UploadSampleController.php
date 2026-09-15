@@ -246,12 +246,14 @@ class UploadSampleController extends Controller
         }
 
         // Save fields
-        $singleSample->school_id    = $schoolId;
-        $singleSample->name         = $request->name;
+        $singleSample->school_id     = $schoolId;
+        $singleSample->name          = $request->name;
         $singleSample->applicable_id = $request->applicable_id;
-        $singleSample->class_id     = $request->class_id;
-        $singleSample->orientation  = $request->orientation;
-        $singleSample->house_id     = $request->house_id;
+        $singleSample->class_id      = $request->class_id;
+        $singleSample->orientation   = $request->orientation;
+        $singleSample->house_id      = $request->house_id;
+        $singleSample->height        = $request->height;
+        $singleSample->width         = $request->width;
 
         $singleSample->save();
 
@@ -263,5 +265,37 @@ class UploadSampleController extends Controller
                     ? 'Template updated successfully.'
                     : 'Template uploaded successfully.'
             );
+    }
+
+    public function singleDefault($id)
+    {
+        $sample = UploadSample::findOrFail($id);
+
+        $schoolId = session('role') === 'school'
+            ? Auth::user()->school_id
+            : session('viewing_school');
+
+        // Authorization check
+        if ($sample->school_id !== $schoolId && !is_null($sample->school_id)) {
+            return redirect()
+                ->back()
+                ->with('error', 'You are not authorized to set this sample as default.');
+        }
+
+        // Only reset cards where BOTH class_id and applicable_id are NULL
+        UploadSample::
+         where(function ($query) use ($schoolId) {
+                $query->whereNull('school_id')
+                    ->orWhere('school_id', $schoolId);
+            })
+            ->update(['defaultcard' => 0]);
+
+        // Set selected sample as default
+        $sample->defaultcard = 1;
+        $sample->save();
+
+        return redirect()
+            ->back()
+            ->with('success', 'Sample set as default successfully.');
     }
 }

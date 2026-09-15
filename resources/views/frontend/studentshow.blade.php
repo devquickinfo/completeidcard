@@ -601,7 +601,7 @@
 
                                                                 <img
                                                                     src=" {{ $imageUrl }}" alt="{{ $fieldType }}"
-                                                        style="{{ $style }} object-fit:contain;">
+                                                        style="{{ $style }}">
 
                                                         @endif
 

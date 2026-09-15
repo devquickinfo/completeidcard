@@ -216,7 +216,7 @@
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-sm btn-danger" onclick=""><i class="fas fa-trash"></i></button>
                                             </form>
-                                             <a href="{{ route('student.history', $student->id) }}" class="btn btn-sm btn-info">
+                                            <a href="{{ route('student.history', $student->id) }}" class="btn btn-sm btn-info">
                                                 <i class="fas fa-history"></i>
                                             </a>
                                         </td>

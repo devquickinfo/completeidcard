@@ -9,7 +9,7 @@ class UploadSample extends Model
      protected $fillable = [
         'name',
         'file_path',
-        'caption', 'orientation','school_id','applicable_id','class_id','house_id',
+        'caption', 'orientation','school_id','applicable_id','class_id','house_id','height','width',
     ];
 
     public function selectedSample()
