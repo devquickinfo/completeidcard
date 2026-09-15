@@ -380,7 +380,7 @@
                                                     </td> 
                                                     <td>
                                                          <a href="{{ route('card.template.edit', [
-                                                                'schoolId' => $all->school_id,
+                                                                'schoolId' => $all->id,
                                                                 'orientation' => $all->orientation
                                                             ]) }}"
                                                             class="btn btn-sm btn-warning">
