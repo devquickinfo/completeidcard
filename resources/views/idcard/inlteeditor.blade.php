@@ -1161,7 +1161,7 @@
                             <div id="elStudentAddress" class="el el-text">Address: 24, Green Park, Varanasi, UP - 221001</div>
                             <div id="elTableData" class="el el-tabledata"></div>
 
-                            <div id="elName" class="el el-text" style="{{$designcard->layout['fields']['name']['css']}}">AARAV SHARMA</div>
+                            <div id="elName" class="el el-text" style="{{@$designcard->layout['fields']['name']['css']}}">AARAV SHARMA</div>
                             <div id="elFather" class="el el-text">Father: Rakesh Sharma</div>
                             <div id="elMother" class="el el-text">Mother: Anita Sharma</div>
                             <div id="elClass" class="el el-text">Class: V - B</div>
