@@ -609,7 +609,7 @@ class ImageHelper
                 'school_id',
                 $schoolId
             )
-            ->where('orientation', 'vertical')
+            ->where('orientation', 'vertical')->where('is_default',1)
             ->first();
 
 
@@ -623,7 +623,7 @@ class ImageHelper
                 'school_id',
                 $schoolId
             )
-            ->where('orientation', 'horizontal')
+            ->where('orientation', 'horizontal')->where('is_default',1)
             ->first();
 
 
@@ -660,5 +660,12 @@ class ImageHelper
 
         return StudentClass::find($id)?->name;
     }
+
+    public static function getLayoutStatus($id)
+    {
+        return Mainidcard::where('sample_id', $id)
+            ->value('is_default') ?? 0;
+    }
+   
   
 }

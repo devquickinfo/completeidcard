@@ -11,13 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('upload_samples', function (Blueprint $table) {
+        Schema::create('event_registrations', function (Blueprint $table) {
+
             $table->id();
+
+            $table->foreignId('event_id')
+                  ->constrained('manage_events')
+                  ->cascadeOnDelete();
+
             $table->string('name');
-            $table->string('file_path');
-            $table->string('caption')->nullable();
-            $table->enum('orientation', ['horizontal', 'vertical'])->default('horizontal');
+            $table->string('email')->nullable();
+            $table->string('mobile', 20);
+            $table->string('organization')->nullable();
+            $table->text('address')->nullable();
+
             $table->timestamps();
+
         });
     }
 
@@ -26,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('upload_samples');
+        Schema::dropIfExists('event_registrations');
     }
 };

@@ -253,11 +253,11 @@ class SchoolController extends Controller
 
         //$mainidcard = Mainidcard::where('school_id', $school->id)->first();
         $verticalDesign = Mainidcard::where('school_id', $school->id)
-            ->where('orientation', 'vertical')
+            ->where('orientation', 'vertical')->where('is_default',1)
             ->first();
 
         $horizontalDesign = Mainidcard::where('school_id', $school->id)
-            ->where('orientation', 'horizontal')
+            ->where('orientation', 'horizontal')->where('is_default',1)
             ->first();
 
         return view('schools.show', compact('school', 'classes','verticalSample','horizontalSample','verticalDesign','horizontalDesign'));

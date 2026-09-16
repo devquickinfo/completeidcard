@@ -346,6 +346,31 @@
 
     });
     });
+
+    $('.deleteAll').on('change', function () {
+    $('.deleteAllCheck').prop('checked', this.checked);
+    });
+
+    $('.deleteAllCheck').on('change', function () {
+        const total = $('.deleteAllCheck').length;
+        const checked = $('.deleteAllCheck:checked').length;
+
+        $('.deleteAll').prop('checked', total === checked);
+    });
+
+    $('.deleteAll').on('change', function () {
+      $('.deleteAllCheck').prop('checked', this.checked);
+    });
+
+    $('.printedAll').on('change', function () {
+        const total = $('.printedAllCheck').length;
+        const checked = $('.printedAllCheck:checked').length;
+        $('.printedAllCheck').prop('checked', total === checked);
+    });
+
+    $('.printedAll').on('change', function () {
+       $('.printedAllCheck').prop('checked', this.checked);
+    });
 </script>
 @endsection
 

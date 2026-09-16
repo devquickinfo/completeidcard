@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\StudentClass;
 use App\Models\ApplicableUser;
 use App\Models\House;
+use App\Models\Mainidcard;
+
+
 class UploadSampleController extends Controller
 {
     /**
@@ -269,29 +272,44 @@ class UploadSampleController extends Controller
 
     public function singleDefault($id)
     {
-        $sample = UploadSample::findOrFail($id);
-
         $schoolId = session('role') === 'school'
             ? Auth::user()->school_id
             : session('viewing_school');
 
+        // Get the actual Mainidcard record
+        $sample = Mainidcard::where('sample_id', $id)
+            ->where(function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId)
+                      ->orWhereNull('school_id');
+            })
+            ->first();
+
+        // Sample not found
+        if (!$sample) {
+            return redirect()
+                ->back()
+                ->with('error', 'ID card sample not found.');
+        }
+
         // Authorization check
-        if ($sample->school_id !== $schoolId && !is_null($sample->school_id)) {
+        if (
+            !is_null($sample->school_id) &&
+            $sample->school_id != $schoolId
+        ) {
             return redirect()
                 ->back()
                 ->with('error', 'You are not authorized to set this sample as default.');
         }
 
-        // Only reset cards where BOTH class_id and applicable_id are NULL
-        UploadSample::
-         where(function ($query) use ($schoolId) {
-                $query->whereNull('school_id')
-                    ->orWhere('school_id', $schoolId);
-            })
-            ->update(['defaultcard' => 0]);
+        // Remove default from all cards for this school
+        Mainidcard::where('school_id', $schoolId)
+            ->update([
+                'is_default' => 0
+            ]);
 
-        // Set selected sample as default
-        $sample->defaultcard = 1;
+        // If this is a global/admin sample (school_id NULL),
+        // don't change its school_id; only make it default.
+        $sample->is_default = 1;
         $sample->save();
 
         return redirect()

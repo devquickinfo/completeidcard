@@ -18,6 +18,11 @@ class Mainidcard extends Model
         'background',
         'layout',
         'is_default',
+        'class_id',
+        'applicable_id',
+        'house_id',
+        'sample_id',
+        
     ];
 
     protected $casts = [

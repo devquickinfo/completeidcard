@@ -56,7 +56,7 @@ class StudentController extends Controller
         $students = Student::with(['studentClass', 'section'])->latest()->paginate(10);
         $school_id = Auth::user()->school_id ?? session('viewing_school');
         $school = School::where('id', $school_id)->first();
-        $mainidcard = Mainidcard::where('school_id', $school_id)->first();
+        $mainidcard = Mainidcard::where('school_id', $school_id)->where('is_default',1)->first();
         $selectedSample = SelectedSample::where('school_id', $school_id)->first();
         $idcardsample = null;
         if ($selectedSample) {
@@ -164,7 +164,7 @@ class StudentController extends Controller
         }
         $student = Student::with(['studentClass', 'section'])->findOrFail($id);
         $verticalDesign = Mainidcard::where('school_id', $newid)
-            ->where('orientation', 'vertical')
+            ->where('orientation', 'vertical')->where('is_default',1)
             ->first();
             $verticalSelectedSample = SelectedSample::where('school_id', $newid)
             ->where('orientation', 'vertical')
@@ -177,7 +177,7 @@ class StudentController extends Controller
             );
         }
           $horizontalDesign = Mainidcard::where('school_id', $newid)
-            ->where('orientation', 'horizontal')
+            ->where('orientation', 'horizontal')->where('is_default',1)
             ->first();
              $horizontalSelectedSample = SelectedSample::where('school_id', $newid)
             ->where('orientation', 'horizontal')
@@ -247,10 +247,10 @@ class StudentController extends Controller
             );
         }
         $verticalDesign = Mainidcard::where('school_id', $schoolId)
-            ->where('orientation', 'vertical')
+            ->where('orientation', 'vertical')->where('is_default',1)
             ->first();
         $horizontalDesign = Mainidcard::where('school_id', $schoolId)
-            ->where('orientation', 'horizontal')
+            ->where('orientation', 'horizontal')->where('is_default',1)
             ->first();
         $defaultOrientation = SelectedSample::where('school_id', $schoolId)
             ->latest('id')

@@ -7,7 +7,7 @@
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
-          <div class="col-sm-6">
+         <!--  <div class="col-sm-6">
             <h1>Add School</h1>
           </div>
           <div class="col-sm-6">
@@ -15,9 +15,9 @@
               <li class="breadcrumb-item"><a href="#">Home</a></li>
               <li class="breadcrumb-item active">Add School</li>
             </ol>
-          </div>
+          </div> -->
         </div>
-      </div><!-- /.container-fluid -->
+      </div>
     </section>
 
     <!-- Main content -->

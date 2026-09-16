@@ -1,8 +1,15 @@
 @php
+   // $defaultOrientation = \App\Models\Mainidcard::where('school_id',auth()->user()->school_id ?? session('viewing_school')
+   // )->latest('id')->value('orientation') ?? 'vertical';
     $defaultOrientation = \App\Models\Mainidcard::where(
-        'school_id',
-        auth()->user()->school_id ?? session('viewing_school')
-    )->latest('id')->value('orientation') ?? 'vertical';@endphp
+    'school_id',
+    auth()->user()->school_id ?? session('viewing_school')
+    )
+    ->whereNull('class_id')
+    ->whereNull('applicable_id')
+    ->where('is_default', 1)
+    ->value('orientation') ?? 'vertical';
+@endphp
 <div class="col-md-12">
    <div id="captureForm">
         <input type="hidden" name="student_id" id="student_id" class="form-control" readonly>

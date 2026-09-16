@@ -15,6 +15,9 @@ use App\Models\Mainidcard;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use App\Models\PaperSize;
+use App\Models\ApplicableUser;
+use App\Models\Teacher;
 
 class IdCardController extends Controller
 {
@@ -35,12 +38,16 @@ class IdCardController extends Controller
         }
         $students = $this->buildStudentQuery($request, $schoolId)
             ->paginate($perPage);
+        $papersizes=PaperSize::all();
+        $applicableusers=ApplicableUser::all();
 
         return view('schools.createidcard', compact(
             'classes',
             'sections',
             'students',
             'perPage',
+            'papersizes',
+            'applicableusers'
         ));
     }
 
@@ -342,70 +349,211 @@ class IdCardController extends Controller
         ]);
     }
 
-    public function printFiltered(Request $request)
-    {
+    // public function printFiltered(Request $request)
+    // {
+        
+    //     echo '<pre>'; print_r($request->all()); die;
+
+    //     $schoolId = Auth::user()->school_id ?? session('viewing_school');
+    //     $orientation = $request->input('orientation', 'vertical');
+    //     $orientation = in_array($orientation, ['horizontal', 'vertical']) ? $orientation : 'vertical';
+    //     $students = $this->buildStudentQuery($request, $schoolId)->get();
+    //     $school = School::find($schoolId);
+    //     $design = Mainidcard::where('school_id', $schoolId)
+    //         ->where('orientation', $orientation)->where('is_default',1)
+    //         ->first();
+        
+    //     $sample = null;
+    //     $selectedSampleId = SelectedSample::where('school_id', $schoolId)
+    //         ->where('orientation', $orientation)
+    //         ->value('sample_id');
+        
+    //     if ($selectedSampleId) {
+    //         $sample = UploadSample::find($selectedSampleId);
+    //     }
+        
+    //     $classFilter = '';
+    //     if ($request->filled('class_id')) {
+    //         $class = StudentClass::find($request->class_id);
+    //         $classFilter = $class ? $class->name : '';
+    //     }
+        
+    //     $sectionFilter = '';
+    //     if ($request->filled('section_id')) {
+    //         $section = Section::find($request->section_id);
+    //         $sectionFilter = $section ? $section->name : '';
+    //     }
+        
+    //     $photoFilter = '';
+    //     if ($request->filled('photo')) {
+    //         $photoFilter = $request->photo === 'available' ? 'Photo Available' : 'No Photo';
+    //     }
+        
+    //     // Prepare layout
+    //     $layout = $design?->layout ?? [];
+        
+    //     return response()
+    //         ->view('schools.print_filtered_idcards', [
+    //             'students' => $students,
+    //             'school' => $school,
+    //             'design' => $design,
+    //             'sample' => $sample,
+    //             'layout' => $layout,
+    //             'orientation' => $orientation,
+    //             'classFilter' => $classFilter,
+    //             'sectionFilter' => $sectionFilter,
+    //             'photoFilter' => $photoFilter,
+    //         ])
+    //         ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+    //         ->header('Pragma', 'no-cache')
+    //         ->header('Expires', '0');
+    // }
+
+    // public function printFiltered(Request $request){
+    //     $schoolId = Auth::user()->school_id ?? session('viewing_school');
+    //     $orientation = $request->input('orientation', 'vertical');
+    //     $orientation = in_array($orientation, ['horizontal', 'vertical']) ? $orientation : 'vertical';
+    //     $students = $this->buildStudentQuery($request, $schoolId)->get();
+    //     $school = School::find($schoolId);
+    //     $teachers='';
+    //     if($request->applicableuser==2){
+
+    //         $design = Mainidcard::where('school_id', $schoolId)
+    //         ->where('applicable_id',2)
+    //         ->first();
+    //          $teachers=Teacher::where('school_id', $schoolId);
+            
+
+    //     }else{
+    //         $design = Mainidcard::where('school_id', $schoolId)
+    //         ->where('is_default',1)
+    //         ->first();
+    //     }
+        
+    //     $classFilter = '';
+    //     if ($request->filled('class_id')) {
+    //         $class = StudentClass::find($request->class_id);
+    //         $classFilter = $class ? $class->name : '';
+    //     }
+        
+    //     $sectionFilter = '';
+    //     if ($request->filled('section_id')) {
+    //         $section = Section::find($request->section_id);
+    //         $sectionFilter = $section ? $section->name : '';
+    //     }
+        
+    //     $photoFilter = '';
+    //     if ($request->filled('photo')) {
+    //         $photoFilter = $request->photo === 'available' ? 'Photo Available' : 'No Photo';
+    //     }
+    //     $orientation= $design->orientation;
+    //     $layout = $design?->layout ?? [];
+
+    //     return response()
+    //         ->view('schools.print_filtered_idcards', [
+    //             'students' => $students,
+    //             'school' => $school,
+    //             'design' => $design,
+    //             'teachers' => $teachers,
+    //             'layout' => $layout,
+    //             'orientation' => $orientation,
+    //             'classFilter' => $classFilter,
+    //             'sectionFilter' => $sectionFilter,
+    //             'photoFilter' => $photoFilter,
+    //         ]);
+    // }
+
+
+    public function printFiltered(Request $request){
         $schoolId = Auth::user()->school_id ?? session('viewing_school');
-        
-        $orientation = $request->input('orientation', 'vertical');
-        $orientation = in_array($orientation, ['horizontal', 'vertical']) ? $orientation : 'vertical';
-        
-        // Build student query with filters
-        $students = $this->buildStudentQuery($request, $schoolId)->get();
-        
-        // Get school details
         $school = School::find($schoolId);
-        
-        // Get Mainidcard design for this orientation
-        $design = Mainidcard::where('school_id', $schoolId)
-            ->where('orientation', $orientation)
-            ->first();
-        
-        // Get sample if no custom design
-        $sample = null;
-        $selectedSampleId = SelectedSample::where('school_id', $schoolId)
-            ->where('orientation', $orientation)
-            ->value('sample_id');
-        
-        if ($selectedSampleId) {
-            $sample = UploadSample::find($selectedSampleId);
+        $isTeacher = $request->applicableuser == 2;
+
+        if ($isTeacher) {
+            $design = Mainidcard::where('school_id', $schoolId)
+                ->where('applicable_id', 2)
+                ->first();
+
+            $records = $this->buildTeacherQuery($request, $schoolId)->get();
+        } else {
+            $design = Mainidcard::where('school_id', $schoolId)
+                ->where('is_default', 1)
+                ->first();
+
+            $records = $this->buildStudentQuery($request, $schoolId)->get();
         }
-        
-        // Get filter labels for display
+
+        // Reuse the same filter-label vars, just mapped to different columns for teachers
         $classFilter = '';
-        if ($request->filled('class_id')) {
+        if ($isTeacher) {
+            $classFilter = $request->filled('department') ? $request->department : '';
+        } elseif ($request->filled('class_id')) {
             $class = StudentClass::find($request->class_id);
             $classFilter = $class ? $class->name : '';
         }
-        
+
         $sectionFilter = '';
-        if ($request->filled('section_id')) {
+        if ($isTeacher) {
+            $sectionFilter = $request->filled('designation') ? $request->designation : '';
+        } elseif ($request->filled('section_id')) {
             $section = Section::find($request->section_id);
             $sectionFilter = $section ? $section->name : '';
         }
-        
+
         $photoFilter = '';
         if ($request->filled('photo')) {
             $photoFilter = $request->photo === 'available' ? 'Photo Available' : 'No Photo';
         }
-        
-        // Prepare layout
+
+        $orientation = $design->orientation;
         $layout = $design?->layout ?? [];
-        
-        return response()
-            ->view('schools.print_filtered_idcards', [
-                'students' => $students,
-                'school' => $school,
-                'design' => $design,
-                'sample' => $sample,
-                'layout' => $layout,
-                'orientation' => $orientation,
-                'classFilter' => $classFilter,
-                'sectionFilter' => $sectionFilter,
-                'photoFilter' => $photoFilter,
-            ])
-            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-            ->header('Pragma', 'no-cache')
-            ->header('Expires', '0');
+
+        return response()->view('schools.print_filtered_idcards', [
+            'students'     => $records,      // blade var name kept as-is
+            'school'       => $school,
+            'design'       => $design,
+            'isTeacher'    => $isTeacher,    // new — drives all the branching in the blade
+            'layout'       => $layout,
+            'orientation'  => $orientation,
+            'classFilter'  => $classFilter,
+            'sectionFilter'=> $sectionFilter,
+            'photoFilter'  => $photoFilter,
+        ]);
+    }
+
+    protected function buildTeacherQuery(Request $request, $schoolId)
+    {
+        $query = Teacher::where('school_id', $schoolId)
+            ->where('IsDeleted', 0);
+
+        if ($request->filled('department')) {
+            $query->where('department', $request->department);
+        }
+
+        if ($request->filled('designation')) {
+            $query->where('designation', $request->designation);
+        }
+
+        if ($request->filled('photo')) {
+            if ($request->photo === 'available') {
+                $query->whereNotNull('photo')->where('photo', '!=', '');
+            } else {
+                $query->where(function ($q) {
+                    $q->whereNull('photo')->orWhere('photo', '');
+                });
+            }
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('employee_code', 'like', "%{$search}%");
+            });
+        }
+
+        return $query;
     }
 }
 

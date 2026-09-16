@@ -25,11 +25,15 @@ class MainidcardController extends Controller
             'card_height' => 'required|integer',
             'background' => 'nullable|string',
             'layout' => 'required|array',
+            'class_id'      => 'nullable|integer',
+            'applicable_id' => 'nullable|integer',
+            'house_id'      => 'nullable|integer',
+            'sample_id'     => 'nullable|integer',
         ]);
 
 
         $orientation = $validated['orientation'];
-        $existing = Mainidcard::where('school_id', $schoolId)
+        $existing = Mainidcard::where('sample_id', $request->sample_id)
             ->where('orientation', $orientation)
             ->first();
         if ($existing) {
@@ -199,6 +203,11 @@ class MainidcardController extends Controller
             'background' => $validated['background'] ?? null,
             'layout' => $layout,
             'is_default' => $isFirst,
+
+            'class_id'      => $validated['class_id'] ?? null,
+            'applicable_id' => $validated['applicable_id'] ?? null,
+            'house_id'      => $validated['house_id'] ?? null,
+            'sample_id'     => $validated['sample_id'] ?? null,
         ]);
 
 
@@ -212,61 +221,9 @@ class MainidcardController extends Controller
 
 
 
-    // public function edit($schoolId, $orientation)
-    // {
-    //     if (!in_array($orientation, ['vertical', 'horizontal'])) {
-    //         $orientation = 'vertical';
-    //     }
-    //     $schoolId = Auth::user()->school_id ?? session('viewing_school');
-    //     // $selectedSampleId = SelectedSample::where('school_id', $schoolId)
-    //     //     ->where('orientation', $orientation)
-    //     //     ->value('sample_id');
-
-    //     $selectedSample = 1;
-
-    //     if ($selectedSampleId) {
-    //         $selectedSample = UploadSample::find($selectedSampleId);
-    //     }
-    //     $verticalSampleId = SelectedSample::where('school_id', $schoolId)
-    //         ->where('orientation', 'vertical')
-    //         ->value('sample_id');
-
-    //     $verticalSample = $verticalSampleId
-    //         ? UploadSample::find($verticalSampleId)
-    //         : null;
-    //     $horizontalSampleId = SelectedSample::where('school_id', $schoolId)
-    //         ->where('orientation', 'horizontal')
-    //         ->value('sample_id');
-
-    //     $horizontalSample = $horizontalSampleId
-    //         ? UploadSample::find($horizontalSampleId)
-    //         : null;
-    //     $school = School::find($schoolId);
-    //     $idCardData = Mainidcard::where('school_id', $schoolId)
-    //         ->where('orientation', $orientation)
-    //         ->first();
-    //     $designcard = $idCardData ?: null;
-
-    //     return response()->view(
-    //         'idcard.inlteeditor',
-    //         compact(
-    //             'schoolId',
-    //             'selectedSample',
-    //             'verticalSample',
-    //             'horizontalSample',
-    //             'designcard',
-    //             'school',
-    //             'orientation'
-    //         )
-    //     );
-    // }
-    public function edit($schoolId, $orientation)
+    
+    public function edit($id, $orientation)
     {
-        if (!in_array($orientation, ['vertical', 'horizontal'])) {
-            $orientation = 'vertical';
-        }
-
-        // Get school ID based on role
         if (session('role') === 'school') {
             $schoolId = Auth::user()->school_id;
         } elseif (session('role') === 'superadmin') {
@@ -274,42 +231,9 @@ class MainidcardController extends Controller
         } else {
             $schoolId = null;
         }
-
-        // Get vertical sample directly from upload_samples
-        $verticalSample = UploadSample::where('orientation', 'vertical')
-            ->latest()
-            ->first();
-
-        // Get horizontal sample directly from upload_samples
-        $horizontalSample = UploadSample::where('orientation', 'horizontal')
-            ->latest()
-            ->first();
-
-        // Current sample according to orientation
-        $selectedSample = $orientation === 'vertical'
-            ? $verticalSample
-            : $horizontalSample;
-
         $school = School::find($schoolId);
-
-        $idCardData = Mainidcard::where('school_id', $schoolId)
-            ->where('orientation', $orientation)
-            ->first();
-
-        $designcard = $idCardData ?: null;
-
-        return response()->view(
-            'idcard.inlteeditor',
-            compact(
-                'schoolId',
-                'selectedSample',
-                'verticalSample',
-                'horizontalSample',
-                'designcard',
-                'school',
-                'orientation'
-            )
-        );
+        $idCardData = UploadSample::where('id', $id)->first();
+        return response()->view('idcard.inlteeditor',compact('schoolId','idCardData','school','orientation','id'));
     }
 
    

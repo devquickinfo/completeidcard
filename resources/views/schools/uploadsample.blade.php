@@ -372,7 +372,10 @@
                                                         </a>
                                                        
                                                         <a href="{{ route('singlesample.delete', $all->id) }}" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
-                                                        @if($all->defaultcard == 1)
+                                                        @php
+                                                           $idCardData = \App\Helpers\ImageHelper::getLayoutStatus($all->id);
+                                                        @endphp
+                                                        @if($idCardData == 1)
                                                             <a href="{{ route('singlesample.status', $all->id) }}" class="btn btn-sm btn-success"><i class="fas fa-check"></i></a>
                                                         @else
                                                             <a href="{{ route('singlesample.status', $all->id) }}" class="btn btn-sm btn-secondary"><i class="fas fa-times"></i></a>
@@ -380,7 +383,7 @@
                                                     </td> 
                                                     <td>
                                                          <a href="{{ route('card.template.edit', [
-                                                                'schoolId' => $all->school_id,
+                                                                'schoolId' => $all->id,
                                                                 'orientation' => $all->orientation
                                                             ]) }}"
                                                             class="btn btn-sm btn-warning">

@@ -2,15 +2,17 @@
 @section('title', 'ID Card Editor — ' . ucwords($school->school_name ?? ''))
 @section('content')
 @php
-  //echo '<pre>'; print_r($selectedSample); die;
-  $editorBackground = $designcard->background ?? ($selectedSample->file_path ?? null);
+ 
+  $editorBackground = $idCardData->file_path;
   $editorBackgroundUrl = $editorBackground
       ? (preg_match('/^https?:\\/\\//', $editorBackground)
           ? $editorBackground
           : asset('storage/' . $editorBackground))
       : '';
-
-
+    use App\Models\Mainidcard;
+    $designcard= Mainidcard::where('sample_id', $idCardData->id)
+            ->where('orientation', $idCardData->orientation)
+            ->first();
     $mmToPx = 96 / 25.4;
 
 	$cardWidth = !empty($selectedSample->width)
@@ -789,11 +791,11 @@
                                 <div class="row4">
                                     <div class="field">
                                         <label>Left</label>
-                                        <input type="number" id="tableLeft" value="{{ isset($designcard->layout['tablePosition']['left']) ? $designcard->layout['tablePosition']['left'] : 30 }}">
+                                        <input type="number" id="tableLeft" value="{{ isset($designcard->layout['tablePosition']['left']) ? $designcard->layout['tablePosition']['left'] : 90 }}">
                                     </div>
                                     <div class="field">
                                         <label>Top</label>
-                                        <input type="number" id="tableTop" value="{{ isset($designcard->layout['tablePosition']['top']) ? $designcard->layout['tablePosition']['top'] : 120 }}">
+                                        <input type="number" id="tableTop" value="{{ isset($designcard->layout['tablePosition']['top']) ? $designcard->layout['tablePosition']['top'] : 35 }}">
                                     </div>
                                     <div class="field">
                                         <label>Width</label>
@@ -4795,11 +4797,19 @@
                         card_height:
                             CARD_H,
 
-                        background:
-                            background,
+                       // background:background,
+                       background:@json($idCardData->file_path ?? null),
 
                         layout:
-                            layout
+                            layout,
+                        
+                        class_id: @json($idCardData->class_id ?? null),
+
+                        applicable_id: @json($idCardData->applicable_id ?? null),
+
+                        house_id: @json($idCardData->house_id ?? null),
+
+                        sample_id: @json($idCardData->id ?? null)
                     };
 
 

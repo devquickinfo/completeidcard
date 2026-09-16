@@ -567,6 +567,15 @@
                     @endif
                     @if(session('role') === 'superadmin' && !session('viewing_school'))
                     <li class="nav-item">
+                        <a href="{{ route('manage-events.index') }}"
+                        class="nav-link {{ request()->routeIs('manage-events.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-flag"></i>
+                            <p>
+                                Events
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="#" class="nav-link {{ request()->routeIs('student.deleted') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-cog"></i>
                             <p>

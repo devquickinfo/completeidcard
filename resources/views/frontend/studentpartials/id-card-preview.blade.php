@@ -1,11 +1,13 @@
 @php
     use App\Helpers\ImageHelper;
-    $orientation = $orientation
-        ?? \App\Models\Mainidcard::where(
-            'school_id',
-            auth()->user()->school_id ?? session('viewing_school')
-        )->latest('id')->value('orientation')
-        ?? 'vertical';
+     $defaultOrientation = \App\Models\Mainidcard::where(
+    'school_id',
+    auth()->user()->school_id ?? session('viewing_school')
+    )
+    ->whereNull('class_id')
+    ->whereNull('applicable_id')
+    ->where('is_default', 1)
+    ->value('orientation') ?? 'vertical';
     $idCardData = ImageHelper::getIdCard($student->id);
     $verticalSample = $idCardData['verticalSample'];
     $horizontalSample = $idCardData['horizontalSample'];

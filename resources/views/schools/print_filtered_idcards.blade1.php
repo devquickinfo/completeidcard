@@ -5,14 +5,23 @@
     <meta charset="UTF-8">
     <title>Filtered ID Cards - Print</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
+     <style>
+        @php
+            $isVertical = strtolower(trim($orientation)) === 'vertical';
+        @endphp
         @page {
-            size: A4 portrait;
-            margin: 5mm;
+            size: A4 {{ $isVertical ? 'landscape' : 'portrait' }};
+            margin: 0;
+        }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         html,
@@ -25,10 +34,15 @@
             background: #eeeeee;
             font-family: Arial, Helvetica, sans-serif;
         }
+         .print-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 15px auto;
+        }
 
         .print-button {
-            display: block;
-            margin: 15px auto;
             padding: 10px 25px;
             border: 0;
             border-radius: 5px;
@@ -38,27 +52,87 @@
             font-size: 14px;
         }
 
+        @media print {
+            .print-buttons {
+                display: none;
+            }
+        }
         .print-info {
             text-align: center;
+
             margin: 10px auto;
+
             font-size: 13px;
             color: #666;
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | A4 PAGE
-        |--------------------------------------------------------------------------
-        */
-
         .a4-page {
+            width: {{ $isVertical ? '297mm' : '210mm' }};
+            height: {{ $isVertical ? '210mm' : '297mm' }};
+            margin: 5mm auto;
+            padding: 5mm;
+            display: grid;
+            column-gap: 3mm;
+            row-gap: 3mm;
+            align-content: start;
+            justify-content: start;
+            background: #fff;
+            overflow: hidden;
+            page-break-after: always;
+            break-after: page;
+        }
+
+        
+
+        .a4-page.orientation-vertical {
+            width: 297mm !important;
+            height: 210mm !important;
+
+            margin: 0 !important;
+            padding: 14mm 7.5mm !important;
+
+            display: grid !important;
+
+            grid-template-columns: repeat(5, 54mm) !important;
+            grid-template-rows: repeat(2, 84mm) !important;
+
+            column-gap: 3mm !important;
+            row-gap: 14mm !important;
+
+            align-content: start !important;
+            justify-content: start !important;
+
+            overflow: hidden !important;
+        }
+
+        .a4-page.orientation-vertical .id-card-container {
+            width: 54mm !important;
+            height: 84mm !important;
+
+            min-width: 54mm !important;
+            max-width: 54mm !important;
+
+            min-height: 84mm !important;
+            max-height: 84mm !important;
+
+            position: relative !important;
+
+            overflow: hidden !important;
+
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
+       
+
+        .a4-page.orientation-horizontal {
             width: 210mm;
             height: 297mm;
 
-            margin: 5mm auto;
             padding: 5mm;
 
             display: grid;
+
+            grid-template-columns: repeat(2, 98mm);
+            grid-template-rows: repeat(5, 55mm);
 
             column-gap: 3mm;
             row-gap: 3mm;
@@ -66,43 +140,20 @@
             align-content: start;
             justify-content: start;
 
-            background: #fff;
-
             overflow: hidden;
-
-            page-break-after: always;
-            break-after: page;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | HORIZONTAL
-        |--------------------------------------------------------------------------
-        */
+    
+        .a4-page.orientation-horizontal .id-card-container {
+            width: 98mm;
+            height: 55mm;
 
-        .a4-page.orientation-horizontal {
-            grid-template-columns: repeat(2, 98mm);
-            grid-template-rows: repeat(5, 55mm);
-        }
+            min-width: 98mm;
+            max-width: 98mm;
 
-        /*
-        |--------------------------------------------------------------------------
-        | VERTICAL
-        |--------------------------------------------------------------------------
-        */
+            min-height: 55mm;
+            max-height: 55mm;
 
-        .a4-page.orientation-vertical {
-            grid-template-columns: repeat(3, 54mm);
-            grid-template-rows: repeat(3, 84mm);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | PHYSICAL CARD CONTAINER
-        |--------------------------------------------------------------------------
-        */
-
-        .id-card-container {
             position: relative;
 
             overflow: hidden;
@@ -111,11 +162,7 @@
             break-inside: avoid;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | EDITOR CANVAS
-        |--------------------------------------------------------------------------
-        */
+        
 
         .id-card {
             position: absolute;
@@ -126,48 +173,68 @@
             overflow: hidden;
 
             transform-origin: top left;
+
+            page-break-inside: avoid;
+            break-inside: avoid;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | NO STUDENTS
-        |--------------------------------------------------------------------------
-        */
+        
 
         .no-students {
             padding: 40px;
+
             text-align: center;
+
             background: #fff;
+
             margin: 20px auto;
+
             border-radius: 5px;
+
             max-width: 600px;
-            box-shadow: 0 0 8px rgba(0, 0, 0, .15);
+
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
         }
 
         .no-students h3 {
             color: #d9534f;
+
             margin: 0 0 10px 0;
         }
 
         .no-students p {
             color: #666;
+
             margin: 0;
         }
 
+       
+
         @media screen {
+
             .a4-page {
-                box-shadow: 0 0 8px rgba(0, 0, 0, .15);
+                box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
             }
+
         }
+
+        
 
         @media print {
 
+            @page {
+                size: A4 {{ $isVertical ? 'landscape' : 'portrait' }};
+                margin: 0;
+            }
+
             html,
             body {
-                width: 210mm;
-                height: 297mm;
-                margin: 0;
-                padding: 0;
+                width: {{ $isVertical ? '297mm' : '210mm' }};
+                height: {{ $isVertical ? '210mm' : '297mm' }};
+
+                margin: 0 !important;
+                padding: 0 !important;
+
                 background: #fff;
             }
 
@@ -176,26 +243,140 @@
                 display: none !important;
             }
 
-            .a4-page {
-                width: 210mm;
-                height: 297mm;
-                margin: 0;
-                padding: 5mm;
+          
 
-                box-shadow: none;
+            .a4-page {
+                width: {{ $isVertical ? '297mm' : '210mm' }} !important;
+                height: {{ $isVertical ? '210mm' : '297mm' }} !important;
+
+                margin: 0 !important;
+                padding: 5mm !important;
+
+                box-shadow: none !important;
 
                 page-break-after: always;
                 break-after: page;
+
+                overflow: hidden !important;
             }
+
+            
+
+            .a4-page.orientation-vertical {
+                width: 297mm !important;
+                height: 210mm !important;
+
+                margin: 0 !important;
+                padding: 14mm 7.5mm !important;
+
+                display: grid !important;
+
+                grid-template-columns: repeat(5, 54mm) !important;
+                grid-template-rows: repeat(2, 84mm) !important;
+
+                column-gap: 3mm !important;
+                row-gap: 14mm !important;
+
+                align-content: start !important;
+                justify-content: start !important;
+
+                overflow: hidden !important;
+            }
+
+            .a4-page.orientation-vertical .id-card-container {
+                width: 54mm !important;
+                height: 84mm !important;
+
+                min-width: 54mm !important;
+                max-width: 54mm !important;
+
+                min-height: 84mm !important;
+                max-height: 84mm !important;
+
+                position: relative !important;
+
+                overflow: hidden !important;
+
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+          
+
+            .a4-page.orientation-horizontal {
+                width: 210mm !important;
+                height: 297mm !important;
+
+                padding: 5mm !important;
+
+                display: grid !important;
+
+                grid-template-columns:
+                    98mm 98mm !important;
+
+                grid-template-rows:
+                    55mm 55mm 55mm 55mm 55mm !important;
+
+                column-gap: 3mm !important;
+                row-gap: 3mm !important;
+
+                align-content: start !important;
+                justify-content: start !important;
+
+                overflow: hidden !important;
+            }
+
+            .a4-page.orientation-horizontal .id-card-container {
+                width: 98mm !important;
+                height: 55mm !important;
+
+                min-width: 98mm !important;
+                max-width: 98mm !important;
+
+                min-height: 55mm !important;
+                max-height: 55mm !important;
+
+                position: relative !important;
+
+                overflow: hidden !important;
+
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+           
+
+            .id-card {
+                position: absolute !important;
+
+                top: 0 !important;
+                left: 0 !important;
+
+                overflow: hidden !important;
+
+                transform-origin: top left !important;
+
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
         }
     </style>
 </head>
 
 <body>
 
-<button class="print-button" onclick="window.print()">
-    🖨 Print ID Cards
-</button>
+<div class="print-buttons">
+
+    <button type="button" class="print-button" onclick="window.print()">
+        🖨 Print ID Cards
+    </button>
+
+    <button type="button" class="print-button" onclick="">
+        🖨 Mark All Printed
+    </button>
+
+</div>
 
 <div class="print-info">
 
@@ -213,170 +394,58 @@
 
 
 @if($students->count() > 0)
-
     @php
-
-        /*
-        |--------------------------------------------------------------------------
-        | NORMALIZE ORIENTATION
-        |--------------------------------------------------------------------------
-        */
-
         $orientation = strtolower($orientation ?? 'horizontal');
-
         if (!in_array($orientation, ['horizontal', 'vertical'])) {
             $orientation = 'horizontal';
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | PHYSICAL PRINT SIZE
-        |--------------------------------------------------------------------------
-        */
-
         if ($orientation === 'vertical') {
-
-            $cardsPerPage = 9;
-
-            $printWidthMm = 54;
+            $cardsPerPage = 10;
+            $printWidthMm =  54;
             $printHeightMm = 84;
 
         } else {
-
             $cardsPerPage = 10;
-
             $printWidthMm = 98;
             $printHeightMm = 55;
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | SAVED EDITOR LAYOUT
-        |--------------------------------------------------------------------------
-        */
-
         if (is_string($layout)) {
             $layout = json_decode($layout, true) ?? [];
         }
-
         if (!is_array($layout)) {
             $layout = [];
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | IMPORTANT:
-        |
-        | Your actual saved layout is:
-        |
-        | cardWidth  = 317
-        | cardHeight = 204
-        |
-        |--------------------------------------------------------------------------
-        */
-
         $editorWidth = (float) ($layout['cardWidth'] ?? 317);
         $editorHeight = (float) ($layout['cardHeight'] ?? 204);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | FIELDS
-        |--------------------------------------------------------------------------
-        */
-
         $fields = $layout['fields'] ?? [];
-
         if (!is_array($fields)) {
             $fields = [];
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | SCALE
-        |--------------------------------------------------------------------------
-        |
-        | We need to convert the editor's 317x204 canvas
-        | into the physical 98x55mm card.
-        |
-        | IMPORTANT:
-        |
-        | Do NOT scale X and Y independently.
-        |
-        | One uniform scale keeps:
-        |
-        | x
-        | y
-        | width
-        | height
-        |
-        | exactly proportional to the editor.
-        |--------------------------------------------------------------------------
-        */
-
         $pxPerMm = 96 / 25.4;
-
         $printWidthPx = $printWidthMm * $pxPerMm;
         $printHeightPx = $printHeightMm * $pxPerMm;
-
         $scaleX = $printWidthPx / $editorWidth;
         $scaleY = $printHeightPx / $editorHeight;
-
         $scale = min($scaleX, $scaleY);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | BACKGROUND
-        |--------------------------------------------------------------------------
-        */
-
         if (!empty($design->background)) {
-
             $bgUrl = asset(
                 'storage/' . ltrim($design->background, '/')
             );
-
         } elseif ($sample && !empty($sample->file_path)) {
-
             $bgUrl = asset(
                 'storage/' . ltrim($sample->file_path, '/')
             );
-
         } else {
-
             $bgUrl = '';
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | LAYOUT CHECK
-        |--------------------------------------------------------------------------
-        */
-
         $hasLayout = count($fields) > 0;
-
-        /*
-        |--------------------------------------------------------------------------
-        | TABLE DATA (unrelated to $fields — same key names/tokens are reused)
-        |--------------------------------------------------------------------------
-        */
-
         $tabledataHtmlRaw = $layout['tabledata'] ?? '';
         $tablePos = $layout['tablePosition'] ?? [];
-
         $tableLeft   = isset($tablePos['left'])   ? (float) $tablePos['left']   : 30;
         $tableTop    = isset($tablePos['top'])    ? (float) $tablePos['top']    : 120;
         $tableWidth  = isset($tablePos['width'])  ? (float) $tablePos['width']  : max(120, $editorWidth - 60);
         $tableHeight = isset($tablePos['height']) ? (float) $tablePos['height'] : 0;
-
         $hasTableLayout = is_string($tabledataHtmlRaw) && trim(strip_tags($tabledataHtmlRaw)) !== '';
-
     @endphp
 
 
@@ -431,59 +500,31 @@
         @foreach($students->chunk($cardsPerPage) as $pageStudents)
             <div class="a4-page orientation-{{ $orientation }}">
                 @foreach($pageStudents as $student)
-                    <div
-                        class="id-card-container"
-                        style="
-                            width: {{ $printWidthMm }}mm;
-                            height: {{ $printHeightMm }}mm;
-                        "
-                    >
-                        <div
-                            class="id-card"
-                            style="
-                                width: {{ $editorWidth }}px;
-                                height: {{ $editorHeight }}px;
-
-                                transform:
-                                    scale({{ $scale }});
-                            "
-                        >
+                    <div class="id-card-container" style=" width: {{ $printWidthMm }}mm; height: {{ $printHeightMm }}mm;">
+                        <div class="id-card" style="width:{{ $editorWidth }}px; height:{{ $editorHeight }}px; transform:scale({{ $scale }});">
                             @if($bgUrl)
                                 <div
                                     style="
                                         position:absolute;
                                         left:0;
                                         top:0;
-
                                         width:100%;
                                         height:100%;
-
                                         background-image:url('{{ $bgUrl }}');
-
                                         background-size:100% 100%;
-
                                         background-position:0 0;
-
                                         background-repeat:no-repeat;
-
-                                        z-index:0;
-                                    "
-                                ></div>
-
+                                        z-index:0;">
+                                </div>
                             @else
-
                                 <div
                                     style="
                                         position:absolute;
-
                                         left:0;
                                         top:0;
-
                                         width:100%;
                                         height:100%;
-
                                         background:#f5f5f5;
-
                                         z-index:0;
                                     "
                                 ></div>
@@ -830,13 +871,7 @@
                                                 $student->phone ?? '-'
                                             );
 
-                                        /*
-                                        |--------------------------------------------------------------------------
-                                        | Check "studentaddress" BEFORE the generic "address" check below,
-                                        | since "student address" (with a space/underscore) DOES satisfy the
-                                        | word-boundary regex for "address" too. Order matters here.
-                                        |--------------------------------------------------------------------------
-                                        */
+                                       
 
                                         } elseif (
                                             $wb('studentaddress') ||
@@ -1135,7 +1170,7 @@
 
                                                 
 
-                                                
+                                               
                                             "
                                         >
 
@@ -1476,7 +1511,7 @@
                                             'blood group' => 'blood_group',
                                             'student address' => 'student_address',
                                             'school address' => 'school_address',
-                                            'address' => 'school_address',
+                                            'address' => 'student_address',
                                             'school name' => 'school_name',
                                         ];
 
@@ -1492,32 +1527,29 @@
                                         if ($table) {
                                             $rows = $table->getElementsByTagName('tr');
 
-                                            foreach ($rows as $rowIndex => $row) {
-                                                $cells = [];
+                                            foreach ($rows as $row) {
+                                                $cells = $row->getElementsByTagName('td');
+                                                $cellCount = $cells->length;
 
-                                                foreach ($row->childNodes as $childNode) {
-                                                    if ($childNode instanceof DOMElement && in_array(strtolower($childNode->nodeName), ['td', 'th'], true)) {
-                                                        $cells[] = $childNode;
-                                                    }
-                                                }
-
-                                                if ($rowIndex === 0 && count($cells) === 1) {
-                                                    $cells[0]->nodeValue = $tablePlaceholderValues['student_name'] ?? '-';
+                                                if ($cellCount === 1) {
+                                                    $cells->item(0)->nodeValue = $tablePlaceholderValues['student_name'] ?? '-';
                                                     continue;
                                                 }
 
-                                                foreach ($cells as $cellIndex => $cell) {
-                                                    $cellText = $normalizeTableText($cell->textContent ?? '');
+                                                for ($i = 0; $i < $cellCount; $i++) {
+                                                    $cell = $cells->item($i);
+                                                    if (!$cell) continue;
 
-                                                    if (!isset($labelMap[$cellText])) {
-                                                        continue;
-                                                    }
+                                                    $cellText = $normalizeTableText($cell->textContent ?? '');
+                                                    if (!isset($labelMap[$cellText])) continue;
 
                                                     $mappedKey = $labelMap[$cellText];
                                                     $replacement = $tablePlaceholderValues[$mappedKey] ?? '';
 
-                                                    for ($j = $cellIndex + 1; $j < count($cells); $j++) {
-                                                        $valueCell = $cells[$j];
+                                                    for ($j = $i + 1; $j < $cellCount; $j++) {
+                                                        $valueCell = $cells->item($j);
+                                                        if (!$valueCell) continue;
+
                                                         $valueText = $normalizeTableText($valueCell->textContent ?? '');
 
                                                         if ($valueText === '' || in_array($valueText, ['colon', 'dash', 'ndash', 'mdash'], true)) {

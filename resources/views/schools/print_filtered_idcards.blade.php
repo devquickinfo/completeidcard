@@ -5,259 +5,80 @@
     <meta charset="UTF-8">
     <title>Filtered ID Cards - Print</title>
 
-     <style>
-        @php
-            $isVertical = strtolower(trim($orientation)) === 'vertical';
-        @endphp
-        @page {
-            size: A4 {{ $isVertical ? 'landscape' : 'portrait' }};
-            margin: 0;
-        }
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background: #eeeeee;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-         .print-buttons {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin: 15px auto;
-        }
-
-        .print-button {
-            padding: 10px 25px;
-            border: 0;
-            border-radius: 5px;
-            background: #147abb;
-            color: #fff;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        @media print {
-            .print-buttons {
-                display: none;
-            }
-        }
-        .print-info {
-            text-align: center;
-
-            margin: 10px auto;
-
-            font-size: 13px;
-            color: #666;
-        }
-        .a4-page {
-            width: {{ $isVertical ? '297mm' : '210mm' }};
-            height: {{ $isVertical ? '210mm' : '297mm' }};
-            margin: 5mm auto;
-            padding: 5mm;
-            display: grid;
-            column-gap: 3mm;
-            row-gap: 3mm;
-            align-content: start;
-            justify-content: start;
-            background: #fff;
-            overflow: hidden;
-            page-break-after: always;
-            break-after: page;
-        }
-
-        
-
-        .a4-page.orientation-vertical {
-            width: 297mm !important;
-            height: 210mm !important;
-
-            margin: 0 !important;
-            padding: 14mm 7.5mm !important;
-
-            display: grid !important;
-
-            grid-template-columns: repeat(5, 54mm) !important;
-            grid-template-rows: repeat(2, 84mm) !important;
-
-            column-gap: 3mm !important;
-            row-gap: 14mm !important;
-
-            align-content: start !important;
-            justify-content: start !important;
-
-            overflow: hidden !important;
-        }
-
-        .a4-page.orientation-vertical .id-card-container {
-            width: 54mm !important;
-            height: 84mm !important;
-
-            min-width: 54mm !important;
-            max-width: 54mm !important;
-
-            min-height: 84mm !important;
-            max-height: 84mm !important;
-
-            position: relative !important;
-
-            overflow: hidden !important;
-
-            page-break-inside: avoid !important;
-            break-inside: avoid !important;
-        }
-       
-
-        .a4-page.orientation-horizontal {
-            width: 210mm;
-            height: 297mm;
-
-            padding: 5mm;
-
-            display: grid;
-
-            grid-template-columns: repeat(2, 98mm);
-            grid-template-rows: repeat(5, 55mm);
-
-            column-gap: 3mm;
-            row-gap: 3mm;
-
-            align-content: start;
-            justify-content: start;
-
-            overflow: hidden;
-        }
-
-    
-        .a4-page.orientation-horizontal .id-card-container {
-            width: 98mm;
-            height: 55mm;
-
-            min-width: 98mm;
-            max-width: 98mm;
-
-            min-height: 55mm;
-            max-height: 55mm;
-
-            position: relative;
-
-            overflow: hidden;
-
-            page-break-inside: avoid;
-            break-inside: avoid;
-        }
-
-        
-
-        .id-card {
-            position: absolute;
-
-            top: 0;
-            left: 0;
-
-            overflow: hidden;
-
-            transform-origin: top left;
-
-            page-break-inside: avoid;
-            break-inside: avoid;
-        }
-
-        
-
-        .no-students {
-            padding: 40px;
-
-            text-align: center;
-
-            background: #fff;
-
-            margin: 20px auto;
-
-            border-radius: 5px;
-
-            max-width: 600px;
-
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .no-students h3 {
-            color: #d9534f;
-
-            margin: 0 0 10px 0;
-        }
-
-        .no-students p {
-            color: #666;
-
-            margin: 0;
-        }
-
-       
-
-        @media screen {
-
-            .a4-page {
-                box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
-            }
-
-        }
-
-        
-
-        @media print {
-
+    <style>
+            @php
+                $isVertical = strtolower(trim($orientation)) === 'vertical';
+            @endphp
             @page {
                 size: A4 {{ $isVertical ? 'landscape' : 'portrait' }};
                 margin: 0;
             }
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
 
             html,
             body {
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                background: #eeeeee;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+             .print-buttons {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 15px;
+                margin: 15px auto;
+            }
+
+            .print-button {
+                padding: 10px 25px;
+                border: 0;
+                border-radius: 5px;
+                background: #147abb;
+                color: #fff;
+                cursor: pointer;
+                font-size: 14px;
+            }
+
+            @media print {
+                .print-buttons {
+                    display: none;
+                }
+            }
+            .print-info {
+                text-align: center;
+
+                margin: 10px auto;
+
+                font-size: 13px;
+                color: #666;
+            }
+            .a4-page {
                 width: {{ $isVertical ? '297mm' : '210mm' }};
                 height: {{ $isVertical ? '210mm' : '297mm' }};
-
-                margin: 0 !important;
-                padding: 0 !important;
-
+                margin: 5mm auto;
+                padding: 5mm;
+                display: grid;
+                column-gap: 3mm;
+                row-gap: 3mm;
+                align-content: start;
+                justify-content: start;
                 background: #fff;
-            }
-
-            .print-button,
-            .print-info {
-                display: none !important;
-            }
-
-          
-
-            .a4-page {
-                width: {{ $isVertical ? '297mm' : '210mm' }} !important;
-                height: {{ $isVertical ? '210mm' : '297mm' }} !important;
-
-                margin: 0 !important;
-                padding: 5mm !important;
-
-                box-shadow: none !important;
-
+                overflow: hidden;
                 page-break-after: always;
                 break-after: page;
-
-                overflow: hidden !important;
             }
 
             
@@ -300,67 +121,248 @@
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
             }
-
-          
+           
 
             .a4-page.orientation-horizontal {
-                width: 210mm !important;
-                height: 297mm !important;
+                width: 210mm;
+                height: 297mm;
 
-                padding: 5mm !important;
+                padding: 5mm;
+                padding-left: 15mm;
 
-                display: grid !important;
+                display: grid;
 
-                grid-template-columns:
-                    98mm 98mm !important;
+                grid-template-columns: repeat(2, 98mm);
+                grid-template-rows: repeat(5, 55mm);
 
-                grid-template-rows:
-                    55mm 55mm 55mm 55mm 55mm !important;
-
-                column-gap: 3mm !important;
-                row-gap: 3mm !important;
+                column-gap: 3mm;
+                row-gap: 3mm;
 
                 align-content: start !important;
-                justify-content: start !important;
+                justify-content: center !important;
 
-                overflow: hidden !important;
+                overflow: hidden;
             }
 
+        
             .a4-page.orientation-horizontal .id-card-container {
-                width: 98mm !important;
-                height: 55mm !important;
+                width: 98mm;
+                height: 55mm;
 
-                min-width: 98mm !important;
-                max-width: 98mm !important;
+                min-width: 98mm;
+                max-width: 98mm;
 
-                min-height: 55mm !important;
-                max-height: 55mm !important;
+                min-height: 55mm;
+                max-height: 55mm;
 
-                position: relative !important;
+                position: relative;
 
-                overflow: hidden !important;
+                overflow: hidden;
 
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            
+
+            .id-card {
+                position: absolute;
+
+                top: 0;
+                left: 0;
+
+                overflow: hidden;
+
+                transform-origin: top left;
+
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            
+
+            .no-students {
+                padding: 40px;
+
+                text-align: center;
+
+                background: #fff;
+
+                margin: 20px auto;
+
+                border-radius: 5px;
+
+                max-width: 600px;
+
+                box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+            }
+
+            .no-students h3 {
+                color: #d9534f;
+
+                margin: 0 0 10px 0;
+            }
+
+            .no-students p {
+                color: #666;
+
+                margin: 0;
             }
 
            
 
-            .id-card {
-                position: absolute !important;
+            @media screen {
 
-                top: 0 !important;
-                left: 0 !important;
+                .a4-page {
+                    box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+                }
 
-                overflow: hidden !important;
-
-                transform-origin: top left !important;
-
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
             }
 
-        }
+            
+
+            @media print {
+
+                @page {
+                    size: A4 {{ $isVertical ? 'landscape' : 'portrait' }};
+                    margin: 0;
+                }
+
+                html,
+                body {
+                    width: {{ $isVertical ? '297mm' : '210mm' }};
+                    height: {{ $isVertical ? '210mm' : '297mm' }};
+
+                    margin: 0 !important;
+                    padding: 0 !important;
+
+                    background: #fff;
+                }
+
+                .print-button,
+                .print-info {
+                    display: none !important;
+                }
+
+              
+
+                .a4-page {
+                    width: {{ $isVertical ? '297mm' : '210mm' }} !important;
+                    height: {{ $isVertical ? '210mm' : '297mm' }} !important;
+
+                    margin: 0 !important;
+                    padding: 5mm !important;
+
+                    box-shadow: none !important;
+
+                    page-break-after: always;
+                    break-after: page;
+
+                    overflow: hidden !important;
+                }
+
+                
+
+                .a4-page.orientation-vertical {
+                    width: 297mm !important;
+                    height: 210mm !important;
+
+                    margin: 0 !important;
+                    padding: 14mm 7.5mm !important;
+
+                    display: grid !important;
+
+                    grid-template-columns: repeat(5, 54mm) !important;
+                    grid-template-rows: repeat(2, 84mm) !important;
+
+                    column-gap: 3mm !important;
+                    row-gap: 14mm !important;
+
+                    align-content: start !important;
+                    justify-content: start !important;
+
+                    overflow: hidden !important;
+                }
+
+                .a4-page.orientation-vertical .id-card-container {
+                    width: 54mm !important;
+                    height: 84mm !important;
+
+                    min-width: 54mm !important;
+                    max-width: 54mm !important;
+
+                    min-height: 84mm !important;
+                    max-height: 84mm !important;
+
+                    position: relative !important;
+
+                    overflow: hidden !important;
+
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                }
+
+              
+
+                .a4-page.orientation-horizontal {
+                    width: 210mm !important;
+                    height: 297mm !important;
+
+                    padding: 5mm !important;
+                    padding-left: 12mm !important;
+
+                    display: grid !important;
+
+                    grid-template-columns:
+                        98mm 98mm !important;
+
+                    grid-template-rows:
+                        55mm 55mm 55mm 55mm 55mm !important;
+
+                    column-gap: 3mm !important;
+                    row-gap: 3mm !important;
+
+                    align-content: start !important;
+                    justify-content: start !important;
+
+                    overflow: hidden !important;
+                }
+
+                .a4-page.orientation-horizontal .id-card-container {
+                    width: 98mm !important;
+                    height: 55mm !important;
+
+                    min-width: 98mm !important;
+                    max-width: 98mm !important;
+
+                    min-height: 55mm !important;
+                    max-height: 55mm !important;
+
+                    position: relative !important;
+
+                    overflow: hidden !important;
+
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                }
+
+               
+
+                .id-card {
+                    position: absolute !important;
+
+                    top: 0 !important;
+                    left: 0 !important;
+
+                    overflow: hidden !important;
+
+                    transform-origin: top left !important;
+
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                }
+
+            }
     </style>
 </head>
 
@@ -382,9 +384,19 @@
 
     Total Cards: {{ $students->count() }}
 
-    | Class: {{ $classFilter ?? 'All' }}
+    @if(($isTeacher ?? false) || request('applicableuser') == 2)
 
-    | Section: {{ $sectionFilter ?? 'All' }}
+        | Department: {{ $classFilter ?? 'All' }}
+
+        | Designation: {{ $sectionFilter ?? 'All' }}
+
+    @else
+
+        | Class: {{ $classFilter ?? 'All' }}
+
+        | Section: {{ $sectionFilter ?? 'All' }}
+
+    @endif
 
     | Orientation: {{ ucfirst($orientation) }}
 
@@ -395,6 +407,13 @@
 
 @if($students->count() > 0)
     @php
+        // True when this print run is for Teacher ID cards instead of Student ID cards.
+        // Prefer the explicit flag passed from the controller; fall back to the design's
+        // applicable_id (2 = Teacher) if the flag wasn't passed for some reason.
+        $isTeacher = isset($isTeacher)
+            ? (bool) $isTeacher
+            : (($design->applicable_id ?? null) == 2);
+
         $orientation = strtolower($orientation ?? 'horizontal');
         if (!in_array($orientation, ['horizontal', 'vertical'])) {
             $orientation = 'horizontal';
@@ -657,9 +676,13 @@
                                         case 'father':
                                         case 'fathername':
                                         case 'father_name':
+                                        case 'father_husband':
+                                        case 'fatherhusband':
+                                        case 'guardian':
 
-                                            $fieldValue =
-                                                $student->father_name ?? '-';
+                                            $fieldValue = $isTeacher
+                                                ? ($student->father_husband ?? '-')
+                                                : ($student->father_name ?? '-');
 
                                             $matched = true;
                                             break;
@@ -669,26 +692,31 @@
                                         case 'mothername':
                                         case 'mother_name':
 
-                                            $fieldValue =
-                                                $student->mother_name ?? '-';
+                                            $fieldValue = $isTeacher
+                                                ? '-'
+                                                : ($student->mother_name ?? '-');
 
                                             $matched = true;
                                             break;
 
 
                                         case 'class':
+                                        case 'department':
 
-                                            $fieldValue =
-                                                optional($student->studentClass)->name ?? '-';
+                                            $fieldValue = $isTeacher
+                                                ? ($student->department ?? '-')
+                                                : (optional($student->studentClass)->name ?? '-');
 
                                             $matched = true;
                                             break;
 
 
                                         case 'section':
+                                        case 'designation':
 
-                                            $fieldValue =
-                                                optional($student->section) ?? '-';
+                                            $fieldValue = $isTeacher
+                                                ? ($student->designation ?? '-')
+                                                : (optional($student->section)->name ?? '-');
 
                                             $matched = true;
                                             break;
@@ -700,9 +728,23 @@
                                         case 'roll':
                                         case 'rollno':
                                         case 'roll_no':
+                                        case 'employee_code':
+                                        case 'employeecode':
+                                        case 'emp_code':
+                                        case 'empcode':
+
+                                            $fieldValue = $isTeacher
+                                                ? ($student->employee_code ?? '-')
+                                                : ($student->admission_no ?? '-');
+
+                                            $matched = true;
+                                            break;
+
+
+                                        case 'gender':
 
                                             $fieldValue =
-                                                $student->admission_no ?? '-';
+                                                $student->gender ?? '-';
 
                                             $matched = true;
                                             break;
@@ -713,12 +755,14 @@
                                         case 'birth':
                                         case 'birthdate':
 
-                                            if (!empty($student->date_of_birth)) {
+                                            $dobValue = $isTeacher ? $student->dob : $student->date_of_birth;
+
+                                            if (!empty($dobValue)) {
 
                                                 try {
 
                                                     $fieldValue = \Carbon\Carbon::parse(
-                                                        $student->date_of_birth
+                                                        $dobValue
                                                     )->format('d-m-Y');
 
                                                 } catch (\Exception $e) {
@@ -751,12 +795,13 @@
                                         case 'bloodgroup':
                                         case 'blood_group':
 
-
-                                            $fieldValue = sprintf(
-                                                'Blood Group: %s  |  Ph: %s',
-                                                $student->blood_group ?? '-',
-                                                $student->phone ?? '-'
-                                            );
+                                            $fieldValue = $isTeacher
+                                                ? sprintf('Ph: %s', $student->phone ?? '-')
+                                                : sprintf(
+                                                    'Blood Group: %s  |  Ph: %s',
+                                                    $student->blood_group ?? '-',
+                                                    $student->phone ?? '-'
+                                                );
 
                                             $matched = true;
                                             break;
@@ -766,6 +811,8 @@
 
                                         case 'studentaddress':
                                         case 'student_address':
+                                        case 'teacheraddress':
+                                        case 'teacher_address':
 
                                             $fieldValue =
                                                 $student->address ?? '-';
@@ -813,39 +860,51 @@
                                             $fieldValue =
                                                 $school->school_name ?? ($field['text'] ?? '');
 
-                                        } elseif ($wb('father')) {
+                                        } elseif ($wb('father') || $wb('father_husband') || $wb('guardian')) {
 
-                                            $fieldValue =
-                                                $student->father_name ?? '-';
+                                            $fieldValue = $isTeacher
+                                                ? ($student->father_husband ?? '-')
+                                                : ($student->father_name ?? '-');
 
                                         } elseif ($wb('mother')) {
 
+                                            $fieldValue = $isTeacher
+                                                ? '-'
+                                                : ($student->mother_name ?? '-');
+
+                                        } elseif ($wb('class') || $wb('department')) {
+
+                                            $fieldValue = $isTeacher
+                                                ? ($student->department ?? '-')
+                                                : (optional($student->studentClass)->name ?? '-');
+
+                                        } elseif ($wb('section') || $wb('designation')) {
+
+                                            $fieldValue = $isTeacher
+                                                ? ($student->designation ?? '-')
+                                                : (optional($student->section)->name ?? '-');
+
+                                        } elseif ($wb('admission') || $wb('adm') || $wb('roll') || $wb('employee_code') || $wb('empcode')) {
+
+                                            $fieldValue = $isTeacher
+                                                ? ($student->employee_code ?? '-')
+                                                : ($student->admission_no ?? '-');
+
+                                        } elseif ($wb('gender')) {
+
                                             $fieldValue =
-                                                $student->mother_name ?? '-';
-
-                                        } elseif ($wb('class')) {
-
-                                            $fieldValue =
-                                                optional($student->studentClass)->name ?? '-';
-
-                                        } elseif ($wb('section')) {
-
-                                            $fieldValue =
-                                                optional($student->section) ?? '-';
-
-                                        } elseif ($wb('admission') || $wb('adm') || $wb('roll')) {
-
-                                            $fieldValue =
-                                                $student->admission_no ?? '-';
+                                                $student->gender ?? '-';
 
                                         } elseif ($wb('dob') || $wb('date_of_birth')) {
 
-                                            if (!empty($student->date_of_birth)) {
+                                            $dobValue = $isTeacher ? $student->dob : $student->date_of_birth;
+
+                                            if (!empty($dobValue)) {
 
                                                 try {
 
                                                     $fieldValue = \Carbon\Carbon::parse(
-                                                        $student->date_of_birth
+                                                        $dobValue
                                                     )->format('d-m-Y');
 
                                                 } catch (\Exception $e) {
@@ -865,19 +924,15 @@
 
                                         } elseif ($wb('blood')) {
 
-                                            $fieldValue = sprintf(
-                                                'Blood Group: %s  |  Ph: %s',
-                                                $student->blood_group ?? '-',
-                                                $student->phone ?? '-'
-                                            );
+                                            $fieldValue = $isTeacher
+                                                ? sprintf('Ph: %s', $student->phone ?? '-')
+                                                : sprintf(
+                                                    'Blood Group: %s  |  Ph: %s',
+                                                    $student->blood_group ?? '-',
+                                                    $student->phone ?? '-'
+                                                );
 
-                                        /*
-                                        |--------------------------------------------------------------------------
-                                        | Check "studentaddress" BEFORE the generic "address" check below,
-                                        | since "student address" (with a space/underscore) DOES satisfy the
-                                        | word-boundary regex for "address" too. Order matters here.
-                                        |--------------------------------------------------------------------------
-                                        */
+                                       
 
                                         } elseif (
                                             $wb('studentaddress') ||
@@ -931,43 +986,47 @@
 
                                         $fieldValue = str_replace(
                                             '{{father_name}}',
-                                            $student->father_name ?? '-',
+                                            $isTeacher
+                                                ? ($student->father_husband ?? '-')
+                                                : ($student->father_name ?? '-'),
                                             $fieldValue
                                         );
 
                                         $fieldValue = str_replace(
                                             '{{mother_name}}',
-                                            $student->mother_name ?? '-',
+                                            $isTeacher ? '-' : ($student->mother_name ?? '-'),
                                             $fieldValue
                                         );
 
                                         $fieldValue = str_replace(
                                             '{{class}}',
-                                            optional(
-                                                $student->studentClass
-                                            )->name ?? '-',
+                                            $isTeacher
+                                                ? ($student->department ?? '-')
+                                                : (optional($student->studentClass)->name ?? '-'),
                                             $fieldValue
                                         );
 
                                         $fieldValue = str_replace(
                                             '{{section}}',
-                                            optional(
-                                                $student->section
-                                            )->name ?? '-',
+                                            $isTeacher
+                                                ? ($student->designation ?? '-')
+                                                : (optional($student->section)->name ?? '-'),
                                             $fieldValue
                                         );
 
                                         $fieldValue = str_replace(
                                             '{{admission_no}}',
-                                            $student->admission_no ?? '-',
+                                            $isTeacher
+                                                ? ($student->employee_code ?? '-')
+                                                : ($student->admission_no ?? '-'),
                                             $fieldValue
                                         );
 
                                         $fieldValue = str_replace(
                                             '{{date_of_birth}}',
-                                            $student->date_of_birth
+                                            ($isTeacher ? $student->dob : $student->date_of_birth)
                                                 ? \Carbon\Carbon::parse(
-                                                    $student->date_of_birth
+                                                    $isTeacher ? $student->dob : $student->date_of_birth
                                                 )->format('d-m-Y')
                                                 : '-',
                                             $fieldValue
@@ -981,7 +1040,40 @@
 
                                         $fieldValue = str_replace(
                                             '{{blood_group}}',
-                                            $student->blood_group ?? '-',
+                                            $isTeacher
+                                                ? sprintf('Ph: %s', $student->phone ?? '-')
+                                                : ($student->blood_group ?? '-'),
+                                            $fieldValue
+                                        );
+
+                                        // Teacher-only placeholders (kept as literal "-" on student cards)
+                                        $fieldValue = str_replace(
+                                            '{{employee_code}}',
+                                            $isTeacher ? ($student->employee_code ?? '-') : '-',
+                                            $fieldValue
+                                        );
+
+                                        $fieldValue = str_replace(
+                                            '{{department}}',
+                                            $isTeacher ? ($student->department ?? '-') : '-',
+                                            $fieldValue
+                                        );
+
+                                        $fieldValue = str_replace(
+                                            '{{designation}}',
+                                            $isTeacher ? ($student->designation ?? '-') : '-',
+                                            $fieldValue
+                                        );
+
+                                        $fieldValue = str_replace(
+                                            '{{father_husband}}',
+                                            $isTeacher ? ($student->father_husband ?? '-') : '-',
+                                            $fieldValue
+                                        );
+
+                                        $fieldValue = str_replace(
+                                            '{{gender}}',
+                                            $student->gender ?? '-',
                                             $fieldValue
                                         );
 
@@ -1428,27 +1520,35 @@
                                         'student_name'    => trim(($student->first_name ?? '') . ' ' . ($student->last_name ?? '')),
                                         'first_name'      => $student->first_name ?? '',
                                         'last_name'       => $student->last_name ?? '',
-                                        'father_name'     => $student->father_name ?? '-',
-                                        'mother_name'     => $student->mother_name ?? '-',
-                                        'class'           => optional($student->studentClass)->name ?? '-',
-                                        'section'         => optional($student->section)->name ?? '-',
-                                        'admission_no'    => $student->admission_no ?? '-',
-                                        'date_of_birth'   => $student->date_of_birth
-                                                                ? \Carbon\Carbon::parse($student->date_of_birth)->format('d-m-Y')
+                                        'father_name'     => $isTeacher ? ($student->father_husband ?? '-') : ($student->father_name ?? '-'),
+                                        'mother_name'     => $isTeacher ? '-' : ($student->mother_name ?? '-'),
+                                        'class'           => $isTeacher ? ($student->department ?? '-') : (optional($student->studentClass)->name ?? '-'),
+                                        'section'         => $isTeacher ? ($student->designation ?? '-') : (optional($student->section)->name ?? '-'),
+                                        'admission_no'    => $isTeacher ? ($student->employee_code ?? '-') : ($student->admission_no ?? '-'),
+                                        'date_of_birth'   => ($isTeacher ? $student->dob : $student->date_of_birth)
+                                                                ? \Carbon\Carbon::parse($isTeacher ? $student->dob : $student->date_of_birth)->format('d-m-Y')
                                                                 : '-',
                                         'phone'           => $student->phone ?? '-',
-                                        'blood_group'     => $student->blood_group ?? '-',
+                                        'blood_group'     => $isTeacher ? sprintf('Ph: %s', $student->phone ?? '-') : ($student->blood_group ?? '-'),
 
                                         // School address only
                                         'address'         => $school->address ?? '-',
                                         'school_address'  => $school->address ?? '',
 
-                                        // Student address only
+                                        // Student/teacher's own address
                                         'student_address' => $student->address ?? '-',
+                                        'teacher_address' => $student->address ?? '-',
 
                                         'school_name'     => $school->school_name ?? 'School Name',
                                         'school_phone'    => $school->phone ?? '',
                                         'session'         => $school->session ?? '2026-27',
+
+                                        // Teacher-only keys
+                                        'employee_code'   => $isTeacher ? ($student->employee_code ?? '-') : '-',
+                                        'department'      => $isTeacher ? ($student->department ?? '-') : '-',
+                                        'designation'     => $isTeacher ? ($student->designation ?? '-') : '-',
+                                        'father_husband'  => $isTeacher ? ($student->father_husband ?? '-') : '-',
+                                        'gender'          => $student->gender ?? '-',
                                     ];
 
                                     $tabledataHtml = preg_replace_callback(
@@ -1499,23 +1599,35 @@
                                         $labelMap = [
                                             'student name' => 'student_name',
                                             'name' => 'student_name',
+                                            'employee name' => 'student_name',
+                                            'teacher name' => 'student_name',
                                             'father' => 'father_name',
                                             'father name' => 'father_name',
+                                            'father husband' => 'father_name',
+                                            'father husband name' => 'father_name',
+                                            'husband name' => 'father_name',
                                             'mother' => 'mother_name',
                                             'mother name' => 'mother_name',
                                             'class' => 'class',
+                                            'department' => 'class',
                                             'section' => 'section',
+                                            'designation' => 'section',
                                             'admission' => 'admission_no',
                                             'admission no' => 'admission_no',
                                             'roll' => 'admission_no',
                                             'roll no' => 'admission_no',
+                                            'employee code' => 'admission_no',
+                                            'emp code' => 'admission_no',
+                                            'employee id' => 'admission_no',
                                             'dob' => 'date_of_birth',
                                             'date of birth' => 'date_of_birth',
+                                            'gender' => 'gender',
                                             'phone' => 'phone',
                                             'contact' => 'phone',
                                             'contact no' => 'phone',
                                             'blood group' => 'blood_group',
                                             'student address' => 'student_address',
+                                            'teacher address' => 'student_address',
                                             'school address' => 'school_address',
                                             'address' => 'student_address',
                                             'school name' => 'school_name',
@@ -1562,7 +1674,7 @@
                                                             continue;
                                                         }
 
-                                                        if (in_array($valueText, ['student', 'school', 'father', 'mother', 'class', 'section', 'admission', 'dob', 'phone', 'address'], true)) {
+                                                        if (in_array($valueText, ['student', 'school', 'father', 'mother', 'husband', 'class', 'section', 'admission', 'dob', 'phone', 'address', 'department', 'designation', 'employee', 'teacher', 'gender'], true)) {
                                                             continue;
                                                         }
 
@@ -1618,11 +1730,19 @@
     <div class="no-students">
 
         <h3>
-            No Students Found
+            @if(($isTeacher ?? false) || request('applicableuser') == 2)
+                No Teachers Found
+            @else
+                No Students Found
+            @endif
         </h3>
 
         <p>
-            No students match the selected filters.
+            @if(($isTeacher ?? false) || request('applicableuser') == 2)
+                No teachers match the selected filters.
+            @else
+                No students match the selected filters.
+            @endif
             Please adjust your filters and try again.
         </p>
 

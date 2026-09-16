@@ -97,6 +97,21 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
+                                <label for="class_id">Applicable</label>
+                                <select name="applicableuser"
+                                        id="applicableuser"
+                                        class="form-control" onchange="this.form.submit()">
+                                    @foreach($applicableusers as $applicableuser)
+                                        <option value="{{ $applicableuser->id }}"
+                                            {{ request('applicableuser') == $applicableuser->id ? 'selected' : '' }}>
+                                            {{ $applicableuser->type }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
                                 <label for="class_id">Class</label>
                                 <select name="class_id"
                                         id="class_id"
@@ -208,15 +223,23 @@
                                 </select>
                             </div>
                         </div>
-            
-                        <div class="col-md-4 mt-4">
-                            <div class="form-group mt-1">
-                               <a href="{{ route('idcard.print-filtered') }}?{{ request()->getQueryString() }}" 
-                                  class="btn btn-info btn-block" target="_blank">
-                                   <i class="fas fa-print mr-1"></i> Print ID Cards
-                               </a>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="class_id">Paper</label>
+                                <select name="papersize"
+                                        id="papersize"
+                                        class="form-control" onchange="this.form.submit()">
+                                    @foreach($papersizes as $papersize)
+                                        <option value="{{ $papersize->id }}"
+                                            {{ request('papersize') == $papersize->id ? 'selected' : '' }}>
+                                            {{ $papersize->size }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
+            
+                       
                         <div class="col-md-4"> 
                           <div class="form-group"> 
                             <label for="student_search">Search Student</label> 
@@ -224,6 +247,14 @@
                             <small class="text-muted"> Type at least 3 characters </small> 
                            </div> 
                         </div> 
+                         <div class="col-md-4 mt-4">
+                            <div class="form-group mt-1">
+                               <a href="{{ route('idcard.print-filtered') }}?{{ request()->getQueryString() }}" 
+                                  class="btn btn-info btn-block" target="_blank">
+                                   <i class="fas fa-print mr-1"></i> Print ID Cards
+                               </a>
+                            </div>
+                        </div>
 
 
                     </div>
@@ -253,8 +284,7 @@
 
 
         <!-- Student List -->
-       <div class="card">
-
+     {{---  <div class="card">
             <div class="card-header">
                 <h3 class="card-title">
                     <i class="fas fa-users mr-2"></i>
@@ -262,7 +292,6 @@
                         {{ $students->total() ?? $students->count() }} 
                     Students  </span> 
                 </h3>
-
                 <div class="card-tools card-tools d-flex align-items-center">
                 
                         <select name="per_page" class="form-control form-control-sm" onchange="this.form.submit()">
@@ -273,10 +302,6 @@
                             <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
                             <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                         </select>
-                   
-                    <!-- <span class="badge badge-info">
-                        {{ $students->total() ?? $students->count() }} Students
-                    </span> -->
                 </div>
             </div>
             </form>
@@ -350,8 +375,7 @@
                 </form>
             </div>
             </div>
-
-        </div>
+       </div>---}}
 </section>
 
 

@@ -12,6 +12,8 @@ use App\Http\Controllers\Backend\StudentImportController;
 use App\Http\Controllers\UploadSampleController;
 use App\Http\Controllers\MainidcardController;
 use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\ManageEventController;
+
 
 Route::get('/check', function () {
     return view('check');
@@ -22,6 +24,19 @@ Route::get('/optimize', function () {
 
     return 'Laravel optimized successfully.';
 });
+
+//event public route///
+Route::get('/event/{unique_code}', [ManageEventController::class, 'publicEvent'])
+    ->name('events.public');
+
+Route::get('/event/{unique_code}/register', [ManageEventController::class, 'register'])
+        ->name('events.register');
+
+ Route::post('/event/{unique_code}/register', [ManageEventController::class, 'storeRegistration'])
+        ->name('events.register.store');
+
+
+/// event public route end//////////////
 
 Route::get('/', function () {
     return view('frontend.login');
@@ -128,4 +143,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('singlesample/{id}/status', [UploadSampleController::class, 'singleDefault'])
     ->name('singlesample.status');
+
+
+    Route::resource('manage-events', ManageEventController::class);
+
+
+   
 });
