@@ -335,34 +335,18 @@
         </span>
 
     </div>
-
-
-    {{-- Form --}}
-
-    <form method="POST"
-          action="{{ route('events.register.store', $manageEvent->unique_code) }}">
-
+    <form method="POST" action="{{ route('events.register.store', $manageEvent->unique_code) }}">
         @csrf
-
         <div class="register-content">
-
             <div class="form-section-title">
                 Your Information
             </div>
-
-
-            {{-- Name --}}
-
             <div class="form-group">
-
                 <label class="form-label">
                     Name <span class="required">*</span>
                 </label>
-
                 <div class="input-wrapper">
-
                     <i class="fas fa-user input-icon"></i>
-
                     <input type="text"
                            name="name"
                            class="form-control"
@@ -370,9 +354,7 @@
                            placeholder="Enter your name"
                            autocomplete="name"
                            required>
-
                 </div>
-
                 @error('name')
 
                     <span class="field-error">
@@ -481,12 +463,26 @@
             </div>
 
 
-            {{-- Address --}}
+
+            <div class="form-group">
+                <label class="form-label">
+                    Photo
+                </label>
+                <div class="input-wrapper">
+                    <i class="fas fa-image input-icon"></i>
+                    <input type="file" name="photo" class="form-control">
+                </div>
+                @error('photo')
+                    <span class="field-error">
+                        {{ $message }}
+                    </span>
+                @enderror
+            </div>
 
             <div class="form-group mb-0">
 
                 <label class="form-label">
-                    Address
+                    Address <span class="required">*</span>
                 </label>
 
                 <div class="input-wrapper textarea-wrapper">
@@ -500,24 +496,14 @@
                               autocomplete="street-address">{{ old('address') }}</textarea>
 
                 </div>
-
                 @error('address')
-
                     <span class="field-error">
                         {{ $message }}
                     </span>
-
                 @enderror
-
             </div>
-
         </div>
-
-
-        {{-- Footer --}}
-
         <div class="register-footer">
-
             <button type="submit"
                     class="register-btn">
 

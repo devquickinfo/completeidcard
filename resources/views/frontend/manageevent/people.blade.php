@@ -38,112 +38,38 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <h3 class="card-title">
-                        Event List
+                        People List
                     </h3>
-                    <a href="{{ route('manage-events.create') }}"
+                    <a href=""
                        class="btn btn-sm btn-primary ml-auto">
                         <i class="fas fa-plus"></i>
-                        Add Event
+                        Add People
                     </a>
 
                 </div>
                 <div class="card-body">
-                    <form method="GET" action="{{ route('manage-events.index') }}" class="row g-2 align-items-end mb-3">
-                        <div class="col-md-3">
-                            <label class="form-label">
-                                Event Name
-                            </label>
-
-                            <select name="event_name"
-                                    class="form-control"
-                                    onchange="this.form.submit()">
-
-                                <option value="">
-                                    All Events
-                                </option>
-                                @foreach($eventNames as $eventName)
-                                    <option value="{{ $eventName->event_name }}"
-                                        {{ request('event_name') == $eventName->event_name ? 'selected' : '' }}>
-
-                                        {{ $eventName->event_name }}
-
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">
-                                Start Date From
-                            </label>
-                            <input type="date"
-                                   name="start_date"
-                                   value="{{ request('start_date') }}"
-                                   class="form-control"
-                                   onchange="this.form.submit()">
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">
-                                End Date To
-                            </label>
-                            <input type="date"
-                                   name="end_date"
-                                   value="{{ request('end_date') }}"
-                                   class="form-control"
-                                   onchange="this.form.submit()">
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">
-                                Records Per Page
-                            </label>
-                            <select name="per_page"
-                                    class="form-control"
-                                    onchange="this.form.submit()">
-                                @foreach([10, 20, 30, 40, 50, 100] as $number)
-                                    <option value="{{ $number }}"
-                                        {{ request('per_page', 10) == $number ? 'selected' : '' }}>
-                                        {{ $number }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </form>
                     <div class="row mb-3">
                         <div class="col-md-5">
-                            <form method="GET"action="{{ route('manage-events.index') }}">
-                                <input type="hidden"
-                                       name="event_name"
-                                       value="{{ request('event_name') }}">
-                                <input type="hidden"
-                                       name="start_date"
-                                       value="{{ request('start_date') }}">
-                                <input type="hidden"
-                                       name="end_date"
-                                       value="{{ request('end_date') }}">
-                                <input type="hidden"
-                                       name="per_page"
-                                       value="{{ request('per_page', 10) }}">
+                            <form method="GET" action="{{ route('manage-event.people', $id) }}">
                                 <div class="input-group">
                                     <input type="text"
                                            name="search"
                                            id="event-search"
                                            value="{{ request('search') }}"
                                            class="form-control"
-                                           placeholder="Search Event, Contact Person, Organizer or Code">
+                                           placeholder="Search Name, Mobile or Email">
+
                                     <div class="input-group-append">
-                                        <button type="submit"
-                                                class="btn btn-primary">
-
+                                        <button type="submit" class="btn btn-primary">
                                             <i class="fas fa-search"></i>
-
                                         </button>
-
                                     </div>
-
                                 </div>
                             </form>
                         </div>
+
                         <div class="col-md-3">
-                            <a href="{{ route('manage-events.index') }}"
+                            <a href="{{ route('manage-event.people', $id) }}"
                                class="btn btn-secondary">
                                 <i class="fas fa-sync"></i>
                                 Reset
@@ -158,19 +84,17 @@
                                         #
                                     </th>
                                     <th>
-                                        Logo
+                                        Photo
                                     </th>
 
                                     <th>
-                                        Event Name
+                                         Name
                                     </th>
-
                                     <th>
-                                        Start Date
+                                        mobile
                                     </th>
-
                                     <th>
-                                        End Date
+                                        Email
                                     </th>
 
                                     <th>
@@ -178,16 +102,9 @@
                                     </th>
 
                                     <th>
-                                        Contact Person
+                                        Organization
                                     </th>
 
-                                    <th>
-                                        Organizer
-                                    </th>
-
-                                   <!--  <th>
-                                        Unique Code
-                                    </th> -->
 
                                     <th width="150">
                                         Actions
@@ -211,16 +128,18 @@
                                         </td>
                                         <td>
                                             <strong>
-                                                {{ $event->event_name }}
+                                                {{ $event->name }}
                                             </strong>
                                         </td>
 
+                                      
+
                                         <td>
-                                            {{ \Carbon\Carbon::parse($event->start_date)->format('d-m-Y') }}
+                                            {{ $event->mobile ?? '-' }}
                                         </td>
 
                                         <td>
-                                            {{ \Carbon\Carbon::parse($event->end_date)->format('d-m-Y') }}
+                                            {{ $event->email ?? '-' }}
                                         </td>
 
                                         <td>
@@ -228,23 +147,13 @@
                                         </td>
 
                                         <td>
-                                            {{ $event->contact_person1 ?? '-' }}
+                                            {{ $event->organization ?? '-' }}
                                         </td>
-
-                                        <td>
-                                            {{ $event->organizer_name ?? '-' }}
-                                        </td>
-
-                                       <!--  <td>
-                                            <span class="badge badge-info">
-                                                {{ $event->unique_code }}
-                                            </span>
-                                        </td> -->
 
                                         <td style="white-space: nowrap;">
 
                                             {{-- Edit --}}
-                                            <a href="{{ route('manage-events.edit', $event->id) }}"
+                                            <a href=""
                                                class="btn btn-sm btn-warning"
                                                title="Edit">
 
@@ -253,7 +162,7 @@
                                             </a>
 
                                             {{-- View --}}
-                                            <a href="{{ route('manage-events.show', $event->id) }}"
+                                            <a href=""
                                                class="btn btn-sm btn-info"
                                                title="View">
 
@@ -261,24 +170,7 @@
 
                                             </a>
 
-                                            {{-- Delete --}}
-                                            <form action="{{ route('manage-events.destroy', $event->id) }}"
-                                                  method="POST"
-                                                  class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                        class="btn btn-sm btn-danger"
-                                                        title="Delete">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                             <a href="{{ route('manage-event.people', $event->unique_code) }}"
-                                               class="btn btn-sm btn-info"
-                                               title="People">
-
-                                                <i class="fas fa-user"></i>
-                                            </a>
+                                           
                                         </td>
                                     </tr>
                                 @empty

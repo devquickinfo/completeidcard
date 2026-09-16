@@ -575,12 +575,18 @@
                             </p>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link {{ request()->routeIs('student.deleted') ? 'active' : '' }}">
+                    @php
+                        $administrationOpen =
+                            request()->routeIs('student.deleted') ||
+                            request()->routeIs('upload-samples.*') || request()->routeIs('user.account.*');
+                    @endphp
+                    <li class="nav-item {{ $administrationOpen ? 'menu-open' : '' }}">
+                        <a href="#"
+                           class="nav-link {{ $administrationOpen ? 'active' : '' }}">
                             <i class="nav-icon fas fa-cog"></i>
                             <p>
-                            Administration
-                            <i class="right fas fa-angle-left"></i>
+                                Administration
+                                <i class="right fas fa-angle-left"></i>
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
@@ -590,7 +596,7 @@
                                     <i class="nav-icon fas fa-trash"></i>
                                     <p>Deleted Students</p>
                                 </a>                  
-        				    </li>
+        				            </li>
                             <li class="nav-item">
                                 <a href="{{ route('upload-samples.index') }}"
                                 class="nav-link {{ request()->routeIs('upload-samples.*') ? 'active' : '' }}">
@@ -600,20 +606,18 @@
                                     </p>
                                 </a>
                             </li>
+                             <li class="nav-item">
+                                <a href="{{ route('user.account') }}"
+                                class="nav-link {{ request()->routeIs('user.account') ? 'active' : '' }}">
+                                    <i class="nav-icon fas fa-user"></i>
+                                    <p>
+                                        Account
+                                    </p>
+                                </a>
+                            </li>
                          </ul>
                     </li>
                     @endif
-
-                   
-                  {{---- <li class="nav-item">
-                        <a href="{{ route('id-card-templates.index') }}"
-                        class="nav-link {{ request()->routeIs('id-card-templates.*') ? 'active' : '' }}">
-
-                            <i class="nav-icon fas fa-layer-group"></i>
-                            <p>ID Card Templates</p>
-                        </a>
-                    </li>---}} 
-
                 </ul>
             </nav>
 

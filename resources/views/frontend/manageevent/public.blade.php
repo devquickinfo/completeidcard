@@ -93,7 +93,7 @@
     }
 
     .event-code {
-        display: inline-block;
+        display: block;
         margin-top: 10px;
         padding: 5px 12px;
         border-radius: 20px;
@@ -102,7 +102,16 @@
         font-size: 12px;
         font-weight: 600;
         letter-spacing: .4px;
+        max-width: 100%;
+        line-height: 1.6;
     }
+
+    .event-code-value {
+        overflow-wrap: anywhere;
+        word-break: break-all;
+        white-space: normal;
+    }
+
 
     /* Content */
     .event-content {
@@ -383,23 +392,12 @@
         </h1>
 
 
-        @if(!empty($manageEvent->unique_code))
-
-            <span class="event-code">
-
-                EVENT CODE:
-                {{ $manageEvent->unique_code }}
-
-            </span>
-
-        @endif
+       
 
     </div>
 
 
-    {{-- ========================= --}}
-    {{-- EVENT CONTENT --}}
-    {{-- ========================= --}}
+   
 
     <div class="event-content">
 

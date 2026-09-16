@@ -13,6 +13,7 @@ use App\Http\Controllers\UploadSampleController;
 use App\Http\Controllers\MainidcardController;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\ManageEventController;
+use App\Http\Controllers\UserController;
 
 
 Route::get('/check', function () {
@@ -147,6 +148,10 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('manage-events', ManageEventController::class);
 
+    Route::get('/events/{id}/people', [ManageEventController::class, 'eventPeople'])
+    ->name('manage-event.people');
+
+    Route::get('/user-accounts', [UserController::class,'index'])->name('user.account');
 
    
 });

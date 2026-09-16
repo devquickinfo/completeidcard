@@ -476,8 +476,15 @@ class IdCardController extends Controller
 
             $records = $this->buildTeacherQuery($request, $schoolId)->get();
         } else {
-            $design = Mainidcard::where('school_id', $schoolId)
-                ->where('is_default', 1)
+            // $design = Mainidcard::where('school_id', $schoolId)
+            //     ->where('is_default', 1)
+            //     ->first();
+             $design = Mainidcard::where('school_id', $schoolId)
+                ->when($request->class_id, function ($query) use ($request) {
+                    $query->where('class_id', $request->class_id);
+                }, function ($query) {
+                    $query->where('is_default', 1);
+                })
                 ->first();
 
             $records = $this->buildStudentQuery($request, $schoolId)->get();
