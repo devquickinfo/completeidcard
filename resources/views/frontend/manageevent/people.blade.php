@@ -169,7 +169,13 @@
                                                 <i class="fas fa-eye"></i>
 
                                             </a>
+                                             <a href=""
+                                               class="btn btn-sm btn-danger"
+                                               title="View">
 
+                                                <i class="fas fa-trash"></i>
+
+                                            </a>
                                            
                                         </td>
                                     </tr>

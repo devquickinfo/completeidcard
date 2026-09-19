@@ -31,7 +31,7 @@ class ImageHelper
     public static function processStudentPhoto(
         $image,
         int|string $schoolId
-    ): string {
+        ): string {
 
         if (!extension_loaded('gd')) {
             throw new \Exception('GD extension is not enabled.');
@@ -541,7 +541,7 @@ class ImageHelper
             @unlink($tempPath);
 
             return $imagePath;
-        }
+    }
 
 
 
