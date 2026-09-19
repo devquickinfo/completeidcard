@@ -17,7 +17,7 @@ class MainidcardController extends Controller
    
     public function store(Request $request)
     {
-        $schoolId = Auth::user()->school_id ?? session('viewing_school');
+        $schoolId = Auth::user()->school_id ?? session('viewing_school') ?? session('vendor_viewing');
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'orientation' => 'required|in:vertical,horizontal',
@@ -228,7 +228,12 @@ class MainidcardController extends Controller
             $schoolId = Auth::user()->school_id;
         } elseif (session('role') === 'superadmin') {
             $schoolId = session('viewing_school') ?? null;
-        } else {
+        } 
+
+        elseif (session('role') === 'vendor') {
+            $schoolId = session('vendor_viewing') ?? null;
+        }
+        else {
             $schoolId = null;
         }
         $school = School::find($schoolId);

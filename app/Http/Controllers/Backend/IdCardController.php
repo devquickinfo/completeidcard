@@ -23,7 +23,7 @@ class IdCardController extends Controller
 {
     public function index(Request $request)
     {
-        $schoolId = Auth::user()->school_id ?? session('viewing_school');
+        $schoolId = Auth::user()->school_id ?? session('viewing_school') ?? session('vendor_viewing');
         $classes = StudentClass::
             orderBy('id', 'ASC')
             ->get();
@@ -465,10 +465,9 @@ class IdCardController extends Controller
 
 
     public function printFiltered(Request $request){
-        $schoolId = Auth::user()->school_id ?? session('viewing_school');
+        $schoolId = Auth::user()->school_id ?? session('viewing_school') ?? session('vendor_viewing');
         $school = School::find($schoolId);
         $isTeacher = $request->applicableuser == 2;
-
         if ($isTeacher) {
             $design = Mainidcard::where('school_id', $schoolId)
                 ->where('applicable_id', 2)
