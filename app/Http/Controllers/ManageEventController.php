@@ -9,6 +9,8 @@ use App\Models\EventRegistration;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ManageEventController extends Controller
 {
@@ -180,23 +182,34 @@ class ManageEventController extends Controller
 
         return view('frontend.manageevent.register', compact('manageEvent'));
     }
-    // public function storeRegistration(Request $request, $unique_code)
+    
+    // public function storeRegistration(Request $request)
     // {
-
-    //    // echo $unique_code; die;
-    //     $manageEvent = ManageEvent::where('unique_code', $unique_code)
+    //     $manageEvent = ManageEvent::where('unique_code', $request->unique_code)
     //         ->firstOrFail();
     //     $validated = $request->validate([
     //         'name'         => 'required|string|max:255',
     //         'email'        => 'nullable|email|max:255',
-    //         'mobile'       => 'required',
+    //         //'mobile'       => 'required|string|max:20',
+    //         'mobile'       => [
+    //             'required',
+    //             'string',
+    //             'max:10',
+    //             Rule::unique('event_registrations', 'mobile')
+    //                 ->where(function ($query) use ($manageEvent) {
+    //                     return $query->where('event_id', $manageEvent->id);
+    //                 }),
+    //         ],
     //         'organization' => 'nullable|string|max:255',
-    //         'address'      => 'required|string',
+    //         'address'      => 'required|string|max:1000',
     //         'photo'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
     //     ]);
+
     //     $validated['event_id'] = $manageEvent->id;
+    //     $validated['event_code'] = $request->unique_code;
     //     $validated['ip_address'] = $request->ip();
     //     $validated['device_name'] = $request->userAgent();
+
     //     if ($request->hasFile('photo')) {
 
     //         $photo = $request->file('photo');
@@ -214,19 +227,21 @@ class ManageEventController extends Controller
 
     //     EventRegistration::create($validated);
 
-    //     //return redirect()->route('events.public', $manageEvent->unique_code)->with('success', 'Registration completed successfully.');
-    //     return redirect()->route('events.home')->with('success', 'Registration completed successfully.');
-
+    //     return redirect()
+    //         ->route('events.home')
+    //         ->with('success', 'Registration completed successfully.');
     // }
-    public function storeRegistration(Request $request)
+     public function storeRegistration(Request $request)
     {
         $manageEvent = ManageEvent::where('unique_code', $request->unique_code)
             ->firstOrFail();
+
         $validated = $request->validate([
-            'name'         => 'required|string|max:255',
-            'email'        => 'nullable|email|max:255',
-            //'mobile'       => 'required|string|max:20',
-            'mobile'       => [
+            'name' => 'required|string|max:255',
+
+            'email' => 'nullable|email|max:255',
+
+            'mobile' => [
                 'required',
                 'string',
                 'max:10',
@@ -235,26 +250,52 @@ class ManageEventController extends Controller
                         return $query->where('event_id', $manageEvent->id);
                     }),
             ],
+
             'organization' => 'nullable|string|max:255',
-            'address'      => 'required|string|max:1000',
-            'photo'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+
+            'address' => 'required|string|max:1000',
+
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
         $validated['event_id'] = $manageEvent->id;
-        $validated['event_code'] = $request->unique_code;
+        $validated['event_code'] = $manageEvent->unique_code;
         $validated['ip_address'] = $request->ip();
         $validated['device_name'] = $request->userAgent();
 
+        /*
+         * Compress photo to maximum 500 KB
+         */
         if ($request->hasFile('photo')) {
 
             $photo = $request->file('photo');
 
-            $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+            $manager = new ImageManager(new Driver());
 
-            $photo->storeAs(
-                'event-registrations',
-                $photoName,
-                'public'
+            $image = $manager->read($photo->getRealPath());
+
+            $maxSize = 500 * 1024; // 500 KB
+            $quality = 90;
+
+            do {
+
+                $encoded = $image->toJpeg($quality);
+
+                $size = strlen($encoded);
+
+                if ($size <= $maxSize) {
+                    break;
+                }
+
+                $quality -= 5;
+
+            } while ($quality >= 30);
+
+            $photoName = time() . '_' . uniqid() . '.jpg';
+
+            Storage::disk('public')->put(
+                'event-registrations/' . $photoName,
+                $encoded
             );
 
             $validated['photo'] = 'event-registrations/' . $photoName;
