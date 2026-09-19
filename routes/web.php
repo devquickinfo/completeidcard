@@ -33,7 +33,7 @@ Route::get('/event/{unique_code}', [ManageEventController::class, 'publicEvent']
 Route::get('/event/{unique_code}/register', [ManageEventController::class, 'register'])
         ->name('events.register');
 
- Route::post('/event/{unique_code}/register', [ManageEventController::class, 'storeRegistration'])
+ Route::post('/event/store', [ManageEventController::class, 'storeRegistration'])
         ->name('events.register.store');
 
 
@@ -151,6 +151,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/events/{id}/people', [ManageEventController::class, 'eventPeople'])
     ->name('manage-event.people');
 
+     Route::get('/events/home', [ManageEventController::class, 'home'])
+    ->name('events.home');
+
     Route::get('/user-accounts', [UserController::class,'index'])->name('user.account');
     Route::get('/user-create', [UserController::class,'create'])->name('user.create');
     Route::post('/user-store', [UserController::class,'store'])->name('user.store');
@@ -160,6 +163,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/user-status/{id}', [UserController::class, 'status'])
     ->name('user.status');
-
+    
    
 });

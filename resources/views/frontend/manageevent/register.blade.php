@@ -300,11 +300,44 @@
         }
     }
 
+
+    .photo-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .photo-btn {
+        flex: 1;
+        border: 1px solid #ddd;
+        background: #fff;
+        border-radius: 8px;
+        padding: 12px 10px;
+        font-size: 14px;
+        color: #333;
+        cursor: pointer;
+    }
+
+    .photo-btn i {
+        margin-right: 6px;
+        color: #007bff;
+    }
+
+    .photo-btn:active {
+        transform: scale(0.98);
+    }
+
+    #previewImage {
+        border: 2px solid #eee;
+    }
+
+    @media (min-width: 768px) {
+        .photo-btn {
+            max-width: 200px;
+        }
+    }
 </style>
 
-
 </head>
-
 <body>
 
 <div class="register-page">
@@ -335,12 +368,13 @@
         </span>
 
     </div>
-    <form method="POST" action="{{ route('events.register.store', $manageEvent->unique_code) }}">
+    <form method="POST" action="{{ route('events.register.store') }}" enctype="multipart/form-data">
         @csrf
         <div class="register-content">
             <div class="form-section-title">
                 Your Information
             </div>
+            <input type="hidden" name="unique_code" value="{{$manageEvent->unique_code}}">
             <div class="form-group">
                 <label class="form-label">
                     Name <span class="required">*</span>
@@ -464,7 +498,7 @@
 
 
 
-            <div class="form-group">
+            {{--<div class="form-group">
                 <label class="form-label">
                     Photo
                 </label>
@@ -472,6 +506,55 @@
                     <i class="fas fa-image input-icon"></i>
                     <input type="file" name="photo" class="form-control">
                 </div>
+                @error('photo')
+                    <span class="field-error">
+                        {{ $message }}
+                    </span>
+                @enderror
+            </div>--}}
+
+            <div class="form-group">
+                <label class="form-label">
+                    Photo
+                </label>
+
+                <div class="photo-buttons">
+
+                    <button type="button"
+                            class="photo-btn"
+                            onclick="document.getElementById('cameraInput').click()">
+                        <i class="fas fa-camera"></i>
+                        Take Photo
+                    </button>
+
+                    <button type="button"
+                            class="photo-btn"
+                            onclick="document.getElementById('galleryInput').click()">
+                        <i class="fas fa-images"></i>
+                        Gallery
+                    </button>
+
+                </div>
+
+                <input type="file"
+                       id="cameraInput"
+                       name="photo"
+                       accept="image/*"
+                       capture="user"
+                       style="display:none;">
+
+                <input type="file"
+                       id="galleryInput"
+                       accept="image/*"
+                       style="display:none;">
+
+                <div id="photoPreview" class="mt-2" style="display:none;">
+                    <img id="previewImage"
+                         src=""
+                         alt="Photo Preview"
+                         style="width:120px;height:120px;object-fit:cover;border-radius:10px;">
+                </div>
+
                 @error('photo')
                     <span class="field-error">
                         {{ $message }}
@@ -535,7 +618,35 @@
 </div>
 
 </div>
+<script>
+    const cameraInput = document.getElementById('cameraInput');
+    const galleryInput = document.getElementById('galleryInput');
+    const previewBox = document.getElementById('photoPreview');
+    const previewImage = document.getElementById('previewImage');
 
+    function showPreview(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+
+            // Show preview
+            previewImage.src = URL.createObjectURL(file);
+            previewBox.style.display = 'block';
+
+            // Put selected file into the actual form input
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            cameraInput.files = dataTransfer.files;
+        }
+    }
+
+    cameraInput.addEventListener('change', function () {
+        showPreview(this);
+    });
+
+    galleryInput.addEventListener('change', function () {
+        showPreview(this);
+    });
+</script>
 </body>
 
 </html>

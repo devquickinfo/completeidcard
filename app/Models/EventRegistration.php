@@ -13,6 +13,11 @@ class EventRegistration extends Model
         'mobile',
         'organization',
         'address',
+        'ip_address',
+        'device_name',
+        'event_code',
+        'photo',
+
     ];
 
     public function event()

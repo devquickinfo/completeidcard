@@ -200,7 +200,22 @@
 
 
                     {{-- Profile --}}
-                    <li class="nav-item">
+                    {{--<li class="nav-item">
+
+                        <a href="{{ route('school.profile') }}"
+                           class="nav-link {{ request()->routeIs('school.profile') ? 'active' : '' }}">
+
+                            <i class="nav-icon fas fa-user"></i>
+
+                            <p>Profile</p>
+
+                        </a>
+
+                    </li>--}}
+
+                @endif
+
+                 <li class="nav-item">
 
                         <a href="{{ route('school.profile') }}"
                            class="nav-link {{ request()->routeIs('school.profile') ? 'active' : '' }}">
@@ -212,8 +227,6 @@
                         </a>
 
                     </li>
-
-                @endif
 
 
                 {{-- ================= VENDOR EVENTS ================= --}}

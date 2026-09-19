@@ -120,8 +120,8 @@
                                             {{ $events->firstItem() + $loop->index }}
                                         </td>
                                         <td>
-                                             <img src="{{ $event->logo
-                                                ? asset('storage/' . $event->logo)
+                                             <img src="{{ $event->photo
+                                                ? asset('storage/' . $event->photo)
                                                 : asset('storage/1.webp') }}"
                                                 alt="Event Logo"
                                                 style="max-width: 150px; max-height: 150px;" class="img-thumbnail">

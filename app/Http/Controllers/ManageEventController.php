@@ -180,26 +180,71 @@ class ManageEventController extends Controller
 
         return view('frontend.manageevent.register', compact('manageEvent'));
     }
-    public function storeRegistration(Request $request, $unique_code)
+    // public function storeRegistration(Request $request, $unique_code)
+    // {
+
+    //    // echo $unique_code; die;
+    //     $manageEvent = ManageEvent::where('unique_code', $unique_code)
+    //         ->firstOrFail();
+    //     $validated = $request->validate([
+    //         'name'         => 'required|string|max:255',
+    //         'email'        => 'nullable|email|max:255',
+    //         'mobile'       => 'required',
+    //         'organization' => 'nullable|string|max:255',
+    //         'address'      => 'required|string',
+    //         'photo'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+    //     ]);
+    //     $validated['event_id'] = $manageEvent->id;
+    //     $validated['ip_address'] = $request->ip();
+    //     $validated['device_name'] = $request->userAgent();
+    //     if ($request->hasFile('photo')) {
+
+    //         $photo = $request->file('photo');
+
+    //         $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+
+    //         $photo->storeAs(
+    //             'event-registrations',
+    //             $photoName,
+    //             'public'
+    //         );
+
+    //         $validated['photo'] = 'event-registrations/' . $photoName;
+    //     }
+
+    //     EventRegistration::create($validated);
+
+    //     //return redirect()->route('events.public', $manageEvent->unique_code)->with('success', 'Registration completed successfully.');
+    //     return redirect()->route('events.home')->with('success', 'Registration completed successfully.');
+
+    // }
+    public function storeRegistration(Request $request)
     {
-        $manageEvent = ManageEvent::where('unique_code', $unique_code)
+        $manageEvent = ManageEvent::where('unique_code', $request->unique_code)
             ->firstOrFail();
         $validated = $request->validate([
             'name'         => 'required|string|max:255',
             'email'        => 'nullable|email|max:255',
+            //'mobile'       => 'required|string|max:20',
             'mobile'       => [
                 'required',
                 'string',
                 'max:10',
-                Rule::unique('event_registrations', 'mobile')->ignore($id),
+                Rule::unique('event_registrations', 'mobile')
+                    ->where(function ($query) use ($manageEvent) {
+                        return $query->where('event_id', $manageEvent->id);
+                    }),
             ],
             'organization' => 'nullable|string|max:255',
-            'address'      => 'required|string',
+            'address'      => 'required|string|max:1000',
             'photo'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
+
         $validated['event_id'] = $manageEvent->id;
+        $validated['event_code'] = $request->unique_code;
         $validated['ip_address'] = $request->ip();
         $validated['device_name'] = $request->userAgent();
+
         if ($request->hasFile('photo')) {
 
             $photo = $request->file('photo');
@@ -218,7 +263,7 @@ class ManageEventController extends Controller
         EventRegistration::create($validated);
 
         return redirect()
-            ->route('events.public', $manageEvent->unique_code)
+            ->route('events.home')
             ->with('success', 'Registration completed successfully.');
     }
 
@@ -238,5 +283,9 @@ class ManageEventController extends Controller
             ->withQueryString();
 
         return view('frontend.manageevent.people', compact('events','id'));
+    }
+    public function home(){
+
+        return view('frontend.manageevent.homepage');
     }
 }
