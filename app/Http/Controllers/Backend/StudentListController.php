@@ -16,7 +16,7 @@ class StudentListController extends Controller
     {
         // Allow superadmin to view students for a specific school when
         // 'viewing_school' is set in session (set when superadmin views a school)
-        $schoolId = Auth::user()->school_id ?? session('viewing_school');
+        $schoolId = Auth::user()->school_id ?? session('viewing_school') ?? session('vendor_viewing');
         $classes = StudentClass::orderBy('id', 'ASC')->get();
         $sections = Section::orderBy('id', 'ASC')->get();
         $studentsQuery = Student::with([

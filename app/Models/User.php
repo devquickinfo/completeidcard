@@ -26,6 +26,10 @@ class User extends Authenticatable
         'role',
         'school_id',
         'profilepicture',
+        'phone',
+        'address',
+        'schoolcount',
+        'studentcount',
     ];
 
     /**

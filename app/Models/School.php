@@ -23,6 +23,8 @@ class School extends Model
         'status',
         'principal_signature',
         'IsDeleted',
+        'vendor_id',
+        'student_limit',
 
     ];
     public function mainidcards()

@@ -54,7 +54,7 @@ class StudentController extends Controller
             ->orderBy('id', 'ASC')
             ->get();
         $students = Student::with(['studentClass', 'section'])->latest()->paginate(10);
-        $school_id = Auth::user()->school_id ?? session('viewing_school');
+        $school_id = Auth::user()->school_id ?? session('viewing_school') ?? session('vendor_viewing');
         $school = School::where('id', $school_id)->first();
         $mainidcard = Mainidcard::where('school_id', $school_id)->where('is_default',1)->first();
         $selectedSample = SelectedSample::where('school_id', $school_id)->first();
@@ -78,9 +78,82 @@ class StudentController extends Controller
     }
 
     
+    // public function store(Request $request)
+    // {
+    //     $school_id = Auth::user()?->school_id ?? session('viewing_school') ?? session('vendor_viewing');
+    //     $validator = Validator::make($request->all(), [
+    //         'first_name'    => 'required',
+    //         'father_name'   => 'required',
+    //         'date_of_birth' => 'required|date',
+    //         'class_id'      => 'required',
+    //         'section_id'    => 'required',
+    //         'photo'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         return redirect()->back()->withErrors($validator)->withInput();
+    //     }
+    //     $className=StudentClass::where('id',$request->class_id)->value('name');
+    //     $SectionName=Section::where('id',$request->section_id)->value('name');
+    //     $student = Student::create([
+    //         'school_id'     => $school_id,
+    //         'admission_no'  => $request->admission_no,
+    //         'first_name'    => $request->first_name,
+    //         'last_name'     => $request->last_name,
+    //         'father_name'   => $request->father_name,
+    //         'address'       => $request->address,
+    //         'gender'        => $request->gender,
+    //         'date_of_birth' => $request->date_of_birth,
+    //         'blood_group'   => $request->blood_group,
+    //         'phone'         => $request->phone,
+    //         'class_id'      => $request->class_id,
+    //         'section_id'    => $request->section_id,
+    //         'mother_name'   => $request->mother_name,
+    //         'class_name'    => $className,
+    //         'section'       => $SectionName,
+    //     ]);
+    //     $photo = null;
+    //     if ($request->filled('photo_data')) {
+    //         try {
+    //             $photo = ImageHelper::saveImageAsJpg(
+    //                 $request->input('photo_data'),
+    //                 "students/{$school_id}",
+    //                 "student_{$student->id}"
+    //             );
+
+    //         } catch (\Exception $e) {
+    //             $student->delete();
+    //             return redirect()
+    //                 ->back()
+    //                 ->with('error', 'Unable to save camera image: ' . $e->getMessage())
+    //                 ->withInput();
+    //         }
+    //     }
+    //     elseif ($request->hasFile('photo')) {
+    //         $imageName = time() . '_' . uniqid() . '.' .
+    //             $request->file('photo')->getClientOriginalExtension();
+    //         $imagePath = "students/$school_id/$imageName";
+    //         $request->file('photo')->storeAs(
+    //             "students/$school_id",
+    //             $imageName,
+    //             'public'
+    //         );
+
+    //         $photo = $imagePath;
+    //     }
+    //     if ($photo) {
+    //         $student->update([
+    //             'photo' => $photo,
+    //         ]);
+    //     }
+    //     return redirect()->route('schools.classes.students', ['school' => $school_id,'class'  => $request->class_id,])
+    //     ->with('success', 'Student added successfully.');
+    // }
     public function store(Request $request)
     {
-        $school_id = Auth::user()?->school_id ?? session('viewing_school');
+        $school_id = Auth::user()?->school_id
+            ?? session('viewing_school')
+            ?? session('vendor_viewing');
+
         $validator = Validator::make($request->all(), [
             'first_name'    => 'required',
             'father_name'   => 'required',
@@ -89,12 +162,17 @@ class StudentController extends Controller
             'section_id'    => 'required',
             'photo'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
+
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
-        $className=StudentClass::where('id',$request->class_id)->value('name');
-        $SectionName=Section::where('id',$request->section_id)->value('name');
-        $student = Student::create([
+
+        $className = StudentClass::where('id', $request->class_id)->value('name');
+        $SectionName = Section::where('id', $request->section_id)->value('name');
+
+        $studentData = [
             'school_id'     => $school_id,
             'admission_no'  => $request->admission_no,
             'first_name'    => $request->first_name,
@@ -110,8 +188,17 @@ class StudentController extends Controller
             'mother_name'   => $request->mother_name,
             'class_name'    => $className,
             'section'       => $SectionName,
-        ]);
+        ];
+
+        // If logged-in user is vendor
+        if (Auth::user()?->role === 'vendor') {
+            $studentData['vendor_id'] = Auth::id();
+        }
+
+        $student = Student::create($studentData);
+
         $photo = null;
+
         if ($request->filled('photo_data')) {
             try {
                 $photo = ImageHelper::saveImageAsJpg(
@@ -122,16 +209,19 @@ class StudentController extends Controller
 
             } catch (\Exception $e) {
                 $student->delete();
+
                 return redirect()
                     ->back()
                     ->with('error', 'Unable to save camera image: ' . $e->getMessage())
                     ->withInput();
             }
-        }
-        elseif ($request->hasFile('photo')) {
+        } elseif ($request->hasFile('photo')) {
+
             $imageName = time() . '_' . uniqid() . '.' .
                 $request->file('photo')->getClientOriginalExtension();
+
             $imagePath = "students/$school_id/$imageName";
+
             $request->file('photo')->storeAs(
                 "students/$school_id",
                 $imageName,
@@ -140,15 +230,20 @@ class StudentController extends Controller
 
             $photo = $imagePath;
         }
+
         if ($photo) {
             $student->update([
                 'photo' => $photo,
             ]);
         }
-        return redirect()->route('schools.classes.students', ['school' => $school_id,'class'  => $request->class_id,])
-        ->with('success', 'Student added successfully.');
-    }
 
+        return redirect()
+            ->route('schools.classes.students', [
+                'school' => $school_id,
+                'class'  => $request->class_id,
+            ])
+            ->with('success', 'Student added successfully.');
+    }
 
 
     /**
@@ -157,7 +252,7 @@ class StudentController extends Controller
     public function show(string $id)
     {
         $schooleditid=Student::where('id',$id)->value('school_id');
-        $newid= Auth::user()->school_id ?? session('viewing_school');
+        $newid= Auth::user()->school_id ?? session('viewing_school') ?? session('vendor_viewing');
         if($schooleditid !== $newid){
             //abort(404);
             return view('404');
@@ -209,7 +304,7 @@ class StudentController extends Controller
     public function edit(string $id)
     {
         $schooleditid=Student::where('id',$id)->value('school_id');
-        $newid= Auth::user()->school_id ?? session('viewing_school');
+        $newid= Auth::user()->school_id ?? session('viewing_school') ?? session('vendor_viewing');
         if($schooleditid !== $newid){
             //abort(404);
             return view('404');
@@ -274,102 +369,10 @@ class StudentController extends Controller
      * Update the specified resource in storage.
      */
     
-    // public function update(Request $request, string $id)
-    // {
-    //     $student = Student::findOrFail($id);
-    //     $validator = Validator::make($request->all(), [
-    //         //'admission_no'  => 'required',
-    //         'first_name'    => 'required',
-    //         'father_name'   => 'required',
-    //         'date_of_birth' => 'required|date',
-    //         //'gender'        => 'required',
-    //         'class_id'      => 'required',
-    //         'section_id'    => 'required',
-    //         'photo'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return redirect()->back()->withErrors($validator)->withInput();
-    //     }
-    //     $school_id = $student->school_id ?? Auth::user()->school_id ?? session('viewing_school');
-    //     if (!$school_id) {
-    //         return redirect()->back()->with('error', 'School ID not found.')->withInput();
-    //     }
-    //     $photo = $student->photo;
-    //     if ($request->filled('photo_data')) {
-    //     if (
-    //         $photo &&
-    //         Storage::disk('public')->exists($photo)
-    //     ) {
-    //         Storage::disk('public')->delete($photo);
-    //     }
-
-    //         try {
-    //             $photo = ImageHelper::saveImageAsJpg(
-    //                 $request->input('photo_data'),
-    //                 "students/{$school_id}",
-    //                 "student_{$student->id}"
-    //             );
-    //         } catch (\Exception $e) {
-    //             return redirect()
-    //                 ->back()
-    //                 ->with('error', 'Invalid camera image.')
-    //                 ->withInput();
-    //         }
-    //     }
-    //     elseif ($request->hasFile('photo')) {
-    //         if (
-    //             $photo &&
-    //             Storage::disk('public')->exists($photo)
-    //         ) {
-    //             Storage::disk('public')->delete($photo);
-    //         }
-    //         $uploadedFile = $request->file('photo');
-    //         $imageName = time() . '_' . uniqid() . '.' .
-    //             $uploadedFile->getClientOriginalExtension();
-    //         $imagePath = "students/$school_id/$imageName";
-    //         $uploadedFile->storeAs(
-    //             "students/$school_id",
-    //             $imageName,
-    //             'public'
-    //         );
-    //         $photo = $imagePath;
-    //     }
-    //     $className=StudentClass::where('id',$request->class_id)->value('name');
-    //     $SectionName=Section::where('id',$request->section_id)->value('name');
-    //     $student->update([
-    //         'admission_no'  => $request->admission_no,
-    //         'first_name'    => $request->first_name,
-    //         'last_name'     => $request->last_name,
-    //         'father_name'   => $request->father_name,
-    //         'address'       => $request->address,
-    //         'gender'        => $request->gender,
-    //         'date_of_birth' => $request->date_of_birth,
-    //         'blood_group'   => $request->blood_group,
-    //         'phone'         => $request->phone,
-    //         'class_id'      => $request->class_id,
-    //         'section_id'    => $request->section_id,
-    //         'photo'         => $photo,
-    //         'mother_name'   => $request->mother_name,
-    //         'class_name'    => $className,
-    //         'section'       => $SectionName,
-    //     ]);
-    //     return redirect()->route('schools.classes.students', [
-    //                'school' => $student->school_id
-    //                 ?? Auth::user()->school_id
-    //                 ?? session('viewing_school'),
-    //             'class' => $student->class_id,
-    //     ])->with('success', 'Student updated successfully.');
-    // }
+   
     public function update(Request $request, string $id)
     {
         $student = Student::findOrFail($id);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Validation
-        |--------------------------------------------------------------------------
-        */
         $validator = Validator::make($request->all(), [
             //'admission_no'  => 'required',
             'first_name'    => 'required',
@@ -395,7 +398,7 @@ class StudentController extends Controller
         */
         $school_id = $student->school_id
             ?? Auth::user()->school_id
-            ?? session('viewing_school');
+            ?? session('viewing_school') ?? session('vendor_viewing');
 
         if (!$school_id) {
             return redirect()

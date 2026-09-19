@@ -16,6 +16,7 @@ class ManageEvent extends Model
         'description',
         'unique_code',
         'logo',
+        'vendor_id',
     ];
 
     public function registrations()

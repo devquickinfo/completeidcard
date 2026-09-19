@@ -29,6 +29,9 @@ class Student extends Model
         'idcardprinted',
         'IsDeleted',
         'mother_name',
+        'vendor_id',
+        'section',
+        'class_name',
     ];
 
     protected $casts = [

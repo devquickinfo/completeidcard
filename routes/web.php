@@ -152,6 +152,14 @@ Route::middleware('auth')->group(function () {
     ->name('manage-event.people');
 
     Route::get('/user-accounts', [UserController::class,'index'])->name('user.account');
+    Route::get('/user-create', [UserController::class,'create'])->name('user.create');
+    Route::post('/user-store', [UserController::class,'store'])->name('user.store');
+    Route::get('/user-edit/{id}', [UserController::class,'edit'])->name('user.edit');
+    Route::get('/vendors/{id}/schools', [UserController::class, 'vendorSchools'])
+    ->name('vendor.schools');
+
+    Route::get('/user-status/{id}', [UserController::class, 'status'])
+    ->name('user.status');
 
    
 });

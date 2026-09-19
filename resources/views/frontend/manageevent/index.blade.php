@@ -48,33 +48,9 @@
 
                 </div>
                 <div class="card-body">
-                    <form method="GET" action="{{ route('manage-events.index') }}" class="row g-2 align-items-end mb-3">
-                        <div class="col-md-3">
-                            <label class="form-label">
-                                Event Name
-                            </label>
-
-                            <select name="event_name"
-                                    class="form-control"
-                                    onchange="this.form.submit()">
-
-                                <option value="">
-                                    All Events
-                                </option>
-                                @foreach($eventNames as $eventName)
-                                    <option value="{{ $eventName->event_name }}"
-                                        {{ request('event_name') == $eventName->event_name ? 'selected' : '' }}>
-
-                                        {{ $eventName->event_name }}
-
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <form method="GET" action="{{ route('manage-events.index') }}" class="row align-items-end mb-3">
                         <div class="col-md-2">
-                            <label class="form-label">
-                                Start Date From
-                            </label>
+                            <label class="form-label">Start Date From</label>
                             <input type="date"
                                    name="start_date"
                                    value="{{ request('start_date') }}"
@@ -82,9 +58,7 @@
                                    onchange="this.form.submit()">
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">
-                                End Date To
-                            </label>
+                            <label class="form-label">End Date To</label>
                             <input type="date"
                                    name="end_date"
                                    value="{{ request('end_date') }}"
@@ -92,9 +66,7 @@
                                    onchange="this.form.submit()">
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">
-                                Records Per Page
-                            </label>
+                            <label class="form-label">Records Per Page</label>
                             <select name="per_page"
                                     class="form-control"
                                     onchange="this.form.submit()">
@@ -106,50 +78,30 @@
                                 @endforeach
                             </select>
                         </div>
-                    </form>
-                    <div class="row mb-3">
                         <div class="col-md-5">
-                            <form method="GET"action="{{ route('manage-events.index') }}">
-                                <input type="hidden"
-                                       name="event_name"
-                                       value="{{ request('event_name') }}">
-                                <input type="hidden"
-                                       name="start_date"
-                                       value="{{ request('start_date') }}">
-                                <input type="hidden"
-                                       name="end_date"
-                                       value="{{ request('end_date') }}">
-                                <input type="hidden"
-                                       name="per_page"
-                                       value="{{ request('per_page', 10) }}">
-                                <div class="input-group">
-                                    <input type="text"
-                                           name="search"
-                                           id="event-search"
-                                           value="{{ request('search') }}"
-                                           class="form-control"
-                                           placeholder="Search Event, Contact Person, Organizer or Code">
-                                    <div class="input-group-append">
-                                        <button type="submit"
-                                                class="btn btn-primary">
+                            <label class="form-label">Search</label>
+                            <div class="input-group">
+                                <input type="text"
+                                       name="search"
+                                       id="event-search"
+                                       value="{{ request('search') }}"
+                                       class="form-control"
+                                       placeholder="Search Event, Contact Person, Organizer or Code">
 
-                                            <i class="fas fa-search"></i>
-
-                                        </button>
-
-                                    </div>
-
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i>
+                                    </button>
                                 </div>
-                            </form>
+                            </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-1">
                             <a href="{{ route('manage-events.index') }}"
                                class="btn btn-secondary">
                                 <i class="fas fa-sync"></i>
-                                Reset
                             </a>
                         </div>
-                    </div>
+                    </form>
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
                             <thead>

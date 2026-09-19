@@ -69,7 +69,7 @@
                             </form>
 
 
-                            @if(session('role') !== 'school' && !session('viewing_school'))
+                            @if(session('role') !== 'school' && !session('viewing_school') && !session('vendor_viewing'))
 
                                 {{-- ADMIN --}}
                                 <a href="{{ route('upload-samples.create') }}"
@@ -140,7 +140,7 @@
                 <div class="card-body">
 
 
-                    @if(session('role') === 'school' || session('viewing_school'))
+                    @if(session('role') === 'school' || session('viewing_school') || session('vendor_viewing'))
 
                         {{-- =================================================
                              PARENT TABS

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\ApplicableUser;
 use App\Models\House;
 use App\Models\StudentClass;
+use App\Models\Permission;
 
 
 class ImageHelper
@@ -665,6 +666,11 @@ class ImageHelper
     {
         return Mainidcard::where('sample_id', $id)
             ->value('is_default') ?? 0;
+    }
+
+    public static function getVendorPermission(){
+
+       return Permission::where('vendor_id', Auth::id())->first();
     }
    
   

@@ -15,39 +15,71 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\SelectedSample;
 use App\Models\UploadSample;
 use App\Models\Mainidcard;
+use Illuminate\Support\Facades\DB;
+
 
 class SchoolController extends Controller
 {
+    // public function index(Request $request)
+    // {
+    //     $user = Auth::user();
+
+    //     // clear any previously set viewing_school when listing schools
+    //     if (session()->has('viewing_school')) {
+    //         session()->forget('viewing_school');
+    //     }
+
+    //     if ($user && $user->role === 'school' && $user->school_id) {
+    //         $school = School::findOrFail($user->school_id);
+
+    //         return redirect()->route('schools.show', $school);
+    //     }
+
+        
+    //     //$schools = School::where('IsDeleted', 0)->orderBy('school_name', 'asc')->paginate(10);
+    //      $search = $request->input('search');
+
+    //      $schools = School::where('IsDeleted', 0)
+    //         ->when(strlen($search) >= 3, function ($query) use ($search) {
+    //             $query->where('school_name', 'like', '%' . $search . '%');
+    //         })
+    //         ->orderBy('school_name', 'asc')
+    //         ->paginate(10)
+    //         ->withQueryString();
+
+    //     return view(
+    //         'schools.index',
+    //         compact('schools','search')
+    //     );
+    // }
     public function index(Request $request)
     {
         $user = Auth::user();
-
-        // clear any previously set viewing_school when listing schools
         if (session()->has('viewing_school')) {
             session()->forget('viewing_school');
         }
-
+        if (session()->has('vendor_viewing')) {
+            session()->forget('vendor_viewing');
+        }
         if ($user && $user->role === 'school' && $user->school_id) {
             $school = School::findOrFail($user->school_id);
 
             return redirect()->route('schools.show', $school);
         }
-
-        
-        //$schools = School::where('IsDeleted', 0)->orderBy('school_name', 'asc')->paginate(10);
-         $search = $request->input('search');
-
-         $schools = School::where('IsDeleted', 0)
+        $search = $request->input('search');
+        $schools = School::where('IsDeleted', 0)->whereNull('vendor_id')
+            //->when($user && $user->role === 'vendor', function ($query) use ($user) {
+                //$query->where('vendor_id', $user->id);
+           // })
             ->when(strlen($search) >= 3, function ($query) use ($search) {
                 $query->where('school_name', 'like', '%' . $search . '%');
             })
             ->orderBy('school_name', 'asc')
             ->paginate(10)
             ->withQueryString();
-
         return view(
             'schools.index',
-            compact('schools','search')
+            compact('schools', 'search')
         );
     }
 
@@ -60,14 +92,27 @@ class SchoolController extends Controller
 
 
 
+    
     // public function store(Request $request)
     // {
 
+    //    // echo '<pre>';print_r($request->all()); die;
     //     $validator = Validator::make($request->all(), [
     //         'school_name' => 'required',
-    //         'school_code' => 'required|unique:schools',
+    //         //'school_code' => 'required|unique:schools',
     //         'email' => 'nullable|email',
+    //         'phone' =>'required',
+
     //         'school_logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+    //         'username' => 'required|string|max:255|unique:users,username',
+    //         'password' => 'required|string|min:4',
+            
+    //     ], [
+    //         'username.required' => 'Username is required.',
+    //         'username.unique' => 'This username is already taken.',
+    //         'password.required' => 'Password is required.',
+    //         'password.min' => 'Password must be at least 6 characters.',
+           
     //     ]);
 
     //     if ($validator->fails()) {
@@ -76,6 +121,7 @@ class SchoolController extends Controller
     //             ->withErrors($validator)
     //             ->withInput();
     //     }
+
     //     $data = $request->only([
     //         'school_name',
     //         'school_code',
@@ -88,50 +134,61 @@ class SchoolController extends Controller
     //         'status',
     //     ]);
 
-    //     if ($request->hasFile('school_logo')) {
-    //         $data['logo'] = $request->file('school_logo')->store('schools', 'public');
+    //     if (session('role') === 'vendor') {
+    //        $data['vendor_id'] = Auth::id();
+    //        $data['student_limit'] = $request->student_limit;
     //     }
 
+    //     if ($request->hasFile('school_logo')) {
+    //         $data['logo'] = $request->file('school_logo')
+    //             ->store('schools', 'public');
+    //     }
+
+    //     // Create school
     //     $school = School::create($data);
 
-    //     if (!empty($school->email)) {
-    //         User::create([
-    //             'name' => $school->school_name,
-    //             'email' => $school->email,
-    //             'password' => Hash::make('password'),
-    //             'role' => 'school',
-    //             'school_id' => $school->id,
-    //         ]);
-    //     }
+    //     // Create school user
+    //     $user= User::create([
+    //         'name' => $school->school_name,
+    //         'username' => $request->username,
+    //         'email' => $school->email,
+    //         'password' => Hash::make($request->password),
+    //         'role' => 'school',
+    //         'school_id' => $school->id,
+    //     ]);
 
-    //     //  return redirect()
-    //     // ->route('schools.show', ['school' => Auth::user()->school_id])
-    //     // ->with('success', 'School Added Successfully');
+    //     $userId = $user->id;
+
+    //     $school->update([
+    //         'user_id' => $userId,
+    //     ]);
+
     //     return redirect()
-    //     ->route('schools.show', ['school' => $school->id])
-    //     ->with('success', 'School Added Successfully');
-
+    //         ->route('schools.show', ['school' => $school->id])
+    //         ->with('success', 'School Added Successfully');
     // }
+
     public function store(Request $request)
     {
-
-       // echo '<pre>';print_r($request->all()); die;
         $validator = Validator::make($request->all(), [
             'school_name' => 'required',
-            //'school_code' => 'required|unique:schools',
             'email' => 'nullable|email',
-            'phone' =>'required',
+            'phone' => 'required',
 
             'school_logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
             'username' => 'required|string|max:255|unique:users,username',
             'password' => 'required|string|min:4',
-            
+
+            'student_limit' => session('role') === 'vendor'
+                ? 'required'
+                : 'nullable',
+
         ], [
             'username.required' => 'Username is required.',
             'username.unique' => 'This username is already taken.',
             'password.required' => 'Password is required.',
-            'password.min' => 'Password must be at least 6 characters.',
-           
+            'password.min' => 'Password must be at least 4 characters.',
+            'student_limit.required' => 'Student limit is required.',
         ]);
 
         if ($validator->fails()) {
@@ -141,45 +198,58 @@ class SchoolController extends Controller
                 ->withInput();
         }
 
-        $data = $request->only([
-            'school_name',
-            'school_code',
-            'email',
-            'phone',
-            'address',
-            'city',
-            'state',
-            'pincode',
-            'status',
-        ]);
+        try {
 
-        if ($request->hasFile('school_logo')) {
-            $data['logo'] = $request->file('school_logo')
-                ->store('schools', 'public');
+            DB::transaction(function () use ($request, &$school) {
+
+                $data = $request->only([
+                    'school_name',
+                    'school_code',
+                    'email',
+                    'phone',
+                    'address',
+                    'city',
+                    'state',
+                    'pincode',
+                    'status',
+                ]);
+
+                if (session('role') === 'vendor') {
+                    $data['vendor_id'] = Auth::id();
+                    $data['student_limit'] = $request->student_limit;
+                }
+
+                if ($request->hasFile('school_logo')) {
+                    $data['logo'] = $request->file('school_logo')
+                        ->store('schools', 'public');
+                }
+
+                // Create school
+                $school = School::create($data);
+
+                // Create school user
+                $user = User::create([
+                    'name' => $school->school_name,
+                    'username' => $request->username,
+                    'email' => $school->email,
+                    'password' => Hash::make($request->password),
+                    'role' => 'school',
+                    'school_id' => $school->id,
+                ]);
+
+                // Update school with user ID
+                $school->update([
+                    'user_id' => $user->id,
+                ]);
+            });
+
+            return redirect()
+                ->route('schools.show', ['school' => $school->id])
+                ->with('success', 'School Added Successfully');
+
+        }catch (\Throwable $e) {
+             dd($e->getMessage());
         }
-
-        // Create school
-        $school = School::create($data);
-
-        // Create school user
-        $user= User::create([
-            'name' => $school->school_name,
-            'username' => $request->username,
-            'email' => $school->email,
-            'password' => Hash::make($request->password),
-            'role' => 'school',
-            'school_id' => $school->id,
-        ]);
-
-        $userId = $user->id;
-
-        $school->update([
-            'user_id' => $userId,
-        ]);
-
-        return redirect()
-            ->route('schools.show', ['school' => $school->id])
-            ->with('success', 'School Added Successfully');
     }
 
 
@@ -216,7 +286,11 @@ class SchoolController extends Controller
         if ($user && $user->role === 'superadmin') {
             session(['viewing_school' => $school->id]);
         }
-        $school_id = Auth::user()->school_id ?? session('viewing_school');
+
+        if ($user && $user->role === 'vendor') {
+            session(['vendor_viewing' => $school->id]);
+        }
+        $school_id = Auth::user()->school_id ?? session('viewing_school') ?? session('vendor_viewing');
         // $idcardsample = null;
         // $selectedSample = SelectedSample::where('school_id', $school_id)->first();
         // if ($selectedSample) {
@@ -605,84 +679,91 @@ class SchoolController extends Controller
             ->with('success', 'School status updated successfully.');
     }
       
+    
     // public function saveSample(Request $request)
     // {
-    //     $schoolId = Auth::user()->school_id ?? session('viewing_school');
-
+    //     $schoolId = Auth::user()->school_id ?? session('viewing_school') ?? session('vendor_viewing');
     //     $verticalSampleId = $request->input('vertical_sample_id');
     //     $horizontalSampleId = $request->input('horizontal_sample_id');
-
     //     if (!$schoolId) {
     //         return redirect()->back()
     //             ->with('error', 'Invalid school selection.');
     //     }
-
     //     if (!$verticalSampleId && !$horizontalSampleId) {
     //         return redirect()->back()
     //             ->with('error', 'Please select at least one sample.');
     //     }
-
-    //     // Save / update vertical sample
     //     if ($verticalSampleId) {
-    //         SelectedSample::updateOrCreate(
-    //             [
-    //                 'school_id' => $schoolId,
-    //                 'orientation' => 'vertical',
-    //             ],
-    //             [
-    //                 'sample_id' => $verticalSampleId,
-    //             ]
-    //         );
+    //         $filepath =UploadSample::where('id',$verticalSampleId)->first();
+    //        UploadSample::create([
+    //             'school_id' => $schoolId,
+    //             'name' => $filepath->name ?? null,
+    //             'orientation' => 'vertical',
+    //             'file_path' => $filepath->file_path ?? null,
+    //         ]);
     //     }
-
-    //     // Save / update horizontal sample
     //     if ($horizontalSampleId) {
-    //         SelectedSample::updateOrCreate(
-    //             [
-    //                 'school_id' => $schoolId,
-    //                 'orientation' => 'horizontal',
-    //             ],
-    //             [
-    //                 'sample_id' => $horizontalSampleId,
-    //             ]
-    //         );
+    //          $filepath =UploadSample::where('id',$horizontalSampleId)->first();
+    //         UploadSample::create([
+    //             'school_id' => $schoolId,
+    //             'name' => $filepath->name ?? null,
+    //             'orientation' => 'horizontal',
+    //             'file_path' => $filepath->file_path ?? null,
+    //         ]);
     //     }
+        
 
     //     return redirect()->back()
     //         ->with('success', 'Samples selected successfully.');
     // }
-     public function saveSample(Request $request)
+    public function saveSample(Request $request)
     {
-        $schoolId = Auth::user()->school_id ?? session('viewing_school');
+        $schoolId = Auth::user()->school_id
+            ?? session('viewing_school')
+            ?? session('vendor_viewing');
+
         $verticalSampleId = $request->input('vertical_sample_id');
         $horizontalSampleId = $request->input('horizontal_sample_id');
+
         if (!$schoolId) {
             return redirect()->back()
                 ->with('error', 'Invalid school selection.');
         }
+
         if (!$verticalSampleId && !$horizontalSampleId) {
             return redirect()->back()
                 ->with('error', 'Please select at least one sample.');
         }
+
+        // Add vendor_id only for vendor role
+        $vendorId = Auth::user()->role === 'vendor' ? Auth::id() : null;
         if ($verticalSampleId) {
-            $filepath =UploadSample::where('id',$verticalSampleId)->first();
-           UploadSample::create([
-                'school_id' => $schoolId,
-                'name' => $filepath->name ?? null,
-                'orientation' => 'vertical',
-                'file_path' => $filepath->file_path ?? null,
-            ]);
+            $filepath = UploadSample::find($verticalSampleId);
+
+            if ($filepath) {
+                UploadSample::create([
+                    'school_id'  => $schoolId,
+                    'vendor_id'  => $vendorId,
+                    'name'       => $filepath->name,
+                    'orientation' => 'vertical',
+                    'file_path'  => $filepath->file_path,
+                ]);
+            }
         }
+
         if ($horizontalSampleId) {
-             $filepath =UploadSample::where('id',$horizontalSampleId)->first();
-            UploadSample::create([
-                'school_id' => $schoolId,
-                'name' => $filepath->name ?? null,
-                'orientation' => 'horizontal',
-                'file_path' => $filepath->file_path ?? null,
-            ]);
+            $filepath = UploadSample::find($horizontalSampleId);
+
+            if ($filepath) {
+                UploadSample::create([
+                    'school_id'  => $schoolId,
+                    'vendor_id'  => $vendorId,
+                    'name'       => $filepath->name,
+                    'orientation' => 'horizontal',
+                    'file_path'  => $filepath->file_path,
+                ]);
+            }
         }
-        
 
         return redirect()->back()
             ->with('success', 'Samples selected successfully.');

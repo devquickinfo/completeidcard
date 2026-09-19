@@ -284,7 +284,7 @@
 
 
         <!-- Student List -->
-     {{---  <div class="card">
+       <div class="card">
             <div class="card-header">
                 <h3 class="card-title">
                     <i class="fas fa-users mr-2"></i>
@@ -375,7 +375,7 @@
                 </form>
             </div>
             </div>
-       </div>---}}
+       </div>
 </section>
 
 

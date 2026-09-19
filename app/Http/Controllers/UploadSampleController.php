@@ -19,6 +19,35 @@ class UploadSampleController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // public function index()
+    // {
+    //     $selectedSamples = collect();
+    //     $alls = collect();
+    //     $defaultSamples = collect();
+    //     $ownSamples = collect();
+
+    //     if (session('role') === 'school' || session('viewing_school') || session('vendor_viewing')) {
+
+    //         $schoolId = Auth::user()->school_id ?? session('viewing_school') ?? session('vendor_viewing');
+    //         $defaultSamples = UploadSample::whereNull('school_id')
+    //             ->get();
+    //         $ownSamples = UploadSample::where('school_id', $schoolId)
+    //             ->get();
+    //     } else {
+
+    //         // Admin sees all
+    //         $alls = UploadSample::all();
+    //     }
+    //     return view(
+    //         'schools.uploadsample',
+    //         compact(
+    //             'alls',
+    //             'defaultSamples',
+    //             'ownSamples',
+    //             'selectedSamples'
+    //         )
+    //     );
+    // }
     public function index()
     {
         $selectedSamples = collect();
@@ -26,28 +55,41 @@ class UploadSampleController extends Controller
         $defaultSamples = collect();
         $ownSamples = collect();
 
-        if (session('role') === 'school' || session('viewing_school')) {
+        if (
+            session('role') === 'school' ||
+            session('role') === 'vendor' ||
+            session('viewing_school') ||
+            session('vendor_viewing')
+        ) {
 
-            $schoolId = Auth::user()->school_id ?? session('viewing_school');
+            $schoolId = Auth::user()->school_id
+                ?? session('viewing_school')
+                ?? session('vendor_viewing');
 
-            // Get selected vertical + horizontal samples
-            $selectedSamples = SelectedSample::where('school_id', $schoolId)
-                ->pluck('sample_id', 'orientation');
-
-            // Admin/default samples
+            // Default samples available for everyone
             $defaultSamples = UploadSample::whereNull('school_id')
                 ->get();
 
-            // School uploaded samples
-            $ownSamples = UploadSample::where('school_id', $schoolId)
-                ->get();
+            // Vendor: only samples belonging to this vendor
+            if (session('role') === 'vendor') {
+
+                $ownSamples = UploadSample::where('school_id', $schoolId)
+                    ->where('vendor_id', Auth::id())
+                    ->get();
+
+            } else {
+
+                // School / viewing school
+                $ownSamples = UploadSample::where('school_id', $schoolId)
+                    ->get();
+            }
 
         } else {
 
             // Admin sees all
-            $alls = UploadSample::all();
+            $alls = UploadSample::where('school_id', null)->get();
         }
-
+        
         return view(
             'schools.uploadsample',
             compact(
@@ -81,8 +123,8 @@ class UploadSampleController extends Controller
             'orientation'    => 'required|in:horizontal,vertical',
         ]);
 
-        if (session('role') === 'school' || session('viewing_school')) {
-            $schoolId = Auth::user()->school_id ?? session('viewing_school');
+        if (session('role') === 'school' || session('viewing_school') || session('vendor_viewing')) {
+            $schoolId = Auth::user()->school_id ?? session('viewing_school') ?? session('vendor_viewing');
             $path = $request->file('upload_samples')
                 ->store('samples/' . $schoolId, 'public');
         } else {
@@ -212,6 +254,8 @@ class UploadSampleController extends Controller
             $schoolId = Auth::user()->school_id;
         } elseif (session('viewing_school')) {
             $schoolId = session('viewing_school');
+        } elseif (session('vendor_viewing')) {
+            $schoolId = session('vendor_viewing');
         } else {
             $schoolId = null;
         }

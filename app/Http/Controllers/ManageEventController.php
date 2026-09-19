@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\EventRegistration;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class ManageEventController extends Controller
 {
@@ -17,6 +18,10 @@ class ManageEventController extends Controller
     public function index(Request $request)
     {
         $query = ManageEvent::query();
+
+        if (Auth::user()->role === 'vendor') {
+          $query->where('vendor_id', Auth::id());
+        }
 
         // Event Name filter
         if ($request->filled('event_name')) {
@@ -90,6 +95,12 @@ class ManageEventController extends Controller
 
         $validated['unique_code'] = Str::random(60);
 
+        if (Auth::user()->role === 'vendor') {
+            $validated['vendor_id'] = Auth::id();
+        } else {
+            $validated['vendor_id'] = null;
+        }
+
         if ($request->hasFile('logo')) {
             $validated['logo'] = $request->file('logo')->store('events', 'public');
         }
@@ -113,6 +124,13 @@ class ManageEventController extends Controller
 
     public function update(Request $request, ManageEvent $manageEvent)
     {
+
+        if (Auth::user()->role === 'vendor' &&
+            $manageEvent->vendor_id != Auth::id()) {
+
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validate([
             'event_name'       => 'required|string|max:255',
             'start_date'       => 'required|date',
@@ -144,10 +162,6 @@ class ManageEventController extends Controller
 
     public function destroy(ManageEvent $manageEvent)
     {
-        // if (!empty($manageEvent->logo)) {
-        //     Storage::disk('public')->delete($manageEvent->logo);
-        // }
-        // $manageEvent->delete();
         return redirect()
             ->route('manage-events.index')
             ->with('success', 'Event deleted successfully.');

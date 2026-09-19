@@ -87,6 +87,22 @@
                             <span class="text-danger">{{ $message }}</span>
                        @enderror
                     </div>
+                    @if(session('role')==='vendor')
+                    <div class="col-md-3">                    
+                      <div class="form-group">
+                        <label for="student_limit">Student Limit <span class="text-danger"> * </span></label>
+                        <select name="student_limit" id="student_limit" class="form-control">
+                          <option value="0-500">0-500</option>
+                          <option value="500-1000">500-1000</option>
+                          <option value="1000-2000">1000-2000</option>
+                          
+                        </select>
+                      </div>
+                       @error('phone')
+                            <span class="text-danger">{{ $message }}</span>
+                       @enderror
+                    </div>
+                    @endif
                     <div class="col-md-3">
                       <div class="form-group">
                         <label for="school_logo">School Logo</label>

@@ -42,7 +42,17 @@ class LoginController extends Controller
                     ])
                     ->withInput();
             }
+            /// Added on 19-09-2026
+            if ($user?->role === 'vendor' && ! $user->status) {
+                Auth::logout();
 
+                return back()
+                    ->withErrors([
+                        'email' => 'Your account is not active. Please contact admin.',
+                    ])
+                    ->withInput();
+            }
+            // end /////
             $request->session()->regenerate();
             session([
                 'user_id' => Auth::id(),
@@ -65,6 +75,9 @@ class LoginController extends Controller
         if (session()->has('viewing_school')) {
             session()->forget('viewing_school');
         }
+        if (session()->has('vendor_viewing')) {
+            session()->forget('vendor_viewing');
+        }
         $user = Auth::user();
 
         if ($user?->role === 'school') {
@@ -73,6 +86,17 @@ class LoginController extends Controller
             // Redirect school users to their school details page
             return redirect()->route('schools.show', $school);
         }
+
+        if ($user?->role === 'vendor') {
+            $users = User::where('role', 'vendor')
+            ->where('id', Auth::id())
+            ->first();
+            $schools = School::where('vendor_id', Auth::id())->get();
+            $schoolsCount = School::where('vendor_id', Auth::id())->count();
+            $studentsCount = Student::where('vendor_id', Auth::id())->count();
+            return view('users.dashboard', compact('user', 'users','schoolsCount','schools','studentsCount'));
+        }
+
 
         $schoolsCount = School::count();
         $classesCount = StudentClass::count();
