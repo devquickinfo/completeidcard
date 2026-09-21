@@ -17,6 +17,7 @@ class EventRegistration extends Model
         'device_name',
         'event_code',
         'photo',
+        'user_unique_code',
 
     ];
 

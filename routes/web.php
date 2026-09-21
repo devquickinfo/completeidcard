@@ -33,10 +33,14 @@ Route::get('/event/{unique_code}', [ManageEventController::class, 'publicEvent']
 Route::get('/event/{unique_code}/register', [ManageEventController::class, 'register'])
         ->name('events.register');
 
- Route::post('/event/store', [ManageEventController::class, 'storeRegistration'])
+Route::post('/event/store', [ManageEventController::class, 'storeRegistration'])
         ->name('events.register.store');
 
+Route::get('/events/home', [ManageEventController::class, 'home'])
+    ->name('events.home');
 
+Route::get('/showRegisterUsermobile/{id}', [ManageEventController::class, 'showRegisterUserMobile'])
+    ->name('show.register.user.mobile');
 /// event public route end//////////////
 
 Route::get('/', function () {
@@ -151,8 +155,31 @@ Route::middleware('auth')->group(function () {
     Route::get('/events/{id}/people', [ManageEventController::class, 'eventPeople'])
     ->name('manage-event.people');
 
-     Route::get('/events/home', [ManageEventController::class, 'home'])
-    ->name('events.home');
+     Route::get('/events/{id}/settings', [ManageEventController::class, 'settings'])
+    ->name('manage-event.settings');
+
+
+    Route::get('/showRegisterUser/{id}', [ManageEventController::class, 'showRegisterUser'])
+    ->name('show.register.user');
+
+    
+
+    Route::get(
+    '/manage-events/people/{id}/edit',
+    [ManageEventController::class, 'editRegisteredUser']
+    )->name('manage-events.people.edit');
+
+    Route::put(
+        '/manage-events/people/{id}',
+        [ManageEventController::class, 'updateRegisteredUser']
+    )->name('manage-events.people.update');
+
+    Route::get(
+    '/manage-events/people/{id}',
+    [ManageEventController::class, 'deleteRegisteredUser']
+    )->name('manage-events.people.delete');
+
+     
 
     Route::get('/user-accounts', [UserController::class,'index'])->name('user.account');
     Route::get('/user-create', [UserController::class,'create'])->name('user.create');

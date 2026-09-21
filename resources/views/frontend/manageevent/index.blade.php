@@ -225,11 +225,16 @@
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
-                                             <a href="{{ route('manage-event.people', $event->unique_code) }}"
+                                            <a href="{{ route('manage-event.people', $event->unique_code) }}"
                                                class="btn btn-sm btn-info"
                                                title="People">
 
                                                 <i class="fas fa-user"></i>
+                                            </a>
+                                             <a href="{{ route('manage-event.settings', $event->id) }}"
+                                               class="btn btn-sm btn-primary"
+                                               title="Settings">
+                                                <i class="fas fa-cog"></i>
                                             </a>
                                         </td>
                                     </tr>

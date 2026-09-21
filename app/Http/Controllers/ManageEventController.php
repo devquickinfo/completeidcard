@@ -23,6 +23,8 @@ class ManageEventController extends Controller
 
         if (Auth::user()->role === 'vendor') {
           $query->where('vendor_id', Auth::id());
+        }else{
+            $query->where('vendor_id', null);
         }
 
         // Event Name filter
@@ -182,16 +184,18 @@ class ManageEventController extends Controller
 
         return view('frontend.manageevent.register', compact('manageEvent'));
     }
-    
+   
     // public function storeRegistration(Request $request)
     // {
     //     $manageEvent = ManageEvent::where('unique_code', $request->unique_code)
     //         ->firstOrFail();
+
     //     $validated = $request->validate([
-    //         'name'         => 'required|string|max:255',
-    //         'email'        => 'nullable|email|max:255',
-    //         //'mobile'       => 'required|string|max:20',
-    //         'mobile'       => [
+    //         'name' => 'required|string|max:255',
+
+    //         'email' => 'nullable|email|max:255',
+
+    //         'mobile' => [
     //             'required',
     //             'string',
     //             'max:10',
@@ -200,26 +204,52 @@ class ManageEventController extends Controller
     //                     return $query->where('event_id', $manageEvent->id);
     //                 }),
     //         ],
+
     //         'organization' => 'nullable|string|max:255',
-    //         'address'      => 'required|string|max:1000',
-    //         'photo'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+
+    //         'address' => 'required|string|max:1000',
+
+    //         'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
     //     ]);
 
     //     $validated['event_id'] = $manageEvent->id;
-    //     $validated['event_code'] = $request->unique_code;
+    //     $validated['event_code'] = $manageEvent->unique_code;
     //     $validated['ip_address'] = $request->ip();
     //     $validated['device_name'] = $request->userAgent();
 
+    //     /*
+    //      * Compress photo to maximum 500 KB
+    //      */
     //     if ($request->hasFile('photo')) {
 
     //         $photo = $request->file('photo');
 
-    //         $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+    //         $manager = new ImageManager(new Driver());
 
-    //         $photo->storeAs(
-    //             'event-registrations',
-    //             $photoName,
-    //             'public'
+    //         $image = $manager->read($photo->getRealPath());
+
+    //         $maxSize = 500 * 1024; // 500 KB
+    //         $quality = 90;
+
+    //         do {
+
+    //             $encoded = $image->toJpeg($quality);
+
+    //             $size = strlen($encoded);
+
+    //             if ($size <= $maxSize) {
+    //                 break;
+    //             }
+
+    //             $quality -= 5;
+
+    //         } while ($quality >= 30);
+
+    //         $photoName = time() . '_' . uniqid() . '.jpg';
+
+    //         Storage::disk('public')->put(
+    //             'event-registrations/' . $photoName,
+    //             $encoded
     //         );
 
     //         $validated['photo'] = 'event-registrations/' . $photoName;
@@ -231,10 +261,14 @@ class ManageEventController extends Controller
     //         ->route('events.home')
     //         ->with('success', 'Registration completed successfully.');
     // }
-     public function storeRegistration(Request $request)
+
+
+    public function storeRegistration(Request $request)
     {
-        $manageEvent = ManageEvent::where('unique_code', $request->unique_code)
-            ->firstOrFail();
+        $manageEvent = ManageEvent::where(
+            'unique_code',
+            $request->unique_code
+        )->firstOrFail();
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -255,26 +289,316 @@ class ManageEventController extends Controller
 
             'address' => 'required|string|max:1000',
 
-            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-        ]);
+            // Normal file upload
+            'photo' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
+            ],
 
+            // Camera captured image
+            'photo_data' => [
+                'nullable',
+                'string',
+            ],
+        ]);
+        
+        $validated['user_unique_code'] = Str::random(60);
         $validated['event_id'] = $manageEvent->id;
         $validated['event_code'] = $manageEvent->unique_code;
         $validated['ip_address'] = $request->ip();
         $validated['device_name'] = $request->userAgent();
+        if (!$request->hasFile('photo') && !$request->filled('photo_data')) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'photo' => 'Please capture a photo or upload a photo.',
+                ]);
+        }
+
+        $manager = new ImageManager(new Driver());
+        $encoded = null;
+        if ($request->filled('photo_data')) {
+            $photoData = $request->input('photo_data');
+            if (preg_match(
+                '/^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/',
+                $photoData,
+                $matches
+            )) {
+                $base64Image = $matches[2];
+                $base64Image = str_replace(' ', '+', $base64Image);
+                $imageBinary = base64_decode($base64Image, true);
+
+                if ($imageBinary === false) {
+                    return back()
+                        ->withInput()
+                        ->withErrors([
+                            'photo' => 'Invalid captured photo.',
+                        ]);
+                }
+                try {
+
+                    $image = $manager->read($imageBinary);
+                } catch (\Exception $e) {
+
+                    return back()
+                        ->withInput()
+                        ->withErrors([
+                            'photo' => 'Unable to process captured photo.',
+                        ]);
+                }
+                $maxSize = 500 * 1024;
+                $quality = 90;
+                do {
+                    $encoded = $image->toJpeg($quality);
+                    $size = strlen($encoded);
+                    if ($size <= $maxSize) {
+                        break;
+                    }
+                    $quality -= 5;
+                } while ($quality >= 30);
+            } else {
+
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'photo' => 'Invalid captured photo format.',
+                    ]);
+            }
+        }
+        elseif ($request->hasFile('photo')) {
+            $photo = $request->file('photo');
+            try {
+                $image = $manager->read($photo->getRealPath());
+            } catch (\Exception $e) {
+
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'photo' => 'Unable to process uploaded photo.',
+                    ]);
+            }
+
+            $maxSize = 500 * 1024;
+            $quality = 90;
+            do {
+                $encoded = $image->toJpeg($quality);
+                $size = strlen($encoded);
+                if ($size <= $maxSize) {
+                    break;
+                }
+                $quality -= 5;
+            } while ($quality >= 30);
+        }
+        if ($encoded !== null) {
+            $photoName = time() . '_' . Str::random(20) . '.jpg';
+            $photoPath = 'event-registrations/' . $photoName;
+            Storage::disk('public')->put(
+                $photoPath,
+                $encoded
+            );
+            $validated['photo'] = $photoPath;
+        }
+        unset($validated['photo_data']);
+        EventRegistration::create($validated);
+        return redirect()
+            ->route('events.home')
+            ->with(
+                'success',
+                'Registration completed successfully.'
+            );
+    }
+
+    public function eventPeople(Request $request, $id)
+    {
+        $search = $request->get('search');
+
+        $events = EventRegistration::where('event_code', $id)
+            ->where('is_deleted', 0)
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                      ->orWhere('mobile', 'like', '%' . $search . '%')
+                      ->orWhere('email', 'like', '%' . $search . '%');
+                });
+            })
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('frontend.manageevent.people', compact('events','id'));
+    }
+    public function home(){
+
+        return view('frontend.manageevent.homepage');
+    }
+    public function settings(){
+
+        return view('frontend.manageevent.settings');
+    }
+
+    public function showRegisterUser($id){
+         
+         $manageEvent=EventRegistration::where('id',$id)->first();
+         return view('frontend.manageevent.showuser',compact('manageEvent'));
+    }
+    public function showRegisterUserMobile($id){
+
+      $manageEvent = EventRegistration::where(
+        'user_unique_code',
+        $id
+        )->firstOrFail();
+
+       return view('frontend.manageevent.showregisterusermobile', compact('manageEvent'));
+
+
+    }
+    public function editRegisteredUser($id)
+    {
+        $manageEvent = EventRegistration::findOrFail($id);
+
+        return view(
+            'frontend.manageevent.editregisteruser',
+            compact('manageEvent')
+        );
+    }
+    public function updateRegisteredUser(Request $request, $id)
+    {
+        $manageEvent = EventRegistration::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+            ],
+
+            'mobile' => [
+                'required',
+                'string',
+                'max:10',
+
+                Rule::unique('event_registrations', 'mobile')
+                    ->where(function ($query) use ($manageEvent) {
+                        return $query->where(
+                            'event_id',
+                            $manageEvent->event_id
+                        );
+                    })
+                    ->ignore($manageEvent->id),
+            ],
+
+            'organization' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'address' => [
+                'required',
+                'string',
+                'max:1000',
+            ],
+
+            'photo' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
+            ],
+
+            'photo_data' => [
+                'nullable',
+                'string',
+            ],
+        ]);
 
         /*
-         * Compress photo to maximum 500 KB
-         */
-        if ($request->hasFile('photo')) {
+        |--------------------------------------------------------------------------
+        | Photo
+        |--------------------------------------------------------------------------
+        */
 
-            $photo = $request->file('photo');
+        $hasUploadedPhoto = $request->hasFile('photo');
+        $hasCapturedPhoto = $request->filled('photo_data');
 
-            $manager = new ImageManager(new Driver());
+        $newPhotoPath = null;
 
-            $image = $manager->read($photo->getRealPath());
+        /*
+        |--------------------------------------------------------------------------
+        | Camera Photo
+        |--------------------------------------------------------------------------
+        */
 
-            $maxSize = 500 * 1024; // 500 KB
+        if ($hasCapturedPhoto) {
+
+            $photoData = $request->input('photo_data');
+
+            if (!preg_match(
+                '/^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/',
+                $photoData,
+                $matches
+            )) {
+
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'photo' => 'Invalid captured photo format.'
+                    ]);
+            }
+
+            $base64Image = str_replace(
+                ' ',
+                '+',
+                $matches[2]
+            );
+
+            $imageBinary = base64_decode(
+                $base64Image,
+                true
+            );
+
+            if ($imageBinary === false) {
+
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'photo' => 'Invalid captured photo.'
+                    ]);
+            }
+
+            try {
+
+                $manager = new ImageManager(
+                    new Driver()
+                );
+
+                $image = $manager->read(
+                    $imageBinary
+                );
+
+            } catch (\Exception $e) {
+
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'photo' => 'Unable to process captured photo.'
+                    ]);
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Compress Image
+            |--------------------------------------------------------------------------
+            */
+
+            $maxSize = 500 * 1024;
             $quality = 90;
 
             do {
@@ -291,42 +615,176 @@ class ManageEventController extends Controller
 
             } while ($quality >= 30);
 
-            $photoName = time() . '_' . uniqid() . '.jpg';
+
+            $photoName =
+                time() .
+                '_' .
+                Str::random(20) .
+                '.jpg';
+
+            $newPhotoPath =
+                'event-registrations/' .
+                $photoName;
 
             Storage::disk('public')->put(
-                'event-registrations/' . $photoName,
+                $newPhotoPath,
                 $encoded
             );
-
-            $validated['photo'] = 'event-registrations/' . $photoName;
         }
 
-        EventRegistration::create($validated);
+        /*
+        |--------------------------------------------------------------------------
+        | Uploaded Photo
+        |--------------------------------------------------------------------------
+        */
+
+        elseif ($hasUploadedPhoto) {
+
+            try {
+
+                $manager = new ImageManager(
+                    new Driver()
+                );
+
+                $image = $manager->read(
+                    $request->file('photo')->getRealPath()
+                );
+
+            } catch (\Exception $e) {
+
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'photo' => 'Unable to process uploaded photo.'
+                    ]);
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Compress Image
+            |--------------------------------------------------------------------------
+            */
+
+            $maxSize = 500 * 1024;
+            $quality = 90;
+
+            do {
+
+                $encoded = $image->toJpeg($quality);
+
+                $size = strlen($encoded);
+
+                if ($size <= $maxSize) {
+                    break;
+                }
+
+                $quality -= 5;
+
+            } while ($quality >= 30);
+
+
+            $photoName =
+                time() .
+                '_' .
+                Str::random(20) .
+                '.jpg';
+
+            $newPhotoPath =
+                'event-registrations/' .
+                $photoName;
+
+            Storage::disk('public')->put(
+                $newPhotoPath,
+                $encoded
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Update Basic Details
+        |--------------------------------------------------------------------------
+        */
+
+        $manageEvent->name =
+            $validated['name'];
+
+        $manageEvent->email =
+            $validated['email'] ?? null;
+
+        $manageEvent->mobile =
+            $validated['mobile'];
+
+        $manageEvent->organization =
+            $validated['organization'] ?? null;
+
+        $manageEvent->address =
+            $validated['address'];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Replace Old Photo
+        |--------------------------------------------------------------------------
+        */
+
+        if ($newPhotoPath) {
+
+            $oldPhoto = $manageEvent->photo;
+
+            $manageEvent->photo =
+                $newPhotoPath;
+
+            $manageEvent->save();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Delete Old Photo
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                !empty($oldPhoto) &&
+                Storage::disk('public')->exists($oldPhoto)
+            ) {
+
+                Storage::disk('public')->delete(
+                    $oldPhoto
+                );
+            }
+
+        } else {
+
+            /*
+            |--------------------------------------------------------------------------
+            | No New Photo
+            | Keep Existing Photo
+            |--------------------------------------------------------------------------
+            */
+
+            $manageEvent->save();
+        }
+
 
         return redirect()
-            ->route('events.home')
-            ->with('success', 'Registration completed successfully.');
+            ->route(
+                'manage-events.people.edit',
+                $manageEvent->id
+            )
+            ->with(
+                'success',
+                'Registered user updated successfully.'
+            );
     }
-
-    public function eventPeople(Request $request, $id)
+    public function deleteRegisteredUser($id)
     {
-        $search = $request->get('search');
+        $manageEvent = EventRegistration::findOrFail($id);
 
-        $events = EventRegistration::where('event_code', $id)
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%')
-                      ->orWhere('mobile', 'like', '%' . $search . '%')
-                      ->orWhere('email', 'like', '%' . $search . '%');
-                });
-            })
-            ->paginate(10)
-            ->withQueryString();
+        $manageEvent->is_deleted = 1;
+        $manageEvent->save();
 
-        return view('frontend.manageevent.people', compact('events','id'));
-    }
-    public function home(){
-
-        return view('frontend.manageevent.homepage');
+        return redirect()
+            ->back()
+            ->with('success', 'Registered user deleted successfully.');
     }
 }

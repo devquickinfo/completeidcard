@@ -153,7 +153,7 @@
                                         <td style="white-space: nowrap;">
 
                                             {{-- Edit --}}
-                                            <a href=""
+                                            <a href="{{route('manage-events.people.edit',$event->id)}}"
                                                class="btn btn-sm btn-warning"
                                                title="Edit">
 
@@ -162,16 +162,16 @@
                                             </a>
 
                                             {{-- View --}}
-                                            <a href=""
+                                            <a href="{{route('show.register.user', $event->id)}}"
                                                class="btn btn-sm btn-info"
                                                title="View">
 
                                                 <i class="fas fa-eye"></i>
 
                                             </a>
-                                             <a href=""
+                                             <a href="{{route('manage-events.people.delete',$event->id)}}"
                                                class="btn btn-sm btn-danger"
-                                               title="View">
+                                               title="Delete">
 
                                                 <i class="fas fa-trash"></i>
 
