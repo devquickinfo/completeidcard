@@ -3,20 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\ManageEvent;
+use App\Models\EventCustomField;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\EventRegistration;
+use App\Models\EventRegistrationFieldValue;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 
+
 class ManageEventController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+   
+    
     public function index(Request $request)
     {
         $query = ManageEvent::query();
@@ -177,12 +179,31 @@ class ManageEventController extends Controller
 
         return view('frontend.manageevent.public', compact('manageEvent'));
     }
+ 
+
     public function register($unique_code)
     {
-        $manageEvent = ManageEvent::where('unique_code', $unique_code)
-            ->firstOrFail();
+        $manageEvent = ManageEvent::where(
+            'unique_code',
+            $unique_code
+        )->firstOrFail();
 
-        return view('frontend.manageevent.register', compact('manageEvent'));
+        $customFields = EventCustomField::where(
+            'event_id',
+            $manageEvent->id
+        )
+        ->where('is_deleted', false)
+        ->orderBy('sort_order', 'asc')
+        ->orderBy('id', 'asc')
+        ->get();
+
+        return view(
+            'frontend.manageevent.register',
+            compact(
+                'manageEvent',
+                'customFields'
+            )
+        );
     }
    
     // public function storeRegistration(Request $request)
@@ -432,9 +453,20 @@ class ManageEventController extends Controller
 
         return view('frontend.manageevent.homepage');
     }
-    public function settings(){
+    public function settings($id)
+    {
+        $event = ManageEvent::findOrFail($id);
 
-        return view('frontend.manageevent.settings');
+        $customFields = EventCustomField::where('event_id', $event->id)
+            ->where('is_deleted', false)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+        return view(
+            'frontend.manageevent.settings',
+            compact('event', 'customFields')
+        );
     }
 
     public function showRegisterUser($id){
@@ -786,5 +818,148 @@ class ManageEventController extends Controller
         return redirect()
             ->back()
             ->with('success', 'Registered user deleted successfully.');
+    }
+    public function storeCustomField(Request $request, $eventId)
+    {
+        $event = ManageEvent::findOrFail($eventId);
+
+        $validated = $request->validate([
+            'label' => 'required|string|max:255',
+
+            'field_name' => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[a-zA-Z][a-zA-Z0-9_]*$/',
+            ],
+
+            'input_type' => [
+                'required',
+                'in:text,textarea,email,number,date,time,dropdown,checkbox,radio'
+            ],
+
+            'html_id' => 'nullable|string|max:100',
+            'html_class' => 'nullable|string|max:255',
+
+            'options' => 'nullable|string',
+
+            'is_required' => 'nullable|boolean',
+            'sort_order' => 'nullable|integer|min:0',
+        ]);
+
+        $options = null;
+
+        if (in_array($validated['input_type'], [
+            'dropdown',
+            'checkbox',
+            'radio'
+        ])) {
+            $optionsArray = collect(
+                preg_split('/\r\n|\r|\n/', $request->options ?? '')
+            )
+            ->map(fn ($value) => trim($value))
+            ->filter()
+            ->values()
+            ->toArray();
+
+            $options = json_encode($optionsArray);
+        }
+
+        EventCustomField::create([
+            'event_id' => $event->id,
+            'label' => $validated['label'],
+            'field_name' => $validated['field_name'],
+            'input_type' => $validated['input_type'],
+            'html_id' => $validated['html_id'] ?? null,
+            'html_class' => $validated['html_class'] ?? null,
+            'options' => $options,
+            'is_required' => $request->boolean('is_required'),
+            'sort_order' => $validated['sort_order'] ?? 0,
+        ]);
+
+        return back()->with(
+            'success',
+            'Custom field added successfully.'
+        );
+    }
+    public function updateCustomField(Request $request, $eventId, $fieldId)
+    {
+        $event = ManageEvent::findOrFail($eventId);
+
+        $field = EventCustomField::where('event_id', $event->id)
+            ->where('id', $fieldId)
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'label' => 'required|string|max:255',
+
+            'field_name' => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[a-zA-Z][a-zA-Z0-9_]*$/',
+            ],
+
+            'input_type' => [
+                'required',
+                'in:text,textarea,email,number,date,time,dropdown,checkbox,radio'
+            ],
+
+            'html_id' => 'nullable|string|max:100',
+            'html_class' => 'nullable|string|max:255',
+            'options' => 'nullable|string',
+            'sort_order' => 'nullable|integer|min:0',
+        ]);
+
+        $options = null;
+
+        if (in_array($validated['input_type'], [
+            'dropdown',
+            'checkbox',
+            'radio'
+        ])) {
+            $optionsArray = collect(
+                preg_split('/\r\n|\r|\n/', $request->options ?? '')
+            )
+            ->map(fn ($value) => trim($value))
+            ->filter()
+            ->values()
+            ->toArray();
+
+            $options = json_encode($optionsArray);
+        }
+
+        $field->update([
+            'label' => $validated['label'],
+            'field_name' => $validated['field_name'],
+            'input_type' => $validated['input_type'],
+            'html_id' => $validated['html_id'] ?? null,
+            'html_class' => $validated['html_class'] ?? null,
+            'options' => $options,
+            'is_required' => $request->boolean('is_required'),
+            'sort_order' => $validated['sort_order'] ?? 0,
+        ]);
+
+        return back()->with(
+            'success',
+            'Custom field updated successfully.'
+        );
+    }
+    public function deleteCustomField($eventId, $fieldId)
+    {
+        $event = ManageEvent::findOrFail($eventId);
+
+        $field = EventCustomField::where('event_id', $event->id)
+            ->where('id', $fieldId)
+            ->firstOrFail();
+
+        $field->update([
+            'is_deleted' => true
+        ]);
+
+        return back()->with(
+            'success',
+            'Custom field deleted successfully.'
+        );
     }
 }

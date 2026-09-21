@@ -650,6 +650,327 @@
                     </span>
                 @enderror
             </div>
+            {{-- Custom Event Fields --}}
+
+@if($customFields->count())
+
+    <div class="mt-4 mb-4">
+
+        <div class="form-section-title">
+            Additional Information
+        </div>
+
+        @foreach($customFields as $field)
+
+            @php
+                $fieldId = $field->html_id ?: $field->field_name;
+                $fieldClass = $field->html_class ?: 'form-control';
+                $required = $field->is_required ? 'required' : '';
+                $options = $field->options_array;
+            @endphp
+
+
+            {{-- TEXT --}}
+
+            @if($field->input_type === 'text')
+
+                <div class="form-group">
+
+                    <label class="form-label">
+
+                        {{ $field->label }}
+
+                        @if($field->is_required)
+                            <span class="required">*</span>
+                        @endif
+
+                    </label>
+
+                    <input type="text"
+                           name="custom_fields[{{ $field->id }}]"
+                           id="{{ $fieldId }}"
+                           class="{{ $fieldClass }}"
+                           value="{{ old('custom_fields.' . $field->id) }}"
+                           {{ $required }}>
+
+                </div>
+
+
+            {{-- EMAIL --}}
+
+            @elseif($field->input_type === 'email')
+
+                <div class="form-group">
+
+                    <label class="form-label">
+
+                        {{ $field->label }}
+
+                        @if($field->is_required)
+                            <span class="required">*</span>
+                        @endif
+
+                    </label>
+
+                    <input type="email"
+                           name="custom_fields[{{ $field->id }}]"
+                           id="{{ $fieldId }}"
+                           class="{{ $fieldClass }}"
+                           value="{{ old('custom_fields.' . $field->id) }}"
+                           {{ $required }}>
+
+                </div>
+
+
+            {{-- NUMBER --}}
+
+            @elseif($field->input_type === 'number')
+
+                <div class="form-group">
+
+                    <label class="form-label">
+
+                        {{ $field->label }}
+
+                        @if($field->is_required)
+                            <span class="required">*</span>
+                        @endif
+
+                    </label>
+
+                    <input type="number"
+                           name="custom_fields[{{ $field->id }}]"
+                           id="{{ $fieldId }}"
+                           class="{{ $fieldClass }}"
+                           value="{{ old('custom_fields.' . $field->id) }}"
+                           {{ $required }}>
+
+                </div>
+
+
+            {{-- DATE --}}
+
+            @elseif($field->input_type === 'date')
+
+                <div class="form-group">
+
+                    <label class="form-label">
+
+                        {{ $field->label }}
+
+                        @if($field->is_required)
+                            <span class="required">*</span>
+                        @endif
+
+                    </label>
+
+                    <input type="date"
+                           name="custom_fields[{{ $field->id }}]"
+                           id="{{ $fieldId }}"
+                           class="{{ $fieldClass }}"
+                           value="{{ old('custom_fields.' . $field->id) }}"
+                           {{ $required }}>
+
+                </div>
+
+
+            {{-- TIME --}}
+
+            @elseif($field->input_type === 'time')
+
+                <div class="form-group">
+
+                    <label class="form-label">
+
+                        {{ $field->label }}
+
+                        @if($field->is_required)
+                            <span class="required">*</span>
+                        @endif
+
+                    </label>
+
+                    <input type="time"
+                           name="custom_fields[{{ $field->id }}]"
+                           id="{{ $fieldId }}"
+                           class="{{ $fieldClass }}"
+                           value="{{ old('custom_fields.' . $field->id) }}"
+                           {{ $required }}>
+
+                </div>
+
+
+            {{-- TEXTAREA --}}
+
+            @elseif($field->input_type === 'textarea')
+
+                <div class="form-group">
+
+                    <label class="form-label">
+
+                        {{ $field->label }}
+
+                        @if($field->is_required)
+                            <span class="required">*</span>
+                        @endif
+
+                    </label>
+
+                    <textarea
+                        name="custom_fields[{{ $field->id }}]"
+                        id="{{ $fieldId }}"
+                        class="{{ $fieldClass }}"
+                        rows="4"
+                        {{ $required }}>{{ old('custom_fields.' . $field->id) }}</textarea>
+
+                </div>
+
+
+            {{-- DROPDOWN --}}
+
+            @elseif($field->input_type === 'dropdown')
+
+                <div class="form-group">
+
+                    <label class="form-label">
+
+                        {{ $field->label }}
+
+                        @if($field->is_required)
+                            <span class="required">*</span>
+                        @endif
+
+                    </label>
+
+                    <select name="custom_fields[{{ $field->id }}]"
+                            id="{{ $fieldId }}"
+                            class="{{ $fieldClass }}"
+                            {{ $required }}>
+
+                        <option value="">
+                            Select {{ $field->label }}
+                        </option>
+
+                        @foreach($options as $option)
+
+                            <option value="{{ $option }}"
+                                {{ old('custom_fields.' . $field->id) == $option ? 'selected' : '' }}>
+
+                                {{ $option }}
+
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
+                </div>
+
+
+            {{-- RADIO --}}
+
+            @elseif($field->input_type === 'radio')
+
+                <div class="form-group">
+
+                    <label class="form-label">
+
+                        {{ $field->label }}
+
+                        @if($field->is_required)
+                            <span class="required">*</span>
+                        @endif
+
+                    </label>
+
+                    <div>
+
+                        @foreach($options as $index => $option)
+
+                            <div class="custom-control custom-radio mb-2">
+
+                                <input type="radio"
+                                       name="custom_fields[{{ $field->id }}]"
+                                       id="{{ $fieldId }}_{{ $index }}"
+                                       class="custom-control-input"
+                                       value="{{ $option }}"
+                                       {{ old('custom_fields.' . $field->id) == $option ? 'checked' : '' }}
+                                       {{ $required }}>
+
+                                <label class="custom-control-label"
+                                       for="{{ $fieldId }}_{{ $index }}">
+
+                                    {{ $option }}
+
+                                </label>
+
+                            </div>
+
+                        @endforeach
+
+                    </div>
+
+                </div>
+
+
+            {{-- CHECKBOX --}}
+
+            @elseif($field->input_type === 'checkbox')
+
+                <div class="form-group">
+
+                    <label class="form-label">
+
+                        {{ $field->label }}
+
+                        @if($field->is_required)
+                            <span class="required">*</span>
+                        @endif
+
+                    </label>
+
+                    @foreach($options as $index => $option)
+
+                        <div class="custom-control custom-checkbox mb-2">
+
+                            <input type="checkbox"
+                                   name="custom_fields[{{ $field->id }}][]"
+                                   id="{{ $fieldId }}_{{ $index }}"
+                                   class="custom-control-input"
+                                   value="{{ $option }}"
+                                   {{ in_array(
+                                        $option,
+                                        old('custom_fields.' . $field->id, [])
+                                      ) ? 'checked' : '' }}>
+
+                            <label class="custom-control-label"
+                                   for="{{ $fieldId }}_{{ $index }}">
+
+                                {{ $option }}
+
+                            </label>
+
+                        </div>
+
+                    @endforeach
+
+                </div>
+
+            @endif
+
+            @error('custom_fields.' . $field->id)
+
+                <span class="field-error">
+                    {{ $message }}
+                </span>
+
+            @enderror
+
+        @endforeach
+
+    </div>
+
+@endif
         </div>
         <div class="register-footer">
             <button type="submit"

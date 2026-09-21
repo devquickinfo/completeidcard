@@ -21,6 +21,20 @@ class ManageEvent extends Model
 
     public function registrations()
     {
-        return $this->hasMany(EventRegistration::class, 'event_id');
+        return $this->hasMany(
+            EventRegistration::class,
+            'event_id'
+        );
+    }
+
+    public function customFields()
+    {
+        return $this->hasMany(
+            EventCustomField::class,
+            'event_id'
+        )
+        ->where('is_deleted', false)
+        ->orderBy('sort_order')
+        ->orderBy('id');
     }
 }

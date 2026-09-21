@@ -14,6 +14,7 @@ use App\Http\Controllers\MainidcardController;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\ManageEventController;
 use App\Http\Controllers\UserController;
+use App\Models\EventCustomField;
 
 
 Route::get('/check', function () {
@@ -155,8 +156,28 @@ Route::middleware('auth')->group(function () {
     Route::get('/events/{id}/people', [ManageEventController::class, 'eventPeople'])
     ->name('manage-event.people');
 
-     Route::get('/events/{id}/settings', [ManageEventController::class, 'settings'])
-    ->name('manage-event.settings');
+    //  Route::get('/events/{id}/settings', [ManageEventController::class, 'settings'])
+    // ->name('manage-event.settings');
+
+    Route::get(
+    '/manage-events/{event}/settings',
+    [ManageEventController::class, 'settings']
+)->name('manage-event.settings');
+
+Route::post(
+    '/manage-events/{event}/settings/custom-fields',
+    [ManageEventController::class, 'storeCustomField']
+)->name('manage-event.custom-fields.store');
+
+Route::put(
+    '/manage-events/{event}/settings/custom-fields/{field}',
+    [ManageEventController::class, 'updateCustomField']
+)->name('manage-event.custom-fields.update');
+
+Route::delete(
+    '/manage-events/{event}/settings/custom-fields/{field}',
+    [ManageEventController::class, 'deleteCustomField']
+)->name('manage-event.custom-fields.delete');
 
 
     Route::get('/showRegisterUser/{id}', [ManageEventController::class, 'showRegisterUser'])
