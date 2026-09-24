@@ -45,6 +45,11 @@
                         <i class="fas fa-plus"></i>
                         Add Event
                     </a>
+                    <a href="{{ route('event-id-cards.index') }}"
+                       class="btn btn-sm btn-primary ml-1">
+                        <i class="fas fa-id-card"></i>
+                        Create ID Card
+                    </a>
 
                 </div>
                 <div class="card-body">
@@ -231,11 +236,11 @@
 
                                                 <i class="fas fa-user"></i>
                                             </a>
-                                             <a href="{{ route('manage-event.settings', $event->id) }}"
+                                            <a href="{{ route('manage-event.settings', $event->id) }}"
                                                class="btn btn-sm btn-primary"
                                                title="Settings">
                                                 <i class="fas fa-cog"></i>
-                                            </a>
+                                            </a>                                           
                                         </td>
                                     </tr>
                                 @empty

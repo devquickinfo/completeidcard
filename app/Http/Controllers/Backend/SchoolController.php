@@ -286,7 +286,10 @@ class SchoolController extends Controller
         if ($user && $user->role === 'superadmin') {
             session(['viewing_school' => $school->id]);
         }
-
+        
+        if (session()->has('vendor_viewing')) {
+            session()->forget('vendor_viewing');
+        }
         if ($user && $user->role === 'vendor') {
             session(['vendor_viewing' => $school->id]);
         }

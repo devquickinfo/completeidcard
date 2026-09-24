@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 19, 2026 at 08:15 AM
+-- Generation Time: Sep 24, 2026 at 07:53 AM
 -- Server version: 11.4.13-MariaDB
--- PHP Version: 8.4.24
+-- PHP Version: 8.4.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -67,31 +67,140 @@ CREATE TABLE `cache_locks` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `event_custom_fields`
+--
+
+CREATE TABLE `event_custom_fields` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `event_id` bigint(20) UNSIGNED NOT NULL,
+  `label` varchar(255) NOT NULL,
+  `field_name` varchar(255) NOT NULL,
+  `input_type` varchar(255) NOT NULL,
+  `html_id` varchar(255) DEFAULT NULL,
+  `html_class` varchar(255) DEFAULT NULL,
+  `options` text DEFAULT NULL,
+  `is_required` tinyint(1) NOT NULL DEFAULT 0,
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
+  `sort_order` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `event_custom_fields`
+--
+
+INSERT INTO `event_custom_fields` (`id`, `event_id`, `label`, `field_name`, `input_type`, `html_id`, `html_class`, `options`, `is_required`, `is_deleted`, `sort_order`, `created_at`, `updated_at`) VALUES
+(1, 4, 'Gender', 'Gender', 'dropdown', NULL, 'form-control', '[\"Male\",\"Female\",\"Other\"]', 1, 0, 6, '2026-09-21 09:39:17', '2026-09-21 09:39:17');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `event_id_cards`
+--
+
+CREATE TABLE `event_id_cards` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `event_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `height` varchar(255) DEFAULT NULL,
+  `width` varchar(255) DEFAULT NULL,
+  `paper_size` varchar(120) DEFAULT NULL,
+  `vendor_id` int(11) NOT NULL,
+  `status` tinyint(4) NOT NULL DEFAULT 1,
+  `is_deleted` tinyint(4) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `event_id_cards`
+--
+
+INSERT INTO `event_id_cards` (`id`, `event_id`, `name`, `file_path`, `height`, `width`, `paper_size`, `vendor_id`, `status`, `is_deleted`, `created_at`, `updated_at`) VALUES
+(1, 3, 'Template 1', 'event-id-cards/3oWQ38id0iot0JsQMAeULPPYZU2hPNYsRogFe5XF.jpg', '54', '84', 'A4', 39, 1, 0, '2026-09-23 06:29:47', '2026-09-24 04:00:28');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `event_i_d_card_layouts`
+--
+
+CREATE TABLE `event_i_d_card_layouts` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `vendor_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `height` decimal(10,2) DEFAULT NULL,
+  `width` decimal(10,2) DEFAULT NULL,
+  `layout` longtext DEFAULT NULL,
+  `background` varchar(255) DEFAULT NULL,
+  `is_default` tinyint(1) NOT NULL DEFAULT 0,
+  `event_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `sample_id` int(11) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `event_i_d_card_layouts`
+--
+
+INSERT INTO `event_i_d_card_layouts` (`id`, `vendor_id`, `name`, `height`, `width`, `layout`, `background`, `is_default`, `event_id`, `sample_id`, `created_at`, `updated_at`) VALUES
+(15, 39, 'Default ID Card', 430.87, 268.35, '{\"cardWidth\":268.3464566929134,\"cardHeight\":430.8661417322835,\"background\":\"\",\"fields\":{\"logo\":{\"label\":\"Logo\",\"x\":0,\"y\":8,\"visible\":true,\"width\":49,\"height\":60,\"type\":\"image\",\"src\":\"idcards\\/z7TyQXrplRBOF244jyajwv96AKoPxcKe94pCaH2q.png\",\"css\":\"\"},\"schoolName\":{\"label\":\"School Name\",\"x\":68,\"y\":18,\"visible\":true,\"text\":\"     New Mega Event\",\"fontSize\":18,\"color\":\"rgb(158, 27, 50)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":\"\"},\"address\":{\"label\":\"Address\",\"x\":34,\"y\":393,\"visible\":true,\"text\":\"Venue :123 Education Lane, Varanasi, \",\"fontSize\":11,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":\"\"},\"session\":{\"label\":\"Session\",\"x\":96,\"y\":234,\"visible\":true,\"text\":\"2026-2027\",\"fontSize\":12,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":\"\"},\"photo\":{\"label\":\"Photo\",\"x\":87,\"y\":53,\"visible\":true,\"width\":79,\"height\":102,\"borderRadius\":0,\"type\":\"image\",\"src\":\"idcards\\/U6Bd4GrFdTM4l6NsOwJuqZcLjbSRMLaegOPDmbVF.jpg\",\"css\":\"\"},\"qr\":{\"label\":\"Qr\",\"x\":77,\"y\":260,\"visible\":true,\"width\":99,\"height\":99,\"type\":\"image\",\"src\":\"https:\\/\\/api.qrserver.com\\/v1\\/create-qr-code\\/?size=200x200&data=MP-2026-0143\",\"css\":\"\"}},\"tabledata\":\"<table style=\\\"width: 100%; border-collapse: collapse; font-size: 11px; margin: 0px;\\\"><tbody><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Name<\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">Rahul Kumar<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Mobile<\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">3698521470<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Email<\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">admin@gmail.com<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\"><br><\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\"><br><\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\"><br><\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\"><br><\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\"><br><\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\"><br><\\/td><\\/tr><\\/tbody><\\/table>\",\"useval\":\"\",\"tablePosition\":{\"left\":66,\"top\":164,\"width\":150,\"height\":0}}', 'event-id-cards/3oWQ38id0iot0JsQMAeULPPYZU2hPNYsRogFe5XF.jpg', 0, 3, 1, '2026-09-24 06:49:00', '2026-09-24 06:49:00');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `event_registrations`
 --
 
 CREATE TABLE `event_registrations` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `user_unique_code` varchar(255) NOT NULL,
   `event_id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) DEFAULT NULL,
   `mobile` varchar(20) NOT NULL,
   `photo` varchar(255) DEFAULT NULL,
   `organization` varchar(255) DEFAULT NULL,
-  `ip_address` varchar(255) NOT NULL,
+  `ip_address` varchar(255) DEFAULT NULL,
   `device_name` varchar(255) DEFAULT NULL,
   `address` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `event_code` varchar(255) NOT NULL
+  `event_code` varchar(255) NOT NULL,
+  `is_deleted` tinyint(4) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `event_registrations`
 --
 
-INSERT INTO `event_registrations` (`id`, `event_id`, `name`, `email`, `mobile`, `photo`, `organization`, `ip_address`, `device_name`, `address`, `created_at`, `updated_at`, `event_code`) VALUES
-(2, 2, 'Test User', 'test@gmail.com', '99632587410', NULL, 'Test Organization', '127.0.0.1', NULL, 'test address', NULL, NULL, 'TwsOUbRjA4LRmqIf7qjw84304xFFa16Jk6bSu0FxRHKpqhSE3nkEyvNesKZp');
+INSERT INTO `event_registrations` (`id`, `user_unique_code`, `event_id`, `name`, `email`, `mobile`, `photo`, `organization`, `ip_address`, `device_name`, `address`, `created_at`, `updated_at`, `event_code`, `is_deleted`) VALUES
+(1, 'KqZ4lMbauEDrUvP7Iu76OTmwl36AbpjnJTZYz6kS4MyZPcGh2ju6pXIAE7Jm', 3, 'First User', 'superadmin@gmail.com', '3698521474', 'event-registrations/1789985480_arihvZkNs9FylBqKTtiy.jpg', 'Test', '49.36.209.28', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/30.0 Chrome/143.0.0.0 Mobile Safari/537.36', 'Test', '2026-09-21 10:11:20', '2026-09-24 06:50:06', 'W6kue4RiiOjBB3S9j4j9c8Rn4tOf5wYEfDpVDFIFvQC8ASzA95obJtW2byr0', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `event_registration_field_values`
+--
+
+CREATE TABLE `event_registration_field_values` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `event_registration_id` bigint(20) UNSIGNED NOT NULL,
+  `event_custom_field_id` bigint(20) UNSIGNED NOT NULL,
+  `value` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `event_registration_field_values`
+--
+
+INSERT INTO `event_registration_field_values` (`id`, `event_registration_id`, `event_custom_field_id`, `value`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 'Female', '2026-09-21 10:11:20', '2026-09-21 10:34:40');
 
 -- --------------------------------------------------------
 
@@ -146,49 +255,6 @@ INSERT INTO `houses` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `id_card_templates`
---
-
-CREATE TABLE `id_card_templates` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `school_id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `image_path` varchar(255) NOT NULL,
-  `image_width` int(10) UNSIGNED DEFAULT NULL,
-  `image_height` int(10) UNSIGNED DEFAULT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `id_card_template_fields`
---
-
-CREATE TABLE `id_card_template_fields` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `template_id` bigint(20) UNSIGNED NOT NULL,
-  `field_type` varchar(255) NOT NULL,
-  `x` decimal(8,3) NOT NULL DEFAULT 0.000,
-  `y` decimal(8,3) NOT NULL DEFAULT 0.000,
-  `width` decimal(8,3) DEFAULT NULL,
-  `height` decimal(8,3) DEFAULT NULL,
-  `font_size` decimal(8,2) DEFAULT NULL,
-  `font_family` varchar(255) DEFAULT NULL,
-  `font_color` varchar(255) NOT NULL DEFAULT '#000000',
-  `font_weight` varchar(255) NOT NULL DEFAULT 'normal',
-  `text_align` varchar(255) NOT NULL DEFAULT 'left',
-  `visible` tinyint(1) NOT NULL DEFAULT 1,
-  `sort_order` int(10) UNSIGNED NOT NULL DEFAULT 0,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `mainidcards`
 --
 
@@ -216,7 +282,8 @@ CREATE TABLE `mainidcards` (
 
 INSERT INTO `mainidcards` (`id`, `school_id`, `name`, `orientation`, `card_width`, `card_height`, `background`, `layout`, `is_default`, `class_id`, `applicable_id`, `house_id`, `sample_id`, `created_at`, `updated_at`) VALUES
 (10, 1, 'Default ID Card', 'horizontal', 317, 204, 'samples/Eu5NRx6CbGNvJAiITxoMcNqUfQIW1tzyhySH62Vv.jpg', '{\"cardWidth\":317,\"cardHeight\":204,\"background\":null,\"fields\":{\"logo\":{\"label\":\"Logo\",\"x\":0,\"y\":12,\"visible\":true,\"width\":30,\"height\":30,\"type\":\"image\",\"src\":\"idcards\\/EG10oF3EhHrxWvZw.jpeg\",\"css\":null},\"schoolName\":{\"label\":\"School Name\",\"x\":31,\"y\":8,\"visible\":true,\"text\":\"Arpana Convent Higher Secondary School\",\"fontSize\":13,\"color\":\"rgb(158, 27, 50)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"address\":{\"label\":\"Address\",\"x\":45,\"y\":27,\"visible\":true,\"text\":\"123 Education Lane, Varanasi, UP - 221001\",\"fontSize\":11,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"session\":{\"label\":\"Session\",\"x\":2,\"y\":46,\"visible\":true,\"text\":\"Session: 2026-2027\",\"fontSize\":11,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":null},\"photo\":{\"label\":\"Photo\",\"x\":20,\"y\":71,\"visible\":true,\"width\":80,\"height\":100,\"borderRadius\":0,\"type\":\"image\",\"src\":\"idcards\\/QdCmrdBdfzI9PC6M.jpeg\",\"css\":null},\"logo_copy_1789455002760_8372\":{\"cloneOf\":\"logo\",\"type\":\"image\",\"x\":288,\"y\":10,\"visible\":true,\"width\":30,\"height\":30,\"src\":\"idcards\\/UdbWSN558Rzt1g8u.jpeg\"}},\"tabledata\":\"<table style=\\\"width: 100%; border-collapse: collapse; font-size: 12px; margin: 0px;\\\"><tbody><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(31, 36, 48); padding: 2px 1px 3px 6px; text-align: left; vertical-align: top;\\\">Name<\\/td><td style=\\\"border: 0px solid rgb(31, 36, 48); padding: 2px 1px 3px 6px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">Rahul Kumar<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(31, 36, 48); padding: 2px 1px 3px 6px; text-align: left; vertical-align: top;\\\">Father<\\/td><td style=\\\"border: 0px solid rgb(31, 36, 48); padding: 2px 1px 3px 6px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">Rajesh Kumar<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(31, 36, 48); padding: 2px 1px 3px 6px; text-align: left; vertical-align: top;\\\">Class<\\/td><td style=\\\"border: 0px solid rgb(31, 36, 48); padding: 2px 1px 3px 6px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">8-A<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(31, 36, 48); padding: 2px 1px 3px 6px; text-align: left; vertical-align: top;\\\">DOB<\\/td><td style=\\\"border: 0px solid rgb(31, 36, 48); padding: 2px 1px 3px 6px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">10\\/05\\/2012<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(31, 36, 48); padding: 2px 1px 3px 6px; text-align: left; vertical-align: top;\\\">Adm. No.<\\/td><td style=\\\"border: 0px solid rgb(31, 36, 48); padding: 2px 1px 3px 6px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">ADM001<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(31, 36, 48); padding: 2px 1px 3px 6px; text-align: left; vertical-align: top;\\\">Blood<\\/td><td style=\\\"border: 0px solid rgb(31, 36, 48); padding: 2px 1px 3px 6px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">O+<\\/td><\\/tr><\\/tbody><\\/table>\",\"useval\":null,\"tablePosition\":{\"left\":120,\"top\":62,\"width\":180,\"height\":0}}', 1, NULL, 2, 1, 45, '2026-09-15 10:57:14', '2026-09-15 10:57:37'),
-(11, 1, 'Default ID Card', 'horizontal', 317, 204, 'samples/cDVDKuqvAgI0xUKrdYuSc4O7ko4xsGlrGRD8Pssy.jpg', '{\"cardWidth\":317,\"cardHeight\":204,\"background\":null,\"fields\":{\"photo\":{\"label\":\"Photo\",\"x\":23,\"y\":46,\"visible\":true,\"width\":80,\"height\":120,\"borderRadius\":0,\"type\":\"image\",\"src\":\"idcards\\/IRgaEXntJPTVxzqr.jpeg\",\"css\":null}},\"tabledata\":\"<table style=\\\"width: 100%; border-collapse: collapse; font-size: 11px; margin: 0px;\\\"><tbody><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Name<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">Rahul Kumar<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Father<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">Rajesh Kumar<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Class<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">8-A<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">DOB<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">10\\/05\\/2012<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Adm. No.<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">ADM001<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Blood<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">O+<\\/td><\\/tr><\\/tbody><\\/table>\",\"useval\":null,\"tablePosition\":{\"left\":131,\"top\":35,\"width\":180,\"height\":0}}', 0, 4, NULL, NULL, 46, '2026-09-15 11:32:31', '2026-09-15 11:32:31');
+(11, 1, 'Default ID Card', 'horizontal', 317, 204, 'samples/cDVDKuqvAgI0xUKrdYuSc4O7ko4xsGlrGRD8Pssy.jpg', '{\"cardWidth\":317,\"cardHeight\":204,\"background\":null,\"fields\":{\"photo\":{\"label\":\"Photo\",\"x\":23,\"y\":46,\"visible\":true,\"width\":80,\"height\":120,\"borderRadius\":0,\"type\":\"image\",\"src\":\"idcards\\/IRgaEXntJPTVxzqr.jpeg\",\"css\":null}},\"tabledata\":\"<table style=\\\"width: 100%; border-collapse: collapse; font-size: 11px; margin: 0px;\\\"><tbody><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Name<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">Rahul Kumar<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Father<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">Rajesh Kumar<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Class<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">8-A<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">DOB<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">10\\/05\\/2012<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Adm. No.<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">ADM001<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Blood<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">O+<\\/td><\\/tr><\\/tbody><\\/table>\",\"useval\":null,\"tablePosition\":{\"left\":131,\"top\":35,\"width\":180,\"height\":0}}', 0, 4, NULL, NULL, 46, '2026-09-15 11:32:31', '2026-09-15 11:32:31'),
+(12, 40, 'Default ID Card', 'horizontal', 317, 204, 'samples/2uK6AreNfycR0sudQ1uL62j29snIDl3A4KfiqeVp.jpg', '{\"cardWidth\":317,\"cardHeight\":204,\"background\":null,\"fields\":[],\"tabledata\":\"<table style=\\\"width: 100%; border-collapse: collapse; font-size: 11px; margin: 60px 0px 0px;\\\"><tbody><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 0px 0px 1px 4px; text-align: left; vertical-align: top;\\\">Name<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 0px 0px 1px 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">Rahul Kumar<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 0px 0px 1px 4px; text-align: left; vertical-align: top;\\\">Father<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 0px 0px 1px 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">Rajesh Kumar<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 0px 0px 1px 4px; text-align: left; vertical-align: top;\\\">Class<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 0px 0px 1px 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">8-A<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 0px 0px 1px 4px; text-align: left; vertical-align: top;\\\">DOB<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 0px 0px 1px 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">10\\/05\\/2012<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 0px 0px 1px 4px; text-align: left; vertical-align: top;\\\">Adm. No.<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 0px 0px 1px 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">ADM001<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 1px solid rgb(203, 208, 214); padding: 0px 0px 1px 4px; text-align: left; vertical-align: top;\\\">Blood<\\/td><td style=\\\"border: 1px solid rgb(203, 208, 214); padding: 0px 0px 1px 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">O+<\\/td><\\/tr><\\/tbody><\\/table>\",\"useval\":null,\"tablePosition\":{\"left\":90,\"top\":35,\"width\":180,\"height\":0}}', 1, NULL, NULL, NULL, 54, '2026-09-19 08:37:23', '2026-09-19 08:37:23');
 
 -- --------------------------------------------------------
 
@@ -273,7 +340,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (4, '2026_08_17_063909_create_id_card_template_fields_table', 4),
 (5, '2026_09_16_033158_create_manage_events_table', 5),
 (6, '2026_09_16_045117_create_event_registrations_table', 6),
-(7, '2026_09_19_040714_create_permissions_table', 7);
+(7, '2026_09_19_040714_create_permissions_table', 7),
+(8, '2026_09_21_084842_create_event_custom_fields_table', 8),
+(9, '2026_09_21_084922_create_event_registration_field_values_table', 8),
+(10, '2026_09_21_120937_create_event_i_d_cards_table', 9);
 
 -- --------------------------------------------------------
 
@@ -321,7 +391,7 @@ CREATE TABLE `permissions` (
 
 INSERT INTO `permissions` (`id`, `vendor_id`, `school`, `event`, `created_at`, `updated_at`) VALUES
 (1, 41, 1, 1, '2026-09-19 04:21:05', '2026-09-19 04:21:05'),
-(2, 39, 0, 1, '2026-09-19 04:37:04', '2026-09-19 07:51:11');
+(2, 39, 1, 1, '2026-09-19 04:37:04', '2026-09-19 08:19:39');
 
 -- --------------------------------------------------------
 
@@ -458,9 +528,9 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('rur7k0KiR7vZiGNGzLs0bbZgumS4t8kW3OoLpyFd', 39, '106.219.86.108', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', 'YTo4OntzOjY6Il90b2tlbiI7czo0MDoiZkZxeHdrY3pSWk1FQkVYbW9LQlhrSkpacDd6NWtxbnY5Y3RLbkJyTiI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czozNjoiaHR0cHM6Ly9kZXYuaW5mb3Rhc2tzLmNvbS9zY2hvb2xzLzQwIjt9czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzk6Imh0dHBzOi8vZGV2LmluZm90YXNrcy5jb20vbWFuYWdlLWV2ZW50cyI7czo1OiJyb3V0ZSI7czoxOToibWFuYWdlLWV2ZW50cy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjM5O3M6NzoidXNlcl9pZCI7aTozOTtzOjQ6InJvbGUiO3M6NjoidmVuZG9yIjtzOjk6InNjaG9vbF9pZCI7Tjt9', 1789797557),
-('SHJBX91WbEbq9ghwDnfNdpYReoOCNgnnNVgueClc', 39, '106.219.86.108', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo3OntzOjY6Il90b2tlbiI7czo0MDoiN01wa2IyS2s4QWlMVWFmS3NvaDExZ2VjNHJVaXZ0SklzekpmM05NUSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzU6Imh0dHBzOi8vZGV2LmluZm90YXNrcy5jb20vZGFzaGJvYXJkIjtzOjU6InJvdXRlIjtzOjk6ImRhc2hib2FyZCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjM5O3M6NzoidXNlcl9pZCI7aTozOTtzOjQ6InJvbGUiO3M6NjoidmVuZG9yIjtzOjk6InNjaG9vbF9pZCI7Tjt9', 1789805568),
-('Wozhq1l6cO63wa4A3NZDW7Kn0rdNJtVB5ZyWcJJ0', 34, '106.219.86.108', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo4OntzOjY6Il90b2tlbiI7czo0MDoiYktPR1lQaVJjbUt6aDlITVBZMkZxTXNXWWdubG9TV1ZkczJkV1hRMyI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czozOToiaHR0cHM6Ly9kZXYuaW5mb3Rhc2tzLmNvbS91c2VyLWFjY291bnRzIjt9czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzQ6Imh0dHBzOi8vZGV2LmluZm90YXNrcy5jb20vb3B0aW1pemUiO3M6NToicm91dGUiO3M6Mjc6ImdlbmVyYXRlZDo6cEdISVd0aUp6Y0F4WlNlTyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjM0O3M6NzoidXNlcl9pZCI7aTozNDtzOjQ6InJvbGUiO3M6MTA6InN1cGVyYWRtaW4iO3M6OToic2Nob29sX2lkIjtOO30=', 1789805733);
+('CUCM9gLj49oJuUnN1dfW1qYq2w4jHq9SvNqpjkPX', 39, '106.219.86.108', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo4OntzOjY6Il90b2tlbiI7czo0MDoiaGV4UG5seEdPako0MVlpckJkbVI1em9QajhxOXh0SzNDMFJBWjhkYyI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo0NjoiaHR0cHM6Ly9kZXYuaW5mb3Rhc2tzLmNvbS9lZGl0LWV2ZW50LWlkLWNhcmQvMSI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjM1OiJodHRwczovL2Rldi5pbmZvdGFza3MuY29tL2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czo5OiJkYXNoYm9hcmQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozOTtzOjc6InVzZXJfaWQiO2k6Mzk7czo0OiJyb2xlIjtzOjY6InZlbmRvciI7czo5OiJzY2hvb2xfaWQiO047fQ==', 1790235603),
+('m0wnvdJOoee3b6rTtJTb48PV4rDAH3Fg7s9SiTm3', NULL, '49.36.209.28', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/30.0 Chrome/143.0.0.0 Mobile Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiWVJiQlpTeWZBdHJFUENBUk9MR3hHU21IUXFUbWhWSWNMelJLa3FaMiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MTA5OiJodHRwczovL2Rldi5pbmZvdGFza3MuY29tL3Nob3dSZWdpc3RlclVzZXJtb2JpbGUvS3FaNGxNYmF1RURyVXZQN0l1NzZPVG13bDM2QWJwam5KVFpZejZrUzRNeVpQY0doMmp1NnBYSUFFN0ptIjtzOjU6InJvdXRlIjtzOjI1OiJzaG93LnJlZ2lzdGVyLnVzZXIubW9iaWxlIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1790235036),
+('VfrvmRuFmUPf4P9DvrCnTDmQgdS6xiaxyFNQA9Mf', 34, '106.219.86.108', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo5OntzOjY6Il90b2tlbiI7czo0MDoibkZ5NUNoWE9wdUx6dXB4cVY0ZHVzY2pBRUt0YjRPMU5Yc1AydGk4SiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTM6Imh0dHBzOi8vZGV2LmluZm90YXNrcy5jb20vbWFuYWdlLWV2ZW50cy9wZW9wbGUvMS9lZGl0IjtzOjU6InJvdXRlIjtzOjI1OiJtYW5hZ2UtZXZlbnRzLnBlb3BsZS5lZGl0Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czozNToiaHR0cHM6Ly9kZXYuaW5mb3Rhc2tzLmNvbS9kYXNoYm9hcmQiO31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozNDtzOjc6InVzZXJfaWQiO2k6MzQ7czo0OiJyb2xlIjtzOjEwOiJzdXBlcmFkbWluIjtzOjk6InNjaG9vbF9pZCI7TjtzOjE0OiJ2ZW5kb3Jfdmlld2luZyI7czoyOiIzOSI7fQ==', 1790236301);
 
 -- --------------------------------------------------------
 
@@ -8970,7 +9040,8 @@ INSERT INTO `upload_samples` (`id`, `school_id`, `name`, `file_path`, `caption`,
 (30, NULL, 'new_star.jpg', 'samples/2uK6AreNfycR0sudQ1uL62j29snIDl3A4KfiqeVp.jpg', NULL, NULL, NULL, NULL, 'horizontal', 0, NULL, NULL, NULL, NULL, '2026-08-21 00:27:20', '2026-09-15 07:33:46'),
 (34, NULL, 'prefill.jpg', 'samples/Pcy6jPtj0vyeygaYtmv5btycdKCpH2EY4ZQA9OMt.jpg', NULL, NULL, NULL, NULL, 'horizontal', 0, NULL, NULL, NULL, NULL, '2026-08-21 00:27:58', '2026-09-15 07:33:46'),
 (47, 40, 'Template 1', 'samples/u3FZwnaE3iCQq7msn3GyhN2ctBKpPgpSdEvFa90Y.jpg', NULL, 1, NULL, 1, 'horizontal', 0, NULL, NULL, 39, NULL, '2026-09-18 11:20:05', '2026-09-18 11:34:16'),
-(54, 40, 'new_star.jpg', 'samples/2uK6AreNfycR0sudQ1uL62j29snIDl3A4KfiqeVp.jpg', NULL, NULL, NULL, NULL, 'horizontal', 0, NULL, NULL, 39, NULL, '2026-09-18 12:03:08', '2026-09-18 12:03:08');
+(54, 40, 'new_star.jpg', 'samples/2uK6AreNfycR0sudQ1uL62j29snIDl3A4KfiqeVp.jpg', NULL, NULL, NULL, NULL, 'horizontal', 0, NULL, NULL, 39, NULL, '2026-09-18 12:03:08', '2026-09-18 12:03:08'),
+(55, 8, 'new_star.jpg', 'samples/2uK6AreNfycR0sudQ1uL62j29snIDl3A4KfiqeVp.jpg', NULL, NULL, NULL, NULL, 'horizontal', 0, NULL, NULL, NULL, NULL, '2026-09-22 12:06:53', '2026-09-22 12:06:53');
 
 -- --------------------------------------------------------
 
@@ -9067,11 +9138,41 @@ ALTER TABLE `cache_locks`
   ADD KEY `cache_locks_expiration_index` (`expiration`);
 
 --
+-- Indexes for table `event_custom_fields`
+--
+ALTER TABLE `event_custom_fields`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `event_custom_fields_event_id_foreign` (`event_id`);
+
+--
+-- Indexes for table `event_id_cards`
+--
+ALTER TABLE `event_id_cards`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `event_id_cards_event_id_index` (`event_id`),
+  ADD KEY `event_id_cards_status_index` (`status`),
+  ADD KEY `event_id_cards_is_deleted_index` (`is_deleted`);
+
+--
+-- Indexes for table `event_i_d_card_layouts`
+--
+ALTER TABLE `event_i_d_card_layouts`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `event_registrations`
 --
 ALTER TABLE `event_registrations`
   ADD PRIMARY KEY (`id`),
   ADD KEY `event_registrations_event_id_foreign` (`event_id`);
+
+--
+-- Indexes for table `event_registration_field_values`
+--
+ALTER TABLE `event_registration_field_values`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `registration_custom_field_unique` (`event_registration_id`,`event_custom_field_id`),
+  ADD KEY `event_registration_field_values_event_custom_field_id_foreign` (`event_custom_field_id`);
 
 --
 -- Indexes for table `history`
@@ -9084,19 +9185,6 @@ ALTER TABLE `history`
 --
 ALTER TABLE `houses`
   ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `id_card_templates`
---
-ALTER TABLE `id_card_templates`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `id_card_template_fields`
---
-ALTER TABLE `id_card_template_fields`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_card_template_fields_template_id_field_type_index` (`template_id`,`field_type`);
 
 --
 -- Indexes for table `mainidcards`
@@ -9200,10 +9288,34 @@ ALTER TABLE `applicable_user`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `event_custom_fields`
+--
+ALTER TABLE `event_custom_fields`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `event_id_cards`
+--
+ALTER TABLE `event_id_cards`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `event_i_d_card_layouts`
+--
+ALTER TABLE `event_i_d_card_layouts`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
 -- AUTO_INCREMENT for table `event_registrations`
 --
 ALTER TABLE `event_registrations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `event_registration_field_values`
+--
+ALTER TABLE `event_registration_field_values`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `history`
@@ -9218,22 +9330,10 @@ ALTER TABLE `houses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `id_card_templates`
---
-ALTER TABLE `id_card_templates`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `id_card_template_fields`
---
-ALTER TABLE `id_card_template_fields`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `mainidcards`
 --
 ALTER TABLE `mainidcards`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `manage_events`
@@ -9245,7 +9345,7 @@ ALTER TABLE `manage_events`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `paper_size`
@@ -9299,7 +9399,7 @@ ALTER TABLE `teachers`
 -- AUTO_INCREMENT for table `upload_samples`
 --
 ALTER TABLE `upload_samples`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -9312,16 +9412,23 @@ ALTER TABLE `users`
 --
 
 --
+-- Constraints for table `event_custom_fields`
+--
+ALTER TABLE `event_custom_fields`
+  ADD CONSTRAINT `event_custom_fields_event_id_foreign` FOREIGN KEY (`event_id`) REFERENCES `manage_events` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `event_registrations`
 --
 ALTER TABLE `event_registrations`
   ADD CONSTRAINT `event_registrations_event_id_foreign` FOREIGN KEY (`event_id`) REFERENCES `manage_events` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `id_card_template_fields`
+-- Constraints for table `event_registration_field_values`
 --
-ALTER TABLE `id_card_template_fields`
-  ADD CONSTRAINT `id_card_template_fields_template_id_foreign` FOREIGN KEY (`template_id`) REFERENCES `id_card_templates` (`id`) ON DELETE CASCADE;
+ALTER TABLE `event_registration_field_values`
+  ADD CONSTRAINT `event_registration_field_values_event_custom_field_id_foreign` FOREIGN KEY (`event_custom_field_id`) REFERENCES `event_custom_fields` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `event_registration_field_values_event_registration_id_foreign` FOREIGN KEY (`event_registration_id`) REFERENCES `event_registrations` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

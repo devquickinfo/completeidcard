@@ -9,10 +9,17 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Permission;
 use App\Models\School;
 use App\Models\ManageEvent;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+
+	
     public function index(Request $request) { 
+    	if (session()->has('vendor_viewing')) {
+            session()->forget('vendor_viewing');
+        }
+
     	$search = $request->input('search'); $perPage = $request->input('per_page', 10); 
         $allowedPerPage = [10, 20, 30, 40, 50, 100];
          if (!in_array((int) $perPage, $allowedPerPage)) {
@@ -203,6 +210,11 @@ class UserController extends Controller
 
 	public function vendorSchools($id)
 	{
+
+		if (Auth::user()?->role === 'superadmin') {
+			session()->forget('viewing_school');
+		    session(['vendor_viewing' => $id]);
+		}
 	    
 	    $vendor = User::where('role', 'vendor')->findOrFail($id);
 	    $schools = School::where('vendor_id', $vendor->id)

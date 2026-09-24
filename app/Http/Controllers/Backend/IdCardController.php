@@ -511,8 +511,9 @@ class IdCardController extends Controller
             $photoFilter = $request->photo === 'available' ? 'Photo Available' : 'No Photo';
         }
 
-        $orientation = $design->orientation;
+        $orientation = $design->orientation ?? '';
         $layout = $design?->layout ?? [];
+        $sample='';
 
         return response()->view('schools.print_filtered_idcards', [
             'students'     => $records,      // blade var name kept as-is
@@ -524,6 +525,7 @@ class IdCardController extends Controller
             'classFilter'  => $classFilter,
             'sectionFilter'=> $sectionFilter,
             'photoFilter'  => $photoFilter,
+            'sample'       =>  $sample,
         ]);
     }
 

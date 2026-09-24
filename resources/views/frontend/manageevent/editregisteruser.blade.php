@@ -210,6 +210,90 @@
                                                     </span>
                                                 @enderror
                                             </div>
+                                            @foreach($customFields as $field)
+
+                                                @php
+                                                    $savedValue = $customValues->get($field->id)?->value;
+
+                                                    $options = [];
+
+                                                    if (!empty($field->options)) {
+
+                                                        $decoded = json_decode($field->options, true);
+
+                                                        if (
+                                                            json_last_error() === JSON_ERROR_NONE
+                                                            && is_array($decoded)
+                                                        ) {
+                                                            $options = $decoded;
+                                                        } else {
+                                                            $options = preg_split(
+                                                                '/\r\n|\r|\n/',
+                                                                $field->options
+                                                            );
+                                                        }
+
+                                                        $options = collect($options)
+                                                            ->map(fn($option) => trim((string) $option))
+                                                            ->filter()
+                                                            ->values()
+                                                            ->all();
+                                                    }
+                                                @endphp
+
+
+                                                @if($field->input_type === 'dropdown')
+
+                                                    <div class="form-group">
+
+                                                        <label class="form-label">
+                                                            {{ $field->label }}
+
+                                                            @if($field->is_required)
+                                                                <span class="required">*</span>
+                                                            @endif
+                                                        </label>
+
+                                                        <select
+                                                            name="custom_fields[{{ $field->id }}]"
+                                                            id="{{ $field->html_id ?: 'custom_field_'.$field->id }}"
+                                                            class="form-control {{ $field->html_class }}"
+                                                            @if($field->is_required) required @endif
+                                                        >
+
+                                                            <option value="">
+                                                                Select {{ $field->label }}
+                                                            </option>
+
+                                                            @foreach($options as $option)
+
+                                                                <option
+                                                                    value="{{ $option }}"
+                                                                    {{ (string) old(
+                                                                        'custom_fields.'.$field->id,
+                                                                        $savedValue
+                                                                    ) === (string) $option
+                                                                        ? 'selected'
+                                                                        : '' }}
+                                                                >
+                                                                    {{ $option }}
+                                                                </option>
+
+                                                            @endforeach
+
+                                                        </select>
+
+                                                        @error('custom_fields.'.$field->id)
+                                                            <span class="field-error">
+                                                                {{ $message }}
+                                                            </span>
+                                                        @enderror
+
+                                                    </div>
+
+                                                @endif
+
+                                            @endforeach
                                     </div>
                                 </div>
                                 <div class="col-6">

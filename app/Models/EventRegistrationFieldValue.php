@@ -9,7 +9,7 @@ class EventRegistrationFieldValue extends Model
     protected $fillable = [
         'event_registration_id',
         'event_custom_field_id',
-        'field_value',
+        'value',
     ];
 
     public function registration()
@@ -20,7 +20,7 @@ class EventRegistrationFieldValue extends Model
         );
     }
 
-    public function field()
+    public function customField()
     {
         return $this->belongsTo(
             EventCustomField::class,

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\ManageEventController;
 use App\Http\Controllers\UserController;
 use App\Models\EventCustomField;
+use App\Http\Controllers\EventIDCardController;
 
 
 Route::get('/check', function () {
@@ -212,5 +213,27 @@ Route::delete(
     Route::get('/user-status/{id}', [UserController::class, 'status'])
     ->name('user.status');
     
-   
+
+    Route::resource('event-id-cards', EventIDCardController::class);
+
+    Route::get('edit-event-id-card/{id}', [EventIDCardController::class,'editIDCard'])->name('edit.event.id.card');
+
+    Route::post('/id-card-layout/save', [EventIDCardController::class, 'storeEventIDCard'])
+    ->name('idcardlayout.store')
+    ->middleware('auth');
+
+    Route::post(
+    'event-id-cards/{id}/background',
+      [EventIDCardController::class, 'updateBackground']
+     )->name('event-id-cards.background');
+
+     Route::post(
+            '/event-id-cards/{id}/size',
+            [EventIDCardController::class, 'updateSize']
+        )->name('event-id-cards.size');
+
+     // routes/web.php
+     Route::post('/event-id-cards/{idCard}/field-image', [EventIdCardController::class, 'uploadFieldImage'])
+    ->name('event-id-cards.field-image');
+    
 });

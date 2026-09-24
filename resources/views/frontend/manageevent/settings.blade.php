@@ -123,7 +123,7 @@
                             </div>
 
 
-                            @if(!empty($event->unique_code))
+                           {{--- @if(!empty($event->unique_code))
 
                                 <div class="mt-3">
 
@@ -139,7 +139,7 @@
 
                                 </div>
 
-                            @endif
+                            @endif--}}
 
                         </div>
 
@@ -442,7 +442,7 @@
                     </div>
 
 
-                    <div class="card-footer bg-white">
+                    <div class="card-footer">
 
                         <button type="submit"
                                 class="btn btn-primary">
@@ -1096,6 +1096,16 @@
         }
 
     }
+
+    .form-group label{
+        color:#fff;
+    }
+    
+    .table thead th{
+        background: #6c757d;
+    }
+
+ 
 
 </style>
 

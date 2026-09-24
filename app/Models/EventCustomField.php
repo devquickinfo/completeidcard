@@ -7,16 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class EventCustomField extends Model
 {
     protected $fillable = [
-        'event_id',
-        'label',
-        'field_name',
-        'input_type',
-        'html_id',
-        'html_class',
-        'options',
-        'is_required',
-        'is_deleted',
-        'sort_order',
+    'event_id',
+    'label',
+    'field_name',
+    'input_type',
+    'html_id',
+    'html_class',
+    'options',
+    'sort_order',
+    'is_required',
     ];
 
     protected $casts = [

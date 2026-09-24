@@ -13,6 +13,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use App\Models\EventIDCardLayout;
 
 
 class ManageEventController extends Controller
@@ -23,11 +24,21 @@ class ManageEventController extends Controller
     {
         $query = ManageEvent::query();
 
+        $vendorId = null;
+
         if (Auth::user()->role === 'vendor') {
-          $query->where('vendor_id', Auth::id());
-        }else{
-            $query->where('vendor_id', null);
+
+            $vendorId = Auth::id();
+
+        } elseif (
+            Auth::user()->role === 'superadmin' &&
+            session('vendor_viewing')
+        ) {
+
+            $vendorId = session('vendor_viewing');
         }
+
+        $query->where('vendor_id', $vendorId);
 
         // Event Name filter
         if ($request->filled('event_name')) {
@@ -284,33 +295,232 @@ class ManageEventController extends Controller
     // }
 
 
+    // public function storeRegistration(Request $request)
+    // {
+    //     $manageEvent = ManageEvent::where(
+    //         'unique_code',
+    //         $request->unique_code
+    //     )->firstOrFail();
+
+    //     $validated = $request->validate([
+    //         'name' => 'required|string|max:255',
+
+    //         'email' => 'nullable|email|max:255',
+
+    //         'mobile' => [
+    //             'required',
+    //             'string',
+    //             'max:10',
+    //             Rule::unique('event_registrations', 'mobile')
+    //                 ->where(function ($query) use ($manageEvent) {
+    //                     return $query->where('event_id', $manageEvent->id);
+    //                 }),
+    //         ],
+
+    //         'organization' => 'nullable|string|max:255',
+
+    //         'address' => 'required|string|max:1000',
+
+    //         // Normal file upload
+    //         'photo' => [
+    //             'nullable',
+    //             'image',
+    //             'mimes:jpg,jpeg,png,webp',
+    //             'max:5120',
+    //         ],
+
+    //         // Camera captured image
+    //         'photo_data' => [
+    //             'nullable',
+    //             'string',
+    //         ],
+    //     ]);
+        
+    //     $validated['user_unique_code'] = Str::random(60);
+    //     $validated['event_id'] = $manageEvent->id;
+    //     $validated['event_code'] = $manageEvent->unique_code;
+    //     $validated['ip_address'] = $request->ip();
+    //     $validated['device_name'] = $request->userAgent();
+    //     if (!$request->hasFile('photo') && !$request->filled('photo_data')) {
+    //         return back()
+    //             ->withInput()
+    //             ->withErrors([
+    //                 'photo' => 'Please capture a photo or upload a photo.',
+    //             ]);
+    //     }
+
+    //     $manager = new ImageManager(new Driver());
+    //     $encoded = null;
+    //     if ($request->filled('photo_data')) {
+    //         $photoData = $request->input('photo_data');
+    //         if (preg_match(
+    //             '/^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/',
+    //             $photoData,
+    //             $matches
+    //         )) {
+    //             $base64Image = $matches[2];
+    //             $base64Image = str_replace(' ', '+', $base64Image);
+    //             $imageBinary = base64_decode($base64Image, true);
+
+    //             if ($imageBinary === false) {
+    //                 return back()
+    //                     ->withInput()
+    //                     ->withErrors([
+    //                         'photo' => 'Invalid captured photo.',
+    //                     ]);
+    //             }
+    //             try {
+
+    //                 $image = $manager->read($imageBinary);
+    //             } catch (\Exception $e) {
+
+    //                 return back()
+    //                     ->withInput()
+    //                     ->withErrors([
+    //                         'photo' => 'Unable to process captured photo.',
+    //                     ]);
+    //             }
+    //             $maxSize = 500 * 1024;
+    //             $quality = 90;
+    //             do {
+    //                 $encoded = $image->toJpeg($quality);
+    //                 $size = strlen($encoded);
+    //                 if ($size <= $maxSize) {
+    //                     break;
+    //                 }
+    //                 $quality -= 5;
+    //             } while ($quality >= 30);
+    //         } else {
+
+    //             return back()
+    //                 ->withInput()
+    //                 ->withErrors([
+    //                     'photo' => 'Invalid captured photo format.',
+    //                 ]);
+    //         }
+    //     }
+    //     elseif ($request->hasFile('photo')) {
+    //         $photo = $request->file('photo');
+    //         try {
+    //             $image = $manager->read($photo->getRealPath());
+    //         } catch (\Exception $e) {
+
+    //             return back()
+    //                 ->withInput()
+    //                 ->withErrors([
+    //                     'photo' => 'Unable to process uploaded photo.',
+    //                 ]);
+    //         }
+
+    //         $maxSize = 500 * 1024;
+    //         $quality = 90;
+    //         do {
+    //             $encoded = $image->toJpeg($quality);
+    //             $size = strlen($encoded);
+    //             if ($size <= $maxSize) {
+    //                 break;
+    //             }
+    //             $quality -= 5;
+    //         } while ($quality >= 30);
+    //     }
+    //     if ($encoded !== null) {
+    //         $photoName = time() . '_' . Str::random(20) . '.jpg';
+    //         $photoPath = 'event-registrations/' . $photoName;
+    //         Storage::disk('public')->put(
+    //             $photoPath,
+    //             $encoded
+    //         );
+    //         $validated['photo'] = $photoPath;
+    //     }
+    //     unset($validated['photo_data']);
+    //     EventRegistration::create($validated);
+    //     return redirect()
+    //         ->route('events.home')
+    //         ->with(
+    //             'success',
+    //             'Registration completed successfully.'
+    //         );
+    // }
     public function storeRegistration(Request $request)
     {
+        /*
+        |--------------------------------------------------------------------------
+        | Find Event
+        |--------------------------------------------------------------------------
+        */
+
         $manageEvent = ManageEvent::where(
             'unique_code',
             $request->unique_code
         )->firstOrFail();
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
 
-            'email' => 'nullable|email|max:255',
+        /*
+        |--------------------------------------------------------------------------
+        | Get Dynamic Fields
+        |--------------------------------------------------------------------------
+        */
+
+        $customFields = EventCustomField::where(
+            'event_id',
+            $manageEvent->id
+        )
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Base Validation Rules
+        |--------------------------------------------------------------------------
+        */
+
+        $rules = [
+
+            'unique_code' => 'required|string',
+
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+            ],
 
             'mobile' => [
                 'required',
                 'string',
                 'max:10',
-                Rule::unique('event_registrations', 'mobile')
-                    ->where(function ($query) use ($manageEvent) {
-                        return $query->where('event_id', $manageEvent->id);
-                    }),
+                Rule::unique(
+                    'event_registrations',
+                    'mobile'
+                )->where(function ($query) use ($manageEvent) {
+
+                    return $query->where(
+                        'event_id',
+                        $manageEvent->id
+                    );
+
+                }),
             ],
 
-            'organization' => 'nullable|string|max:255',
+            'organization' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
 
-            'address' => 'required|string|max:1000',
+            'address' => [
+                'required',
+                'string',
+                'max:1000',
+            ],
 
-            // Normal file upload
             'photo' => [
                 'nullable',
                 'image',
@@ -318,117 +528,547 @@ class ManageEventController extends Controller
                 'max:5120',
             ],
 
-            // Camera captured image
             'photo_data' => [
                 'nullable',
                 'string',
             ],
-        ]);
-        
-        $validated['user_unique_code'] = Str::random(60);
-        $validated['event_id'] = $manageEvent->id;
-        $validated['event_code'] = $manageEvent->unique_code;
-        $validated['ip_address'] = $request->ip();
-        $validated['device_name'] = $request->userAgent();
-        if (!$request->hasFile('photo') && !$request->filled('photo_data')) {
+        ];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Dynamic Field Validation
+        |--------------------------------------------------------------------------
+        */
+
+        foreach ($customFields as $field) {
+
+            $fieldName = 'custom_fields.' . $field->id;
+
+            $fieldRules = [];
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Required / Nullable
+            |--------------------------------------------------------------------------
+            */
+
+            if ($field->is_required) {
+
+                $fieldRules[] = 'required';
+
+            } else {
+
+                $fieldRules[] = 'nullable';
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Input Type Validation
+            |--------------------------------------------------------------------------
+            */
+
+            switch ($field->input_type) {
+
+                case 'email':
+
+                    $fieldRules[] = 'email';
+                    $fieldRules[] = 'max:255';
+
+                    break;
+
+
+                case 'number':
+
+                    $fieldRules[] = 'numeric';
+
+                    break;
+
+
+                case 'date':
+
+                    $fieldRules[] = 'date';
+
+                    break;
+
+
+                case 'time':
+
+                    $fieldRules[] = 'date_format:H:i';
+
+                    break;
+
+
+                case 'textarea':
+
+                    $fieldRules[] = 'string';
+                    $fieldRules[] = 'max:5000';
+
+                    break;
+
+
+                case 'dropdown':
+
+                case 'radio':
+
+                    $fieldRules[] = 'string';
+                    $fieldRules[] = 'max:255';
+
+                    /*
+                    |----------------------------------------------------------
+                    | Validate Against Configured Options
+                    |----------------------------------------------------------
+                    */
+
+                    $options = $this->getCustomFieldOptions(
+                        $field->options
+                    );
+
+                    if (!empty($options)) {
+
+                        $fieldRules[] = Rule::in($options);
+
+                    }
+
+                    break;
+
+
+                case 'checkbox':
+
+                    $fieldRules[] = 'array';
+
+                    $options = $this->getCustomFieldOptions(
+                        $field->options
+                    );
+
+                    if (!empty($options)) {
+
+                        $fieldRules[] = 'array';
+
+                    }
+
+                    break;
+
+
+                case 'text':
+
+                default:
+
+                    $fieldRules[] = 'string';
+                    $fieldRules[] = 'max:255';
+
+                    break;
+            }
+
+
+            $rules[$fieldName] = $fieldRules;
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Checkbox Individual Values
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $field->input_type === 'checkbox'
+                && !empty($options)
+            ) {
+
+                $rules[$fieldName . '.*'] = [
+                    Rule::in($options)
+                ];
+
+            }
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Validate Request
+        |--------------------------------------------------------------------------
+        */
+
+        $validated = $request->validate($rules);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Photo Required
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            !$request->hasFile('photo')
+            && !$request->filled('photo_data')
+        ) {
+
             return back()
                 ->withInput()
                 ->withErrors([
-                    'photo' => 'Please capture a photo or upload a photo.',
+                    'photo' =>
+                        'Please capture a photo or upload a photo.',
                 ]);
+
         }
 
-        $manager = new ImageManager(new Driver());
+
+        /*
+        |--------------------------------------------------------------------------
+        | Registration Data
+        |--------------------------------------------------------------------------
+        */
+
+        $registrationData = [
+
+            'user_unique_code' => Str::random(60),
+
+            'event_id' => $manageEvent->id,
+
+            'event_code' => $manageEvent->unique_code,
+
+            'name' => $validated['name'],
+
+            'email' => $validated['email'] ?? null,
+
+            'mobile' => $validated['mobile'],
+
+            'organization' =>
+                $validated['organization'] ?? null,
+
+            'address' => $validated['address'],
+
+            'ip_address' => $request->ip(),
+
+            'device_name' => $request->userAgent(),
+        ];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Photo Processing
+        |--------------------------------------------------------------------------
+        */
+
+        $manager = new ImageManager(
+            new Driver()
+        );
+
         $encoded = null;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Camera Photo
+        |--------------------------------------------------------------------------
+        */
+
         if ($request->filled('photo_data')) {
+
             $photoData = $request->input('photo_data');
-            if (preg_match(
-                '/^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/',
-                $photoData,
-                $matches
-            )) {
+
+
+            if (
+                preg_match(
+                    '/^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/',
+                    $photoData,
+                    $matches
+                )
+            ) {
+
                 $base64Image = $matches[2];
-                $base64Image = str_replace(' ', '+', $base64Image);
-                $imageBinary = base64_decode($base64Image, true);
+
+                $base64Image = str_replace(
+                    ' ',
+                    '+',
+                    $base64Image
+                );
+
+
+                $imageBinary = base64_decode(
+                    $base64Image,
+                    true
+                );
+
 
                 if ($imageBinary === false) {
+
                     return back()
                         ->withInput()
                         ->withErrors([
-                            'photo' => 'Invalid captured photo.',
+                            'photo' =>
+                                'Invalid captured photo.',
                         ]);
+
                 }
+
+
                 try {
 
-                    $image = $manager->read($imageBinary);
+                    $image = $manager->read(
+                        $imageBinary
+                    );
+
                 } catch (\Exception $e) {
 
                     return back()
                         ->withInput()
                         ->withErrors([
-                            'photo' => 'Unable to process captured photo.',
+                            'photo' =>
+                                'Unable to process captured photo.',
                         ]);
+
                 }
+
+
                 $maxSize = 500 * 1024;
+
                 $quality = 90;
+
+
                 do {
-                    $encoded = $image->toJpeg($quality);
+
+                    $encoded = $image->toJpeg(
+                        $quality
+                    );
+
                     $size = strlen($encoded);
+
+
                     if ($size <= $maxSize) {
                         break;
                     }
+
+
                     $quality -= 5;
+
                 } while ($quality >= 30);
+
             } else {
 
                 return back()
                     ->withInput()
                     ->withErrors([
-                        'photo' => 'Invalid captured photo format.',
+                        'photo' =>
+                            'Invalid captured photo format.',
                     ]);
+
             }
+
         }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Uploaded Photo
+        |--------------------------------------------------------------------------
+        */
+
         elseif ($request->hasFile('photo')) {
+
             $photo = $request->file('photo');
+
+
             try {
-                $image = $manager->read($photo->getRealPath());
+
+                $image = $manager->read(
+                    $photo->getRealPath()
+                );
+
             } catch (\Exception $e) {
 
                 return back()
                     ->withInput()
                     ->withErrors([
-                        'photo' => 'Unable to process uploaded photo.',
+                        'photo' =>
+                            'Unable to process uploaded photo.',
                     ]);
+
             }
 
+
             $maxSize = 500 * 1024;
+
             $quality = 90;
+
+
             do {
-                $encoded = $image->toJpeg($quality);
+
+                $encoded = $image->toJpeg(
+                    $quality
+                );
+
                 $size = strlen($encoded);
+
+
                 if ($size <= $maxSize) {
                     break;
                 }
+
+
                 $quality -= 5;
+
             } while ($quality >= 30);
+
         }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Save Photo
+        |--------------------------------------------------------------------------
+        */
+
         if ($encoded !== null) {
-            $photoName = time() . '_' . Str::random(20) . '.jpg';
-            $photoPath = 'event-registrations/' . $photoName;
+
+            $photoName =
+                time()
+                . '_'
+                . Str::random(20)
+                . '.jpg';
+
+
+            $photoPath =
+                'event-registrations/'
+                . $photoName;
+
+
             Storage::disk('public')->put(
                 $photoPath,
                 $encoded
             );
-            $validated['photo'] = $photoPath;
+
+
+            $registrationData['photo'] =
+                $photoPath;
+
         }
-        unset($validated['photo_data']);
-        EventRegistration::create($validated);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create Registration
+        |--------------------------------------------------------------------------
+        */
+
+        $registration = EventRegistration::create(
+            $registrationData
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Save Dynamic Field Values
+        |--------------------------------------------------------------------------
+        */
+
+        foreach ($customFields as $field) {
+
+            $fieldId = $field->id;
+
+
+            $value = $request->input(
+                'custom_fields.' . $fieldId
+            );
+
+
+            /*
+            |--------------------------------------------------------------
+            | Checkbox
+            |--------------------------------------------------------------
+            */
+
+            if ($field->input_type === 'checkbox') {
+
+                if (is_array($value)) {
+
+                    $value = json_encode(
+                        $value,
+                        JSON_UNESCAPED_UNICODE
+                    );
+
+                } else {
+
+                    $value = null;
+
+                }
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------
+            | Save Value
+            |--------------------------------------------------------------
+            */
+
+            if (
+                $value !== null
+                && $value !== ''
+            ) {
+
+               EventRegistrationFieldValue::create([
+
+                    'event_registration_id' => $registration->id,
+
+                    'event_custom_field_id' => $field->id,
+
+                    'value' => $value,
+
+                ]);
+
+            }
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Success
+        |--------------------------------------------------------------------------
+        */
+
         return redirect()
             ->route('events.home')
             ->with(
                 'success',
                 'Registration completed successfully.'
             );
+    }
+
+
+    private function getCustomFieldOptions($options)
+    {
+        if (empty($options)) {
+            return [];
+        }
+
+        // JSON options
+        if (is_string($options)) {
+
+            $decoded = json_decode($options, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return collect($decoded)
+                    ->map(fn ($option) => trim((string) $option))
+                    ->filter()
+                    ->values()
+                    ->toArray();
+            }
+        }
+
+        // New-line options
+        return collect(
+            preg_split('/\r\n|\r|\n/', $options)
+        )
+            ->map(fn ($option) => trim($option))
+            ->filter()
+            ->values()
+            ->toArray();
     }
 
     public function eventPeople(Request $request, $id)
@@ -469,10 +1109,13 @@ class ManageEventController extends Controller
         );
     }
 
-    public function showRegisterUser($id){
-         
+    public function showRegisterUser($id)
+    {
+
          $manageEvent=EventRegistration::where('id',$id)->first();
-         return view('frontend.manageevent.showuser',compact('manageEvent'));
+         $layout= EventIDCardLayout::where('event_id',$manageEvent->event_id)->first();
+        
+         return view('frontend.manageevent.showuser',compact('manageEvent','layout'));
     }
     public function showRegisterUserMobile($id){
 
@@ -489,16 +1132,72 @@ class ManageEventController extends Controller
     {
         $manageEvent = EventRegistration::findOrFail($id);
 
+        /*
+        |--------------------------------------------------------------------------
+        | Get Custom Fields For This Event
+        |--------------------------------------------------------------------------
+        */
+
+        $customFields = EventCustomField::where(
+            'event_id',
+            $manageEvent->event_id
+        )
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Get Saved Custom Field Values
+        |--------------------------------------------------------------------------
+        */
+
+        $customValues = EventRegistrationFieldValue::where(
+            'event_registration_id',
+            $manageEvent->id
+        )
+            ->get()
+            ->keyBy('event_custom_field_id');
+
+
         return view(
             'frontend.manageevent.editregisteruser',
-            compact('manageEvent')
+            compact(
+                'manageEvent',
+                'customFields',
+                'customValues'
+            )
         );
     }
     public function updateRegisteredUser(Request $request, $id)
     {
         $manageEvent = EventRegistration::findOrFail($id);
 
-        $validated = $request->validate([
+
+        /*
+        |--------------------------------------------------------------------------
+        | Get Custom Fields
+        |--------------------------------------------------------------------------
+        */
+
+        $customFields = EventCustomField::where(
+            'event_id',
+            $manageEvent->event_id
+        )
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Base Validation
+        |--------------------------------------------------------------------------
+        */
+
+        $rules = [
+
             'name' => [
                 'required',
                 'string',
@@ -516,14 +1215,19 @@ class ManageEventController extends Controller
                 'string',
                 'max:10',
 
-                Rule::unique('event_registrations', 'mobile')
-                    ->where(function ($query) use ($manageEvent) {
-                        return $query->where(
-                            'event_id',
-                            $manageEvent->event_id
-                        );
-                    })
-                    ->ignore($manageEvent->id),
+                Rule::unique(
+                    'event_registrations',
+                    'mobile'
+                )
+                ->where(function ($query) use ($manageEvent) {
+
+                    return $query->where(
+                        'event_id',
+                        $manageEvent->event_id
+                    );
+
+                })
+                ->ignore($manageEvent->id),
             ],
 
             'organization' => [
@@ -549,7 +1253,130 @@ class ManageEventController extends Controller
                 'nullable',
                 'string',
             ],
-        ]);
+        ];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Dynamic Field Validation
+        |--------------------------------------------------------------------------
+        */
+
+        foreach ($customFields as $field) {
+
+            $fieldName =
+                'custom_fields.' . $field->id;
+
+            $fieldRules = [];
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Required
+            |--------------------------------------------------------------------------
+            */
+
+            if ($field->is_required) {
+
+                $fieldRules[] = 'required';
+
+            } else {
+
+                $fieldRules[] = 'nullable';
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Input Type
+            |--------------------------------------------------------------------------
+            */
+
+            switch ($field->input_type) {
+
+                case 'email':
+
+                    $fieldRules[] = 'email';
+                    $fieldRules[] = 'max:255';
+
+                    break;
+
+
+                case 'number':
+
+                    $fieldRules[] = 'numeric';
+
+                    break;
+
+
+                case 'date':
+
+                    $fieldRules[] = 'date';
+
+                    break;
+
+
+                case 'time':
+
+                    $fieldRules[] = 'date_format:H:i';
+
+                    break;
+
+
+                case 'textarea':
+
+                    $fieldRules[] = 'string';
+                    $fieldRules[] = 'max:5000';
+
+                    break;
+
+
+                case 'checkbox':
+
+                    $fieldRules[] = 'array';
+
+                    break;
+
+
+                case 'dropdown':
+                case 'radio':
+                case 'text':
+                default:
+
+                    $fieldRules[] = 'string';
+                    $fieldRules[] = 'max:255';
+
+                    break;
+            }
+
+
+            $rules[$fieldName] = $fieldRules;
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Checkbox Individual Validation
+            |--------------------------------------------------------------------------
+            */
+
+            if ($field->input_type === 'checkbox') {
+
+                $rules[$fieldName . '.*'] = [
+                    'string',
+                    'max:255',
+                ];
+            }
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Validate
+        |--------------------------------------------------------------------------
+        */
+
+        $validated = $request->validate($rules);
+
 
         /*
         |--------------------------------------------------------------------------
@@ -557,10 +1384,14 @@ class ManageEventController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $hasUploadedPhoto = $request->hasFile('photo');
-        $hasCapturedPhoto = $request->filled('photo_data');
+        $hasUploadedPhoto =
+            $request->hasFile('photo');
+
+        $hasCapturedPhoto =
+            $request->filled('photo_data');
 
         $newPhotoPath = null;
+
 
         /*
         |--------------------------------------------------------------------------
@@ -570,7 +1401,9 @@ class ManageEventController extends Controller
 
         if ($hasCapturedPhoto) {
 
-            $photoData = $request->input('photo_data');
+            $photoData =
+                $request->input('photo_data');
+
 
             if (!preg_match(
                 '/^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/',
@@ -581,48 +1414,60 @@ class ManageEventController extends Controller
                 return back()
                     ->withInput()
                     ->withErrors([
-                        'photo' => 'Invalid captured photo format.'
+                        'photo' =>
+                            'Invalid captured photo format.'
                     ]);
             }
 
-            $base64Image = str_replace(
-                ' ',
-                '+',
-                $matches[2]
-            );
 
-            $imageBinary = base64_decode(
-                $base64Image,
-                true
-            );
+            $base64Image =
+                str_replace(
+                    ' ',
+                    '+',
+                    $matches[2]
+                );
+
+
+            $imageBinary =
+                base64_decode(
+                    $base64Image,
+                    true
+                );
+
 
             if ($imageBinary === false) {
 
                 return back()
                     ->withInput()
                     ->withErrors([
-                        'photo' => 'Invalid captured photo.'
+                        'photo' =>
+                            'Invalid captured photo.'
                     ]);
             }
 
+
             try {
 
-                $manager = new ImageManager(
-                    new Driver()
-                );
+                $manager =
+                    new ImageManager(
+                        new Driver()
+                    );
 
-                $image = $manager->read(
-                    $imageBinary
-                );
+                $image =
+                    $manager->read(
+                        $imageBinary
+                    );
 
             } catch (\Exception $e) {
 
                 return back()
                     ->withInput()
                     ->withErrors([
-                        'photo' => 'Unable to process captured photo.'
+                        'photo' =>
+                            'Unable to process captured photo.'
                     ]);
             }
+
 
             /*
             |--------------------------------------------------------------------------
@@ -631,17 +1476,25 @@ class ManageEventController extends Controller
             */
 
             $maxSize = 500 * 1024;
+
             $quality = 90;
+
 
             do {
 
-                $encoded = $image->toJpeg($quality);
+                $encoded =
+                    $image->toJpeg(
+                        $quality
+                    );
 
-                $size = strlen($encoded);
+                $size =
+                    strlen($encoded);
+
 
                 if ($size <= $maxSize) {
                     break;
                 }
+
 
                 $quality -= 5;
 
@@ -649,20 +1502,23 @@ class ManageEventController extends Controller
 
 
             $photoName =
-                time() .
-                '_' .
-                Str::random(20) .
-                '.jpg';
+                time()
+                . '_'
+                . Str::random(20)
+                . '.jpg';
+
 
             $newPhotoPath =
-                'event-registrations/' .
-                $photoName;
+                'event-registrations/'
+                . $photoName;
+
 
             Storage::disk('public')->put(
                 $newPhotoPath,
                 $encoded
             );
         }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -674,22 +1530,28 @@ class ManageEventController extends Controller
 
             try {
 
-                $manager = new ImageManager(
-                    new Driver()
-                );
+                $manager =
+                    new ImageManager(
+                        new Driver()
+                    );
 
-                $image = $manager->read(
-                    $request->file('photo')->getRealPath()
-                );
+                $image =
+                    $manager->read(
+                        $request
+                            ->file('photo')
+                            ->getRealPath()
+                    );
 
             } catch (\Exception $e) {
 
                 return back()
                     ->withInput()
                     ->withErrors([
-                        'photo' => 'Unable to process uploaded photo.'
+                        'photo' =>
+                            'Unable to process uploaded photo.'
                     ]);
             }
+
 
             /*
             |--------------------------------------------------------------------------
@@ -698,17 +1560,25 @@ class ManageEventController extends Controller
             */
 
             $maxSize = 500 * 1024;
+
             $quality = 90;
+
 
             do {
 
-                $encoded = $image->toJpeg($quality);
+                $encoded =
+                    $image->toJpeg(
+                        $quality
+                    );
 
-                $size = strlen($encoded);
+                $size =
+                    strlen($encoded);
+
 
                 if ($size <= $maxSize) {
                     break;
                 }
+
 
                 $quality -= 5;
 
@@ -716,20 +1586,23 @@ class ManageEventController extends Controller
 
 
             $photoName =
-                time() .
-                '_' .
-                Str::random(20) .
-                '.jpg';
+                time()
+                . '_'
+                . Str::random(20)
+                . '.jpg';
+
 
             $newPhotoPath =
-                'event-registrations/' .
-                $photoName;
+                'event-registrations/'
+                . $photoName;
+
 
             Storage::disk('public')->put(
                 $newPhotoPath,
                 $encoded
             );
         }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -761,10 +1634,13 @@ class ManageEventController extends Controller
 
         if ($newPhotoPath) {
 
-            $oldPhoto = $manageEvent->photo;
+            $oldPhoto =
+                $manageEvent->photo;
+
 
             $manageEvent->photo =
                 $newPhotoPath;
+
 
             $manageEvent->save();
 
@@ -776,8 +1652,11 @@ class ManageEventController extends Controller
             */
 
             if (
-                !empty($oldPhoto) &&
-                Storage::disk('public')->exists($oldPhoto)
+                !empty($oldPhoto)
+                &&
+                Storage::disk('public')->exists(
+                    $oldPhoto
+                )
             ) {
 
                 Storage::disk('public')->delete(
@@ -787,16 +1666,103 @@ class ManageEventController extends Controller
 
         } else {
 
-            /*
-            |--------------------------------------------------------------------------
-            | No New Photo
-            | Keep Existing Photo
-            |--------------------------------------------------------------------------
-            */
-
             $manageEvent->save();
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | Update Custom Fields
+        |--------------------------------------------------------------------------
+        */
+
+        foreach ($customFields as $field) {
+
+            $value = $request->input(
+                'custom_fields.' . $field->id
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Checkbox
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $field->input_type === 'checkbox'
+            ) {
+
+                if (is_array($value)) {
+
+                    $value = json_encode(
+                        $value,
+                        JSON_UNESCAPED_UNICODE
+                    );
+
+                } else {
+
+                    $value = null;
+                }
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Delete Empty Optional Value
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $value === null
+                ||
+                $value === ''
+            ) {
+
+                EventRegistrationFieldValue::where(
+                    'event_registration_id',
+                    $manageEvent->id
+                )
+                ->where(
+                    'event_custom_field_id',
+                    $field->id
+                )
+                ->delete();
+
+                continue;
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Create / Update
+            |--------------------------------------------------------------------------
+            */
+
+            EventRegistrationFieldValue::updateOrCreate(
+
+                [
+                    'event_registration_id' =>
+                        $manageEvent->id,
+
+                    'event_custom_field_id' =>
+                        $field->id,
+                ],
+
+                [
+                    'value' =>
+                        $value,
+                ]
+
+            );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Success
+        |--------------------------------------------------------------------------
+        */
 
         return redirect()
             ->route(

@@ -22,6 +22,16 @@
             </a>
         </div>
     @endif
+
+     @if(session()->has('vendor_viewing'))
+        <div class="school-navbar-info">
+            <a href="{{ route('dashboard') }}"
+               class="btn btn-info btn-sm admin-menu-btn">
+                <i class="fas fa-arrow-left mr-1"></i>
+                Admin Menu
+            </a>
+        </div>
+    @endif
     <ul class="navbar-nav ml-auto">
         <li class="nav-item d-flex align-items-center mr-2">
             @if(Auth::user()->profilepicture)

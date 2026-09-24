@@ -83,7 +83,7 @@
                 {{-- ================= SCHOOL ================= --}}
 
                 {{-- Main School List --}}
-                @if($showSchoolMenu)
+                @if($showSchoolMenu && !session('vendor_viewing'))
 
                     <li class="nav-item">
 
@@ -268,6 +268,7 @@
 
 
                     {{-- ================= ADMINISTRATION ================= --}}
+                    @if(!session('vendor_viewing'))
 
                     <li class="nav-item {{ $administrationOpen ? 'menu-open' : '' }}">
 
@@ -333,6 +334,7 @@
                         </ul>
 
                     </li>
+                    @endif
 
                 @endif
 

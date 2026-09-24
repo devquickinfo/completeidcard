@@ -25,262 +25,441 @@
                 <div class="event-card-header">
                     <div class="event-header-title">
                         <h1 class="m-0 font-weight-bold">
-                            Register User Details
+                             User Details
                         </h1>
-
                         <small class="text-muted">
                             View complete information about User
                         </small>
 
                     </div>
-
-
-                   
                     <div class="event-header-actions">
-
                         <a href="{{ route('manage-events.index') }}"
                            class="btn btn-default">
-
                             <i class="fas fa-arrow-left mr-1"></i>
                             Back
-
                         </a>
-
-
                         <a href="{{route('manage-events.people.edit',$manageEvent->id)}}"
                            class="btn btn-warning">
-
                             <i class="fas fa-edit mr-1"></i>
                             Edit People
-
                         </a>
-
                     </div>
-
                 </div>
 
-
-                {{-- =====================================================
-                     EVENT HERO CONTENT
-                ====================================================== --}}
                 <div class="card-body p-4">
-
                     <div class="row align-items-center">
-
-                        {{-- =================================================
-                             LOGO
-                        ================================================== --}}
                         <div class="col-md-2 text-center mb-3 mb-md-0">
-
                             @if(!empty($manageEvent->photo))
-
                                 <div class="event-logo-wrapper">
-
                                     <img src="{{ asset('storage/' . $manageEvent->photo) }}"
                                          alt="{{ $manageEvent->name }}"
                                          class="event-logo">
-
                                 </div>
-
                             @else
-
                                 <div class="event-logo-placeholder">
-
                                     <i class="fas fa-calendar-alt"></i>
-
                                 </div>
-
                             @endif
-
                         </div>
-
-
-                        {{-- =================================================
-                             EVENT TITLE
-                        ================================================== --}}
                         <div class="col-md-7">
-
                             <div class="mb-2">
-
                                 <span class="badge badge-primary px-3 py-2">
-
                                     <i class="fas fa-calendar-check mr-1"></i>
-
                                     User
-
                                 </span>
-
                             </div>
-
-
                             <h2 class="font-weight-bold mb-2">
-
                                 {{ $manageEvent->name ?? '-' }}
 
                             </h2>
-
-
-                          
-
                         </div>
-
-
-                        {{-- =================================================
-                             QR CODE
-                        ================================================== --}}
                         <div class="col-md-3 text-center">
-
                             <div class="qr-box">
-
                                 <div class="qr-title">
-
                                     <i class="fas fa-qrcode mr-1"></i>
-
                                     User QR Code
-
                                 </div>
-
-
                                 <div class="qr-image">
-
                                     {!! QrCode::size(130)->generate(
                                         route('show.register.user.mobile', $manageEvent->user_unique_code)
                                     ) !!}
-
                                 </div>
-
-
                                 <small class="text-muted d-block mt-2">
-
                                     Scan to view register User
-
                                 </small>
 
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-            
-            
             <div class="card shadow-sm border-0 mt-4">
-
                 <div class="card-header border-bottom">
                     <h3 class="card-title font-weight-bold">
                         <i class="fas fa-user text-primary mr-2"></i>
                         User Information
                     </h3>
                 </div>
-
                 <div class="card-body">
-
                     <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="info-item h-100">
+                                        <div class="info-icon bg-success">
+                                            <i class="fas fa-mobile-alt"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="info-label">
+                                                Mobile
+                                            </div>
+                                            <div class="font-weight-bold">
+                                                {{ !empty($manageEvent->mobile) ? $manageEvent->mobile : '-' }}
+                                            </div>
+                                        </div>
 
-                        {{-- Mobile --}}
-                        <div class="col-md-6 mb-4">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="info-item h-100">
+                                        <div class="info-icon bg-info">
+                                            <i class="fas fa-envelope"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="info-label">
+                                                Email
+                                            </div>
+                                            <div class="font-weight-bold"
+                                                 style="overflow-wrap:anywhere;">
+                                                {{ !empty($manageEvent->email) ? $manageEvent->email : '-' }}
+                                            </div>
+                                        </div>
 
-                            <div class="info-item">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="info-item h-100">
+                                        <div class="info-icon bg-warning">
+                                            <i class="fas fa-building"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="info-label">
+                                                Organization
+                                            </div>
+                                            <div class="font-weight-bold">
+                                                {{ !empty($manageEvent->organization) ? $manageEvent->organization : '-' }}
+                                            </div>
+                                        </div>
 
-                                <div class="info-icon bg-success">
-                                    <i class="fas fa-mobile-alt"></i>
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <div class="info-label">
-                                        Mobile
-                                    </div>
+                                <!-- Camera / Photo -->
+                                <div class="col-md-6 mb-3">
+                                    <div class="info-item h-100">
 
-                                    <div class="font-weight-bold">
-                                        {{ !empty($manageEvent->mobile) ? $manageEvent->mobile : '-' }}
+                                        <div class="info-icon bg-secondary">
+                                            <i class="fas fa-camera"></i>
+                                        </div>
+
+                                        <div class="flex-grow-1">
+                                            <div class="info-label">
+                                                Photo
+                                            </div>
+
+                                            <div class="font-weight-bold">
+                                                {{ !empty($manageEvent->photo) ? 'Available' : '-' }}
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
 
                             </div>
-
                         </div>
+                        <!-- Dynamic data--->
+                            @php
+                                if (isset($layout)) {
+                                    $cardData = is_array($layout->layout)
+                                        ? $layout->layout
+                                        : json_decode($layout->layout, true);
 
+                                    $fields = $cardData['fields'] ?? [];
+                                    $tablePosition = $cardData['tablePosition'] ?? [];
 
-                        {{-- Email --}}
-                        <div class="col-md-6 mb-4">
+                                    $cardWidth = $cardData['cardWidth'] ?? 317;
+                                    $cardHeight = $cardData['cardHeight'] ?? 204;
 
-                            <div class="info-item">
+                                    $background = $layout->background ?? null;
+                                @endphp
 
-                                <div class="info-icon bg-info">
-                                    <i class="fas fa-envelope"></i>
-                                </div>
+                                @php
+                                    $dynamicValues = [
+                                        'name'         => $manageEvent->name ?? '-',
+                                        'mobile'       => $manageEvent->mobile ?? '-',
+                                        'email'        => $manageEvent->email ?? '-',
+                                        'organization' => $manageEvent->organization ?? '-',
+                                        'address'      => $manageEvent->address ?? '-',
+                                        'photo'        => $manageEvent->photo ?? null,
+                                    ];
 
-                                <div>
-                                    <div class="info-label">
-                                        Email
+                                    $resolveCardImageUrl = function ($value) {
+                                        if (!$value) {
+                                            return null;
+                                        }
+                                        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://') || str_starts_with($value, 'data:')) {
+                                            return $value;
+                                        }
+                                        return asset('storage/' . ltrim($value, '/'));
+                                    };
+
+                                    $dynamicImageFields = [
+                                        'photo' => 'photo', // layout field key => $dynamicValues key
+                                    ];
+
+                                    $dynamicTextFields = [
+                                        // 'name' => 'name',
+                                    ];
+
+                                    $backgroundUrl = $resolveCardImageUrl($background);
+                                @endphp
+
+                                <div class="col-md-6">
+                                    <div class="info-item">
+                                        <div class="info-icon bg-primary">
+                                            <i class="fas fa-id-card-alt"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="info-label mb-2">
+                                                Event ID Card
+                                            </div>
+                                            <div
+                                                style="
+                                                    position: relative;
+                                                    width: {{ $cardWidth }}px;
+                                                    height: {{ $cardHeight }}px;
+                                                    overflow: hidden;
+                                                    border: 1px solid #ddd;
+                                                    background-color: #fff;
+
+                                                    @if($backgroundUrl)
+                                                        background-image: url('{{ $backgroundUrl }}');
+                                                        background-size: 100% 100%;
+                                                        background-repeat: no-repeat;
+                                                    @endif
+                                                "
+                                            >
+
+                                                {{-- Render Fields --}}
+                                                @foreach($fields as $fieldKey => $field)
+
+                                                    @if(($field['visible'] ?? true) === true)
+
+                                                        @php
+                                                            $type = $field['type'] ?? 'text';
+
+                                                            $x = $field['x'] ?? 0;
+                                                            $y = $field['y'] ?? 0;
+
+                                                            $width = $field['width'] ?? null;
+                                                            $height = $field['height'] ?? null;
+
+                                                            $fontSize = $field['fontSize'] ?? 12;
+                                                            $color = $field['color'] ?? '#000';
+                                                            $fontWeight = $field['fontWeight'] ?? '400';
+
+                                                            $borderRadius = $field['borderRadius'] ?? 0;
+
+                                                            // Any custom style typed into this field's
+                                                            // "css" box in the editor. Applied LAST on
+                                                            // every field below so it can override any
+                                                            // default here — e.g. "text-align:center;",
+                                                            // "white-space:nowrap;", "width:150px;".
+                                                            $customCss = trim($field['css'] ?? '');
+
+                                                            $fieldStyle = "
+                                                                position:absolute;
+                                                                left:{$x}px;
+                                                                top:{$y}px;
+                                                                z-index:10;
+                                                            ";
+
+                                                            if ($width !== null) {
+                                                                $fieldStyle .= "width:{$width}px;";
+                                                            }
+
+                                                            if ($height !== null) {
+                                                                $fieldStyle .= "height:{$height}px;";
+                                                            }
+
+                                                            $dynImageKey = $dynamicImageFields[$fieldKey] ?? null;
+                                                            $liveImageValue = $dynImageKey ? ($dynamicValues[$dynImageKey] ?? null) : null;
+
+                                                            $resolvedSrc = $liveImageValue
+                                                                ? $resolveCardImageUrl($liveImageValue)
+                                                                : $resolveCardImageUrl($field['src'] ?? null);
+
+                                                            $dynTextKey = $dynamicTextFields[$fieldKey] ?? null;
+                                                            $resolvedText = ($dynTextKey && !empty($dynamicValues[$dynTextKey]))
+                                                                ? $dynamicValues[$dynTextKey]
+                                                                : ($field['text'] ?? '');
+
+                                                            // -----------------------------------------
+                                                            // TEXT wrapping default: no forced nowrap
+                                                            // running text off the card. If the field
+                                                            // has no saved width, fall back to
+                                                            // "however much room is left on the card"
+                                                            // so long content (e.g. an address) wraps
+                                                            // instead of overflowing. A field's own
+                                                            // custom CSS can still override this
+                                                            // (e.g. "white-space:nowrap;") if a
+                                                            // specific field really needs one line.
+                                                            // -----------------------------------------
+                                                            $textWrapWidth = $width ?? max($cardWidth - $x - 4, 20);
+
+                                                            $textFieldStyle = $fieldStyle . "
+                                                                width:{$textWrapWidth}px;
+                                                                font-size:{$fontSize}px;
+                                                                color:{$color};
+                                                                font-weight:{$fontWeight};
+                                                                line-height:1.2;
+                                                                white-space:normal;
+                                                                overflow-wrap:break-word;
+                                                                word-break:break-word;
+                                                            ";
+
+                                                            $isQrField = $fieldKey === 'qr';
+
+                                                            $qrSize = max(
+                                                                (int) ($width ?? $height ?? 130),
+                                                                120
+                                                            );
+
+                                                            $qrValue = $manageEvent->user_unique_code ?? null;
+
+                                                            $qrUrl = $qrValue
+                                                                ? route('show.register.user.mobile', [
+                                                                    'id' => $qrValue
+                                                                ])
+                                                                : null;
+                                                        @endphp
+
+                                                        @if($isQrField && $qrUrl)
+
+                                                            <div
+                                                                style="
+                                                                    {{ $fieldStyle }}
+                                                                    width: {{ $qrSize }}px;
+                                                                    height: {{ $qrSize }}px;
+                                                                    background:#fff;
+                                                                    padding:4px;
+                                                                    box-sizing:border-box;
+                                                                    display:flex;
+                                                                    align-items:center;
+                                                                    justify-content:center;
+                                                                    overflow:hidden;
+                                                                    {{ $customCss }}
+                                                                "
+                                                            >
+                                                                {!! QrCode::format('svg')
+                                                                    ->size($qrSize - 8)
+                                                                    ->margin(2)
+                                                                    ->errorCorrection('M')
+                                                                    ->generate($qrUrl)
+                                                                !!}
+                                                            </div>
+
+                                                        @elseif($type === 'image' && $resolvedSrc)
+
+                                                            <img
+                                                                src="{{ $resolvedSrc }}"
+                                                                style="
+                                                                    {{ $fieldStyle }}
+                                                                    object-fit: cover;
+                                                                    border-radius: {{ $borderRadius }}px;
+                                                                    display: block;
+                                                                    {{ $customCss }}
+                                                                "
+                                                            >
+
+                                                        @elseif($type === 'text')
+
+                                                            <div
+                                                                style="
+                                                                    {{ $textFieldStyle }}
+                                                                    {{ $customCss }}
+                                                                "
+                                                            >
+                                                                {{ $resolvedText }}
+                                                            </div>
+
+                                                        @endif
+
+                                                    @endif
+
+                                                @endforeach
+
+                                                {{-- Table Data --}}
+                                                @if(!empty($cardData['tabledata']))
+                                                    @php
+                                                        $tableLeft = $tablePosition['left'] ?? 0;
+                                                        $tableTop = $tablePosition['top'] ?? 0;
+                                                        $tableWidth = $tablePosition['width'] ?? 180;
+                                                        $tableHeight = $tablePosition['height'] ?? null;
+
+                                                        $tableHtml = $cardData['tabledata'];
+
+                                                        foreach ($dynamicValues as $key => $value) {
+                                                            $tableHtml = str_ireplace('{{' . $key . '}}', e($value ?? '-'), $tableHtml);
+                                                        }
+
+                                                        $legacySampleReplacements = [
+                                                            'Rahul Kumar'     => $dynamicValues['name'] ?? '-',
+                                                            '9632587410'      => $dynamicValues['mobile'] ?? '-',
+                                                            'admin@gmail.com' => $dynamicValues['email'] ?? '-',
+                                                        ];
+
+                                                        foreach ($legacySampleReplacements as $sample => $liveValue) {
+                                                            $tableHtml = str_replace($sample, e($liveValue), $tableHtml);
+                                                        }
+
+                                                        // Same wrap-safety as the text fields above:
+                                                        // the table sits at a fixed left/width, so
+                                                        // long cell content (e.g. a long address row)
+                                                        // should wrap inside that width rather than
+                                                        // pushing past the card edge.
+                                                        $tableMaxWidth = min($tableWidth, max($cardWidth - $tableLeft - 4, 20));
+                                                    @endphp
+                                                    <div
+                                                        style="
+                                                            position: absolute;
+                                                            left: {{ $tableLeft }}px;
+                                                            top: {{ $tableTop }}px;
+                                                            width: {{ $tableMaxWidth }}px;
+                                                            z-index: 20;
+                                                            color: rgb(75, 85, 99);
+                                                            overflow-wrap: break-word;
+                                                            word-break: break-word;
+
+                                                            @if($tableHeight)
+                                                                height: {{ $tableHeight }}px;
+                                                            @endif
+                                                        "
+                                                    >
+                                                        {!! $tableHtml !!}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
-
-                                    <div class="font-weight-bold"
-                                         style="overflow-wrap:anywhere;">
-
-                                        {{ !empty($manageEvent->email) ? $manageEvent->email : '-' }}
-
-                                    </div>
                                 </div>
-
-                            </div>
-
-                        </div>
-
-
-                        {{-- Organization --}}
-                        <div class="col-md-6 mb-4">
-
-                            <div class="info-item">
-
-                                <div class="info-icon bg-warning">
-                                    <i class="fas fa-building"></i>
-                                </div>
-
-                                <div>
-                                    <div class="info-label">
-                                        Organization
-                                    </div>
-
-                                    <div class="font-weight-bold">
-
-                                        {{ !empty($manageEvent->organization) ? $manageEvent->organization : '-' }}
-
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </div>
+                                @php
+                                }
+                            @endphp
 
 
-                        {{-- Photo --}}
-                        <div class="col-md-6 mb-4">
-
-                            <div class="info-item align-items-start">
-
-                                <div class="info-icon bg-secondary">
-                                    <i class="fas fa-camera"></i>
-                                </div>
-
-                                <div>
-
-                                    <div class="info-label">
-                                        
-                                    </div>
-
-                                   
-                                </div>
-
-                            </div>
-
-                        </div>
-
+                        <!----end----->
                     </div>
-
                 </div>
             </div>
 
