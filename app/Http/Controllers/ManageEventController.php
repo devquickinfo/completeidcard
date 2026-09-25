@@ -15,7 +15,7 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use App\Models\EventIDCardLayout;
 use App\Models\EventIDCard;
-
+use App\Models\PaperSize;
 
 class ManageEventController extends Controller
 {
@@ -1930,18 +1930,193 @@ class ManageEventController extends Controller
         );
     }
     public function printidcard($id){
-       // return view('frontend.manageevent.createidcard');
-        $vendorId= Auth::id() ?? session('vendor_viewing');
-        $event=ManageEvent::where('id',$id)->first();
-        $evenidcard=EventIDCard::where('event_id',$id)->first();
-        $alluser=EventRegistration::where('event_id',$id)->get();
-        $layout=EventIDCardLayout::where('vendor_id',$vendorId)->where('event_id',$id)->first();
-
-        //echo '<pre>'; print_r($layout); 
-        return view('frontend.manageevent.print_filtered_idcards', compact(
-            'evenidcard',
-            'alluser',
-            'layout'
-        ));
+        if (Auth::user()?->role === 'superadmin') {
+           $vendorId=session('vendor_viewing');
+        }else{
+            $vendorId= Auth::id();
+        }
+        $events=ManageEvent::where('id',$id)->where('vendor_id',$vendorId)->first();
+        if($events==''){
+            return view('404');
+        }
+        $eventusers=EventRegistration::where('event_id',$id)->paginate(10);
+        $papers=PaperSize::all();
+        return view('frontend.manageevent.createidcard',compact('events','eventusers','papers'));
     }
+
+
+    
+    
+    // public function printFilteredIdCards(Request $request)
+    // {
+    //     if (Auth::user()?->role === 'superadmin') {
+    //        $vendorId=session('vendor_viewing');
+    //     }else{
+    //         $vendorId= Auth::id();
+    //     }
+    //     $event = ManageEvent::findOrFail($request->id);
+    //     $evenidcard = EventIDCard::where('event_id', $request->id)
+    //         ->first();
+    //     $layout = EventIDCardLayout::where('vendor_id', $vendorId)
+    //         ->where('event_id', $request->id)
+    //         ->first();
+    //     if($layout==''){
+    //         return view('404');
+    //     }
+    //     $request->validate([
+    //         'paper_size' => 'required|in:A3,A4,A5,A6',
+    //         'cardperpage' => 'required|integer|min:1',
+    //         'print_type' => 'required|in:all,selected',
+    //         'selected_users' => 'nullable|array',
+    //         'selected_users.*' => 'integer',
+    //     ]);
+    //     $query = EventRegistration::where(
+    //         'event_id',
+    //         $request->id
+    //     );
+
+
+    //     /*
+    //      * Print Selected
+    //      */
+    //     if ($request->print_type === 'selected') {
+
+    //         if (empty($request->selected_users)) {
+
+    //             return redirect()
+    //                 ->back()
+    //                 ->with('error', 'Please select at least one participant.');
+
+    //         }
+
+    //         $query->whereIn(
+    //             'id',
+    //             $request->selected_users
+    //         );
+    //     }
+
+    //     $alluser = $query->get();
+    //     $paper_size = $request->paper_size;
+    //     $cardperpage = (int) $request->cardperpage;
+    //     $papers=PaperSize::all();
+    //     return view(
+    //         'frontend.manageevent.print_filtered_idcards',
+    //         compact(
+    //             'evenidcard',
+    //             'alluser',
+    //             'layout',
+    //             'paper_size',
+    //             'cardperpage',
+    //             'event',
+    //             'papers',
+    //         )
+    //     );
+    // }
+
+
+    public function printFilteredIdCards(Request $request)
+    {
+        
+        if (Auth::user()?->role === 'superadmin') {
+            $vendorId = session('vendor_viewing');
+        } else {
+            $vendorId = Auth::id();
+        }
+        $event = ManageEvent::findOrFail($request->id);
+        $evenidcard = EventIDCard::where('event_id', $request->id)
+            ->first();
+        $layout = EventIDCardLayout::where('vendor_id', $vendorId)
+            ->where('event_id', $request->id)
+            ->first();
+        if (!$layout) {
+            return response()
+                ->view('404', [], 404);
+        }
+        $request->validate([
+            'paper_size' => [
+                'required',
+                'exists:paper_size,size',
+            ],
+
+            'cardperpage' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
+
+            'print_type' => [
+                'required',
+                'in:all,selected',
+            ],
+
+            'selected_users' => [
+                'nullable',
+                'array',
+            ],
+
+            'selected_users.*' => [
+                'integer',
+                'exists:event_registrations,id',
+            ],
+        ]);
+
+        $query = EventRegistration::where(
+            'event_id',
+            $request->id
+        );
+
+
+       
+        if ($request->print_type === 'selected') {
+
+            if (empty($request->selected_users)) {
+
+                return redirect()
+                    ->back()
+                    ->with(
+                        'error',
+                        'Please select at least one participant.'
+                    );
+            }
+
+
+            
+            $query->whereIn(
+                'id',
+                $request->selected_users
+            );
+        }
+
+        $alluser = $query->get();
+        $paper_size = $request->paper_size;
+        $cardperpage = (int) $request->cardperpage;
+        $papers = PaperSize::all();
+
+        return view(
+            'frontend.manageevent.print_filtered_idcards',
+            compact(
+                'evenidcard',
+                'alluser',
+                'layout',
+                'paper_size',
+                'cardperpage',
+                'event',
+                'papers'
+            )
+        );
+    }
+
+    public function showRegisterUserMobileCard($id){
+
+      $manageEvent = EventRegistration::where(
+        'user_unique_code',
+        $id
+        )->firstOrFail();
+        $layout= EventIDCardLayout::where('event_id',$manageEvent->event_id)->first();
+       return view('frontend.manageevent.cardmobile', compact('manageEvent','layout'));
+
+
+    }
+
+
 }

@@ -30,9 +30,9 @@
     }
 </style>
 @php
-    //$defaultOrientation = \App\Models\Mainidcard::where('school_id',auth()->user()->school_id ?? session('viewing_school')
-    //)->latest('id')->value('orientation') ?? 'vertical';
-    $defaultOrientation = \App\Models\Mainidcard::where(
+    $defaultOrientation = \App\Models\Mainidcard::where('school_id',auth()->user()->school_id ?? session('viewing_school')
+    )->latest('id')->value('orientation') ?? 'vertical';
+    /*$defaultOrientation = \App\Models\Mainidcard::where(
         'school_id',
         auth()->user()->school_id ?? session('viewing_school')
     )
@@ -40,7 +40,7 @@
     ->whereNull('applicable_id')
     ->where('is_default', 1)
     
-    ->value('orientation') ?? 'vertical';
+    ->value('orientation') ?? 'vertical';*/
 @endphp
 <div class="content-wrapper">
     <section class="content-header">

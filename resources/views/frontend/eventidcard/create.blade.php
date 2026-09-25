@@ -213,7 +213,7 @@
                                                id="image"
                                                class="form-control-file"
                                                accept="image/jpeg,image/png,image/webp"
-                                               {{ empty($idCardData->id) ? 'required' : '' }}>
+                                               {{ empty($idCardData->id) ? '' : '' }}>
 
                                         <small class="text-muted d-block mt-1">
                                             JPG, PNG or WEBP. Maximum 5MB.

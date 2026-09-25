@@ -1,192 +1,317 @@
+
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>404 Error Page</title>
 
-    <!--begin::Theme Init (prevents flash of incorrect theme on load, #6043)-->
-    <script>
-      (() => {
-        'use strict';
-        const root = document.documentElement;
+<head>
+    <meta charset="utf-8">
 
-        // Applications with their own theming opt out of AdminLTE's color mode
-        // entirely, here as well as in the bundle.
-        if (root.getAttribute('data-lte-color-mode') === 'off') {
-          return;
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>404 - Page Not Found</title>
+
+    <link rel="preload"
+          href="{{ asset('css/adminlte.css') }}"
+          as="style">
+
+    <link rel="stylesheet"
+          href="{{ asset('css/adminlte.css') }}">
+
+    <style>
+        * {
+            box-sizing: border-box;
         }
 
-        const STORAGE_KEY = 'lte-theme';
-        let stored = null;
-        try {
-          stored = localStorage.getItem(STORAGE_KEY);
-        } catch {
-          // localStorage may be unavailable (private mode, sandboxed iframe).
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont,
+                "Segoe UI", Roboto, Arial, sans-serif;
+            background:
+                radial-gradient(circle at 10% 20%, rgba(13, 110, 253, 0.10), transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(111, 66, 193, 0.10), transparent 30%),
+                #f5f7fb;
+            overflow-x: hidden;
         }
-        // Mirror the precedence in color-mode.ts: the visitor's stored choice
-        // wins, then a theme this page declared itself, then the OS preference.
-        const authored = root.getAttribute('data-bs-theme');
-        let resolved = 'light';
-        if (stored === 'dark' || stored === 'light') {
-          resolved = stored;
-        } else if (authored === 'dark' || authored === 'light') {
-          resolved = authored;
-        } else if (globalThis.matchMedia('(prefers-color-scheme: dark)').matches) {
-          resolved = 'dark';
+
+        .error-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 15px;
+            position: relative;
+            overflow: hidden;
         }
-        root.setAttribute('data-bs-theme', resolved);
-        root.style.colorScheme = resolved;
-        // Flag values computed here, so the bundle does not mistake them for a
-        // theme the page declared and stop following the OS preference.
-        if (resolved !== authored) {
-          root.setAttribute('data-lte-theme-resolved', '');
+
+        /* Background circles */
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(1px);
         }
-      })();
-    </script>
 
-    <!--end::Primary Meta Tags-->
+        .circle-one {
+            width: 220px;
+            height: 220px;
+            background: rgba(13, 110, 253, 0.08);
+            top: -70px;
+            left: -70px;
+        }
 
-    <!--begin::Accessibility Features-->
-    <!-- Skip links will be dynamically added by accessibility.js -->
- 
-    <link rel="preload" href="{{asset('css/adminlte.css')}}" as="style" />
-    <!--end::Accessibility Features-->
+        .circle-two {
+            width: 300px;
+            height: 300px;
+            background: rgba(111, 66, 193, 0.07);
+            right: -100px;
+            bottom: -100px;
+        }
 
-    <!--begin::Fonts-->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
-      integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q="
-      crossorigin="anonymous"
-      media="print"
-      onload="this.media = 'all'"
-    />
-    <!--end::Fonts-->
+        .circle-three {
+            width: 80px;
+            height: 80px;
+            border: 15px solid rgba(13, 110, 253, 0.06);
+            left: 12%;
+            bottom: 15%;
+        }
 
-    <!--begin::Third Party Plugin(OverlayScrollbars)-->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css"
-      crossorigin="anonymous"
-    />
-    <!--end::Third Party Plugin(OverlayScrollbars)-->
+        .error-card {
+            width: 100%;
+            max-width: 760px;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 24px;
+            padding: 55px 45px;
+            text-align: center;
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.08),
+                0 4px 15px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(10px);
+        }
 
-    <!--begin::Third Party Plugin(Bootstrap Icons)-->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
-      crossorigin="anonymous"
-    />
-    <!--end::Third Party Plugin(Bootstrap Icons)-->
+        .error-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eef4ff;
+            color: #0d6efd;
+            font-size: 42px;
+            font-weight: 700;
+            box-shadow: 0 10px 25px rgba(13, 110, 253, 0.12);
+        }
 
-    <!--begin::Required Plugin(AdminLTE)-->
-    <link rel="stylesheet" href="{{asset('css/adminlte.css')}}" />
-    <!--end::Required Plugin(AdminLTE)-->
-  </head>
-  <body class="bg-body-tertiary">
-    <main class="d-flex align-items-center min-vh-100 py-5">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-md-8 col-lg-6 text-center">
-            <div class="display-1 fw-bold text-primary lh-1 mb-3">404</div>
-            <h1 class="h3 mb-3">Oops! Page not found.</h1>
-            <p class="text-secondary mb-4">
-              We could not find the page you were looking for. Meanwhile, you may return back or try searching for what you need.
+        .error-code {
+            font-size: clamp(90px, 16vw, 150px);
+            line-height: 0.9;
+            font-weight: 800;
+            letter-spacing: -7px;
+            margin: 0;
+            background: linear-gradient(
+                135deg,
+                #0d6efd,
+                #6610f2
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .error-title {
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            color: #212529;
+            margin: 22px 0 12px;
+        }
+
+        .error-text {
+            max-width: 540px;
+            margin: 0 auto;
+            color: #6c757d;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        .error-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .error-btn {
+            min-width: 145px;
+            padding: 12px 22px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-home {
+            background: #0d6efd;
+            color: #fff;
+            border: 1px solid #0d6efd;
+            box-shadow: 0 8px 20px rgba(13, 110, 253, 0.20);
+        }
+
+        .btn-home:hover {
+            background: #0b5ed7;
+            border-color: #0b5ed7;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(13, 110, 253, 0.28);
+        }
+
+        .btn-back {
+            background: #fff;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+
+        .btn-back:hover {
+            background: #f8f9fa;
+            color: #212529;
+            transform: translateY(-2px);
+            border-color: #ced4da;
+        }
+
+        .help-text {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #edf0f3;
+            color: #adb5bd;
+            font-size: 13px;
+        }
+
+        .help-text span {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        /* Small floating dots */
+        .dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #0d6efd;
+            border-radius: 50%;
+            opacity: 0.15;
+        }
+
+        .dot-one {
+            top: 18%;
+            right: 15%;
+        }
+
+        .dot-two {
+            bottom: 22%;
+            right: 25%;
+            width: 12px;
+            height: 12px;
+        }
+
+        .dot-three {
+            top: 30%;
+            left: 18%;
+            width: 6px;
+            height: 6px;
+        }
+
+        @media (max-width: 576px) {
+
+            .error-card {
+                padding: 40px 22px;
+                border-radius: 18px;
+            }
+
+            .error-icon {
+                width: 72px;
+                height: 72px;
+                font-size: 34px;
+            }
+
+            .error-code {
+                letter-spacing: -4px;
+            }
+
+            .error-title {
+                margin-top: 18px;
+            }
+
+            .error-text {
+                font-size: 14px;
+            }
+
+            .error-btn {
+                width: 100%;
+            }
+
+            .error-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="error-page">
+
+        <!-- Background decoration -->
+        <div class="circle circle-one"></div>
+        <div class="circle circle-two"></div>
+        <div class="circle circle-three"></div>
+
+        <div class="dot dot-one"></div>
+        <div class="dot dot-two"></div>
+        <div class="dot dot-three"></div>
+
+        <!-- Error Card -->
+        <div class="error-card">
+
+            <div class="error-icon">
+                !
+            </div>
+
+            <h1 class="error-code">
+                404
+            </h1>
+
+            <h2 class="error-title">
+                Oops! Page Not Found
+            </h2>
+
+            <p class="error-text">
+                The page you are looking for may have been moved,
+                deleted, or the URL may be incorrect.
+                Please check the address and try again.
             </p>
 
-           {{--- <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">
-              <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>
-              Back
-            </a>---}}
-          </div>
+          
+
+            <div class="help-text">
+                If you believe this is an error,
+                <span>please contact your administrator.</span>
+            </div>
+
         </div>
-      </div>
+
     </main>
-    <!--begin::Third Party Plugin(OverlayScrollbars)-->
-    <script
-      src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
-      crossorigin="anonymous"
-    ></script>
-    <!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
-    <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-      crossorigin="anonymous"
-    ></script>
-    <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
-      crossorigin="anonymous"
-    ></script>
-    <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
-    <script src="{{asset('js/adminlte.js')}}"></script>
-    <!--end::Required Plugin(AdminLTE)-->
-    <!--begin::OverlayScrollbars Configure-->
-    <script>
-      const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
-      const Default = {
-        scrollbarTheme: 'os-theme-light',
-        scrollbarAutoHide: 'leave',
-        scrollbarClickScroll: true,
-      };
-      document.addEventListener('DOMContentLoaded', function () {
-        const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
 
-        // Disable OverlayScrollbars on mobile devices to prevent touch interference
-        const isMobile = window.innerWidth <= 992;
+    <script src="{{ asset('js/adminlte.js') }}"></script>
 
-        if (
-          sidebarWrapper &&
-          OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined &&
-          !isMobile
-        ) {
-          OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
-            scrollbars: {
-              theme: Default.scrollbarTheme,
-              autoHide: Default.scrollbarAutoHide,
-              clickScroll: Default.scrollbarClickScroll,
-            },
-          });
-        }
-      });
-    </script>
-    <!--end::OverlayScrollbars Configure-->
-    <!--begin::Charts follow the colour mode-->
-    <script>
-      // ApexCharts draws light-theme tooltips and axis text unless told otherwise,
-      // which is unreadable in dark mode (#6105). Give it the page's colour mode as
-      // a global default before any chart is created — this runs before the chart
-      // pages' own scripts — and keep every chart that has a `chart.id` in step
-      // when the mode changes (ColorMode, the OS in auto mode, or your own code).
-      (() => {
-        'use strict';
-        const mode = () =>
-          document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light';
-        // `Apex` is ApexCharts' global-options object; it must exist before the library loads.
-        // theme.mode also sets a dark chart background — keep the card's instead.
-        // eslint-disable-next-line unicorn/no-global-object-property-assignment
-        globalThis.Apex ||= {};
-        const apex = globalThis.Apex;
-        apex.theme = { mode: mode() };
-        apex.chart = Object.assign(apex.chart || {}, { background: 'transparent' });
-        new MutationObserver(() => {
-          const next = mode();
-          apex.theme = { mode: next };
-          const instances = apex._chartInstances || [];
-          for (const { chart } of instances) {
-            chart.updateOptions({ theme: { mode: next } }, false, false);
-          }
-        }).observe(document.documentElement, {
-          attributes: true,
-          attributeFilter: ['data-bs-theme'],
-        });
-      })();
-    </script>
-    <!--end::Charts follow the colour mode-->
-
-    <!--begin::Color Mode Toggle-->
-    <!-- The light/dark/auto switcher ships in adminlte.js as the ColorMode
-     module (since 4.1) — no page script needed. Only the no-flash snippet
-     in <head> stays inline, because it must run before first paint. -->
-    <!--end::Color Mode Toggle-->
-  </body>
+</body>
 </html>
+

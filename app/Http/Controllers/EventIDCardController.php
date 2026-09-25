@@ -41,84 +41,6 @@ class EventIDCardController extends Controller
         return view('frontend.eventidcard.create',compact('events'));
     }
 
-    // public function store(Request $request)
-    // {
-    //     $id = $request->input('id');
-    //     if ($id) {
-    //         $eventIDCard = EventIDCard::findOrFail($id);
-    //         $validated = $request->validate([
-    //             'name'       => 'required|string|max:255',
-    //             'image'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-    //             'width'      => 'required|numeric|min:1',
-    //             'height'     => 'required|numeric|min:1',
-    //             'paper_size' => 'required|in:A4,A3,A5,A6',
-    //         ]);
-    //         $eventIDCard->name = $validated['name'];
-    //         $eventIDCard->width = $validated['width'];
-    //         $eventIDCard->height = $validated['height'];
-    //         $eventIDCard->paper_size = $validated['paper_size'];
-
-    //         if ($request->hasFile('image')) {
-
-    //             // Delete old image
-    //             if (
-    //                 $eventIDCard->file_path &&
-    //                 \Storage::disk('public')->exists($eventIDCard->file_path)
-    //             ) {
-    //                 \Storage::disk('public')->delete($eventIDCard->file_path);
-    //             }
-
-    //             // Store new image
-    //             $eventIDCard->file_path = $request
-    //                 ->file('image')
-    //                 ->store('event-id-cards', 'public');
-    //         }
-
-
-    //         $eventIDCard->save();
-
-    //         return redirect()
-    //             ->route('event-id-cards.index')
-    //             ->with('success', 'ID Card Sample updated successfully.');
-    //     }
-
-    //     $validated = $request->validate([
-    //         'name'       => 'required|string|max:255',
-    //         'image'      => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
-    //         'width'      => 'required|numeric|min:1',
-    //         'height'     => 'required|numeric|min:1',
-    //         'paper_size' => 'required|in:A4,A3,A5,A6',
-    //     ]);
-    //     $eventIDCard = new EventIDCard();
-
-    //     $eventIDCard->vendor_id = Auth::id();
-    //     $eventIDCard->name = $validated['name'];
-    //     $eventIDCard->width = $validated['width'];
-    //     $eventIDCard->height = $validated['height'];
-    //     $eventIDCard->paper_size = $validated['paper_size'];
-
-
-    //     /*
-    //     |--------------------------------------------------------------------------
-    //     | Store Image
-    //     |--------------------------------------------------------------------------
-    //     */
-
-    //     if ($request->hasFile('image')) {
-
-    //         $eventIDCard->file_path = $request
-    //             ->file('image')
-    //             ->store('event-id-cards', 'public');
-    //     }
-
-
-    //     $eventIDCard->save();
-
-
-    //     return redirect()
-    //         ->route('event-id-cards.index')
-    //         ->with('success', 'ID Card Sample created successfully.');
-    // }
     public function store(Request $request)
     {
         $id = $request->input('id');
@@ -171,7 +93,7 @@ class EventIDCardController extends Controller
         $validated = $request->validate([
             'event_id'   => 'required|exists:manage_events,id',
             'name'       => 'required|string|max:255',
-            'image'      => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'image'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'width'      => 'required|numeric|min:1',
             'height'     => 'required|numeric|min:1',
             'paper_size' => 'required|in:A4,A3,A5,A6',

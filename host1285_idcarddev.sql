@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 24, 2026 at 07:53 AM
+-- Generation Time: Sep 25, 2026 at 10:21 AM
 -- Server version: 11.4.13-MariaDB
 -- PHP Version: 8.4.25
 
@@ -103,13 +103,14 @@ CREATE TABLE `event_id_cards` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `event_id` bigint(20) UNSIGNED DEFAULT NULL,
   `name` varchar(255) NOT NULL,
-  `file_path` varchar(255) NOT NULL,
+  `file_path` varchar(255) DEFAULT NULL,
   `height` varchar(255) DEFAULT NULL,
   `width` varchar(255) DEFAULT NULL,
   `paper_size` varchar(120) DEFAULT NULL,
   `vendor_id` int(11) NOT NULL,
   `status` tinyint(4) NOT NULL DEFAULT 1,
   `is_deleted` tinyint(4) NOT NULL DEFAULT 0,
+  `cardperpage` int(11) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -118,8 +119,9 @@ CREATE TABLE `event_id_cards` (
 -- Dumping data for table `event_id_cards`
 --
 
-INSERT INTO `event_id_cards` (`id`, `event_id`, `name`, `file_path`, `height`, `width`, `paper_size`, `vendor_id`, `status`, `is_deleted`, `created_at`, `updated_at`) VALUES
-(1, 3, 'Template 1', 'event-id-cards/3oWQ38id0iot0JsQMAeULPPYZU2hPNYsRogFe5XF.jpg', '54', '84', 'A4', 39, 1, 0, '2026-09-23 06:29:47', '2026-09-24 04:00:28');
+INSERT INTO `event_id_cards` (`id`, `event_id`, `name`, `file_path`, `height`, `width`, `paper_size`, `vendor_id`, `status`, `is_deleted`, `cardperpage`, `created_at`, `updated_at`) VALUES
+(1, 3, 'Template 1', 'event-id-cards/Aisy9XnxsF5zfWoPl9OOki8aD8pgcG7UcoF3DdbK.jpg', '125', '78', 'A3', 39, 1, 0, 1, '2026-09-23 06:29:47', '2026-09-24 12:29:13'),
+(2, 4, 'Template 2', NULL, '130', '90', 'A4', 39, 1, 0, 1, '2026-09-25 06:29:48', '2026-09-25 06:29:48');
 
 -- --------------------------------------------------------
 
@@ -147,7 +149,8 @@ CREATE TABLE `event_i_d_card_layouts` (
 --
 
 INSERT INTO `event_i_d_card_layouts` (`id`, `vendor_id`, `name`, `height`, `width`, `layout`, `background`, `is_default`, `event_id`, `sample_id`, `created_at`, `updated_at`) VALUES
-(15, 39, 'Default ID Card', 430.87, 268.35, '{\"cardWidth\":268.3464566929134,\"cardHeight\":430.8661417322835,\"background\":\"\",\"fields\":{\"logo\":{\"label\":\"Logo\",\"x\":0,\"y\":8,\"visible\":true,\"width\":49,\"height\":60,\"type\":\"image\",\"src\":\"idcards\\/z7TyQXrplRBOF244jyajwv96AKoPxcKe94pCaH2q.png\",\"css\":\"\"},\"schoolName\":{\"label\":\"School Name\",\"x\":68,\"y\":18,\"visible\":true,\"text\":\"     New Mega Event\",\"fontSize\":18,\"color\":\"rgb(158, 27, 50)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":\"\"},\"address\":{\"label\":\"Address\",\"x\":34,\"y\":393,\"visible\":true,\"text\":\"Venue :123 Education Lane, Varanasi, \",\"fontSize\":11,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":\"\"},\"session\":{\"label\":\"Session\",\"x\":96,\"y\":234,\"visible\":true,\"text\":\"2026-2027\",\"fontSize\":12,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":\"\"},\"photo\":{\"label\":\"Photo\",\"x\":87,\"y\":53,\"visible\":true,\"width\":79,\"height\":102,\"borderRadius\":0,\"type\":\"image\",\"src\":\"idcards\\/U6Bd4GrFdTM4l6NsOwJuqZcLjbSRMLaegOPDmbVF.jpg\",\"css\":\"\"},\"qr\":{\"label\":\"Qr\",\"x\":77,\"y\":260,\"visible\":true,\"width\":99,\"height\":99,\"type\":\"image\",\"src\":\"https:\\/\\/api.qrserver.com\\/v1\\/create-qr-code\\/?size=200x200&data=MP-2026-0143\",\"css\":\"\"}},\"tabledata\":\"<table style=\\\"width: 100%; border-collapse: collapse; font-size: 11px; margin: 0px;\\\"><tbody><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Name<\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">Rahul Kumar<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Mobile<\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">3698521470<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Email<\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">admin@gmail.com<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\"><br><\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\"><br><\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\"><br><\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\"><br><\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\"><br><\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\"><br><\\/td><\\/tr><\\/tbody><\\/table>\",\"useval\":\"\",\"tablePosition\":{\"left\":66,\"top\":164,\"width\":150,\"height\":0}}', 'event-id-cards/3oWQ38id0iot0JsQMAeULPPYZU2hPNYsRogFe5XF.jpg', 0, 3, 1, '2026-09-24 06:49:00', '2026-09-24 06:49:00');
+(27, 39, 'Default ID Card', 125.00, 78.00, '{\"cardWidth\":294.80314960629926,\"cardHeight\":472.44094488188983,\"background\":\"\",\"fields\":{\"logo\":{\"label\":\"Logo\",\"x\":0,\"y\":8,\"visible\":true,\"width\":49,\"height\":60,\"type\":\"image\",\"src\":\"idcards\\/z7TyQXrplRBOF244jyajwv96AKoPxcKe94pCaH2q.png\",\"css\":\"\"},\"schoolName\":{\"label\":\"School Name\",\"x\":68,\"y\":18,\"visible\":true,\"text\":\"               New Mega Event\",\"fontSize\":18,\"color\":\"rgb(158, 27, 50)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":\"\"},\"address\":{\"label\":\"Address\",\"x\":34,\"y\":393,\"visible\":true,\"text\":\"123 Education Lane, Varanasi, UP - 221001\",\"fontSize\":11,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":\"\"},\"session\":{\"label\":\"Session\",\"x\":109,\"y\":235,\"visible\":true,\"text\":\"2026-2027\",\"fontSize\":12,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":\"\"},\"photo\":{\"label\":\"Photo\",\"x\":99,\"y\":54,\"visible\":true,\"width\":79,\"height\":102,\"borderRadius\":0,\"type\":\"image\",\"src\":\"idcards\\/U6Bd4GrFdTM4l6NsOwJuqZcLjbSRMLaegOPDmbVF.jpg\",\"css\":\"\"},\"qr\":{\"label\":\"Qr\",\"x\":89,\"y\":268,\"visible\":true,\"width\":99,\"height\":99,\"type\":\"image\",\"src\":\"https:\\/\\/api.qrserver.com\\/v1\\/create-qr-code\\/?size=200x200&data=MP-2026-0143\",\"css\":\"\"}},\"tabledata\":\"<table style=\\\"width: 100%; border-collapse: collapse; font-size: 11px; margin: 0px;\\\"><tbody><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Name<\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">Rahul Kumar<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Mobile<\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">3698521470<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\">Email<\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">admin@gmail.com<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\"><br><\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\"><br><\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\"><br><\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\"><br><\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top;\\\"><br><\\/td><td style=\\\"border: 0px solid rgb(203, 208, 214); padding: 4px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\"><br><\\/td><\\/tr><\\/tbody><\\/table>\",\"useval\":\"\",\"tablePosition\":{\"left\":72,\"top\":164,\"width\":150,\"height\":0}}', 'event-id-cards/Aisy9XnxsF5zfWoPl9OOki8aD8pgcG7UcoF3DdbK.jpg', 0, 3, 1, '2026-09-25 05:43:16', '2026-09-25 05:43:16'),
+(31, 39, 'Default ID Card', 130.00, 90.00, '{\"cardWidth\":340.15748031496065,\"cardHeight\":491.3385826771654,\"background\":\"\",\"fields\":{\"schoolName\":{\"label\":\"School Name\",\"x\":111,\"y\":6,\"visible\":true,\"text\":\"   New Event\",\"fontSize\":18,\"color\":\"rgb(158, 27, 50)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":\"\"},\"address\":{\"label\":\"Address\",\"x\":60,\"y\":462,\"visible\":true,\"text\":\"123 Education Lane, Varanasi, UP - 221001\",\"fontSize\":12,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":\"\"},\"session\":{\"label\":\"Session\",\"x\":126,\"y\":435,\"visible\":true,\"text\":\"2026-2027\",\"fontSize\":13,\"color\":\"rgb(31, 36, 48)\",\"fontWeight\":\"700\",\"type\":\"text\",\"css\":\"\"},\"photo\":{\"label\":\"Photo\",\"x\":96,\"y\":48,\"visible\":true,\"width\":150,\"height\":150,\"borderRadius\":0,\"type\":\"image\",\"src\":\"idcards\\/7L1A7VP9a8xB3sX7VThJSnAcQojYpO1C1D3d8Ohu.jpg\",\"css\":\"\"},\"qr\":{\"label\":\"Qr\",\"x\":108,\"y\":306,\"visible\":true,\"width\":110,\"height\":110,\"type\":\"image\",\"src\":\"https:\\/\\/api.qrserver.com\\/v1\\/create-qr-code\\/?size=200x200&data=MP-2026-0143\",\"css\":\"\"}},\"tabledata\":\"<table style=\\\"width: 100%; border-collapse: collapse; font-size: 12px; margin: 0px;\\\"><tbody><tr><td style=\\\"width: 34%; font-weight: 700; color: rgb(75, 85, 99); background: rgba(158, 27, 50, 0.08); border: 0px solid rgb(31, 36, 48); padding: 2px 0px 3px 41px; text-align: left; vertical-align: top;\\\">Name :<\\/td><td style=\\\"border: 0px solid rgb(31, 36, 48); padding: 2px 0px 3px 41px; text-align: left; vertical-align: top; font-weight: 700; background: rgba(158, 27, 50, 0.08);\\\">Rahul Kumar<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(31, 36, 48); padding: 2px 0px 3px 41px; text-align: left; vertical-align: top;\\\">Father :<\\/td><td style=\\\"border: 0px solid rgb(31, 36, 48); padding: 2px 0px 3px 41px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">Rajesh Kumar<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(31, 36, 48); padding: 2px 0px 3px 41px; text-align: left; vertical-align: top;\\\">Mobile :<\\/td><td style=\\\"border: 0px solid rgb(31, 36, 48); padding: 2px 0px 3px 41px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">9963257410<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(31, 36, 48); padding: 2px 0px 3px 41px; text-align: left; vertical-align: top;\\\">Organization:<\\/td><td style=\\\"border: 0px solid rgb(31, 36, 48); padding: 2px 0px 3px 41px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\">Test<\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(31, 36, 48); padding: 2px 0px 3px 41px; text-align: left; vertical-align: top;\\\"><br><\\/td><td style=\\\"border: 0px solid rgb(31, 36, 48); padding: 2px 0px 3px 41px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\"><br><\\/td><\\/tr><tr><td style=\\\"width: 34%; font-weight: 400; color: rgb(75, 85, 99); background: transparent; border: 0px solid rgb(31, 36, 48); padding: 2px 0px 3px 41px; text-align: left; vertical-align: top;\\\"><br><\\/td><td style=\\\"border: 0px solid rgb(31, 36, 48); padding: 2px 0px 3px 41px; text-align: left; vertical-align: top; font-weight: 400; background: transparent;\\\"><br><\\/td><\\/tr><\\/tbody><\\/table>\",\"useval\":\"\",\"tablePosition\":{\"left\":41,\"top\":216,\"width\":290,\"height\":0}}', NULL, 0, 4, 2, '2026-09-25 06:47:24', '2026-09-25 06:47:24');
 
 -- --------------------------------------------------------
 
@@ -178,7 +181,9 @@ CREATE TABLE `event_registrations` (
 --
 
 INSERT INTO `event_registrations` (`id`, `user_unique_code`, `event_id`, `name`, `email`, `mobile`, `photo`, `organization`, `ip_address`, `device_name`, `address`, `created_at`, `updated_at`, `event_code`, `is_deleted`) VALUES
-(1, 'KqZ4lMbauEDrUvP7Iu76OTmwl36AbpjnJTZYz6kS4MyZPcGh2ju6pXIAE7Jm', 3, 'First User', 'superadmin@gmail.com', '3698521474', 'event-registrations/1789985480_arihvZkNs9FylBqKTtiy.jpg', 'Test', '49.36.209.28', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/30.0 Chrome/143.0.0.0 Mobile Safari/537.36', 'Test', '2026-09-21 10:11:20', '2026-09-24 06:50:06', 'W6kue4RiiOjBB3S9j4j9c8Rn4tOf5wYEfDpVDFIFvQC8ASzA95obJtW2byr0', 0);
+(1, 'KqZ4lMbauEDrUvP7Iu76OTmwl36AbpjnJTZYz6kS4MyZPcGh2ju6pXIAE7Jm', 4, 'First User', 'superadmin@gmail.com', '3698521474', 'event-registrations/1789985480_arihvZkNs9FylBqKTtiy.jpg', 'Test', '49.36.209.28', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/30.0 Chrome/143.0.0.0 Mobile Safari/537.36', 'Test', '2026-09-21 10:11:20', '2026-09-24 06:50:06', 'W6kue4RiiOjBB3S9j4j9c8Rn4tOf5wYEfDpVDFIFvQC8ASzA95obJtW2byr0', 0),
+(2, 'gz88Cpow1PcDlyjropY2GbBIG8wVvcsifARycThg3bqz4sJSn3Ginmr7L2LA', 3, 'Test', 'superadmin@gmail.com', '896325417', 'event-registrations/1790246340_lmvoAsJthnpiv6MRF3TE.jpg', 'Test', '49.36.209.28', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/30.0 Chrome/143.0.0.0 Mobile Safari/537.36', 'This is test address', '2026-09-24 10:39:00', '2026-09-24 10:39:00', 'C3mPMh1GdJPGZuBHQnPyqrykusmzah4VM9ss0OyDr4RHn9wHOMb1zyN6Xvn9', 0),
+(3, '8UaYGZLnzG47S5CkRQtlaQGoYz1gZLYbqPYozqpE7A5CQJUGkjQGD9TfzK3E', 3, 'This', 'this@gmail.com', '8741258933', 'event-registrations/1790246888_Q2udnV2L54K4AlXr8J88.jpg', 'Test', '49.36.209.28', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/30.0 Chrome/143.0.0.0 Mobile Safari/537.36', 'This is done', '2026-09-24 10:48:08', '2026-09-24 10:48:08', 'C3mPMh1GdJPGZuBHQnPyqrykusmzah4VM9ss0OyDr4RHn9wHOMb1zyN6Xvn9', 0);
 
 -- --------------------------------------------------------
 
@@ -365,10 +370,12 @@ CREATE TABLE `paper_size` (
 --
 
 INSERT INTO `paper_size` (`id`, `size`, `length`, `width`, `created_at`, `updated_at`) VALUES
-(1, 'A4', NULL, NULL, '2026-09-15 09:35:10', '2026-09-15 09:35:10'),
-(2, 'A3', NULL, NULL, '2026-09-15 09:35:10', '2026-09-15 09:35:10'),
-(3, 'A6', NULL, NULL, '2026-09-15 09:35:21', '2026-09-15 09:35:21'),
-(4, 'A5', NULL, NULL, '2026-09-15 09:35:21', '2026-09-15 09:35:21');
+(1, 'A4', '297', '210', '2026-09-25 09:53:44', '2026-09-25 09:53:44'),
+(2, 'A1', '841', '594', '2026-09-25 09:53:44', '2026-09-25 09:53:44'),
+(3, 'A2', '594', '420', '2026-09-25 09:53:44', '2026-09-25 09:53:44'),
+(4, 'A3', '420', '297', '2026-09-25 09:53:44', '2026-09-25 09:53:44'),
+(5, 'A5', '210', '148', '2026-09-25 09:53:44', '2026-09-25 09:53:44'),
+(6, 'A6', '148', '105', '2026-09-25 09:53:44', '2026-09-25 09:53:44');
 
 -- --------------------------------------------------------
 
@@ -528,9 +535,11 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('CUCM9gLj49oJuUnN1dfW1qYq2w4jHq9SvNqpjkPX', 39, '106.219.86.108', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo4OntzOjY6Il90b2tlbiI7czo0MDoiaGV4UG5seEdPako0MVlpckJkbVI1em9QajhxOXh0SzNDMFJBWjhkYyI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo0NjoiaHR0cHM6Ly9kZXYuaW5mb3Rhc2tzLmNvbS9lZGl0LWV2ZW50LWlkLWNhcmQvMSI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjM1OiJodHRwczovL2Rldi5pbmZvdGFza3MuY29tL2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czo5OiJkYXNoYm9hcmQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozOTtzOjc6InVzZXJfaWQiO2k6Mzk7czo0OiJyb2xlIjtzOjY6InZlbmRvciI7czo5OiJzY2hvb2xfaWQiO047fQ==', 1790235603),
-('m0wnvdJOoee3b6rTtJTb48PV4rDAH3Fg7s9SiTm3', NULL, '49.36.209.28', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/30.0 Chrome/143.0.0.0 Mobile Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiWVJiQlpTeWZBdHJFUENBUk9MR3hHU21IUXFUbWhWSWNMelJLa3FaMiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MTA5OiJodHRwczovL2Rldi5pbmZvdGFza3MuY29tL3Nob3dSZWdpc3RlclVzZXJtb2JpbGUvS3FaNGxNYmF1RURyVXZQN0l1NzZPVG13bDM2QWJwam5KVFpZejZrUzRNeVpQY0doMmp1NnBYSUFFN0ptIjtzOjU6InJvdXRlIjtzOjI1OiJzaG93LnJlZ2lzdGVyLnVzZXIubW9iaWxlIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1790235036),
-('VfrvmRuFmUPf4P9DvrCnTDmQgdS6xiaxyFNQA9Mf', 34, '106.219.86.108', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo5OntzOjY6Il90b2tlbiI7czo0MDoibkZ5NUNoWE9wdUx6dXB4cVY0ZHVzY2pBRUt0YjRPMU5Yc1AydGk4SiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTM6Imh0dHBzOi8vZGV2LmluZm90YXNrcy5jb20vbWFuYWdlLWV2ZW50cy9wZW9wbGUvMS9lZGl0IjtzOjU6InJvdXRlIjtzOjI1OiJtYW5hZ2UtZXZlbnRzLnBlb3BsZS5lZGl0Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czozNToiaHR0cHM6Ly9kZXYuaW5mb3Rhc2tzLmNvbS9kYXNoYm9hcmQiO31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozNDtzOjc6InVzZXJfaWQiO2k6MzQ7czo0OiJyb2xlIjtzOjEwOiJzdXBlcmFkbWluIjtzOjk6InNjaG9vbF9pZCI7TjtzOjE0OiJ2ZW5kb3Jfdmlld2luZyI7czoyOiIzOSI7fQ==', 1790236301);
+('FBsMayOv8IhKhqwRbZa4GKaLDcJiEAhg02rnA3bC', NULL, '49.36.209.28', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/30.0 Chrome/143.0.0.0 Mobile Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiNTk4OUJtMWxORnZRSVF0U2x4dWdpSHNUOVdSN25rekNxVjNHZ3BPbyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MTEzOiJodHRwczovL2Rldi5pbmZvdGFza3MuY29tL3Nob3dSZWdpc3RlclVzZXJtb2JpbGVDYXJkL0txWjRsTWJhdUVEclV2UDdJdTc2T1Rtd2wzNkFicGpuSlRaWXo2a1M0TXlaUGNHaDJqdTZwWElBRTdKbSI7czo1OiJyb3V0ZSI7czozMDoic2hvdy5yZWdpc3Rlci51c2VyLm1vYmlsZS5jYXJkIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1790325670),
+('mCYuwrhTr749quE3WHmyRuBwRdzp5RFNw2GtJfLv', 34, '49.43.1.205', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo5OntzOjY6Il90b2tlbiI7czo0MDoiaFljR2xEOGFqcjZGSmdQNm4wSGdiNnR3RUtPemZRS0l1ZzgzaGlHTiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDc6Imh0dHBzOi8vZGV2LmluZm90YXNrcy5jb20vaWRjYXJkL3ByaW50LWZpbHRlcmVkIjtzOjU6InJvdXRlIjtzOjIxOiJpZGNhcmQucHJpbnQtZmlsdGVyZWQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQ3OiJodHRwczovL2Rldi5pbmZvdGFza3MuY29tL2V2ZW50LWlkLWNhcmRzL2NyZWF0ZSI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjM0O3M6NzoidXNlcl9pZCI7aTozNDtzOjQ6InJvbGUiO3M6MTA6InN1cGVyYWRtaW4iO3M6OToic2Nob29sX2lkIjtOO3M6MTQ6InZpZXdpbmdfc2Nob29sIjtpOjE7fQ==', 1790331423),
+('SzigPYDmBKueFSY6PiGgnMzcPNvi0lcuyZDYMXks', NULL, '198.235.24.133', 'Hello from Palo Alto Networks, find out more about our scans in https://docs-cortex.paloaltonetworks.com/r/1/Cortex-Xpanse/Scanning-activity', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiU2d1YTEyN0I2ZlBUZUhWRU80ZWlvcFVmcW1nM3E0Y1V5VDVRYmdKSiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjQ6Imh0dHA6Ly9kZXYuaW5mb3Rhc2tzLmNvbSI7czo1OiJyb3V0ZSI7czo1OiJsb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1790331054),
+('tniOgSaXLnUYiq8UxNYnfJu0qa7Yxuk8rYSqoaHR', 39, '49.43.1.205', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo3OntzOjY6Il90b2tlbiI7czo0MDoiZ3hwUlNFZlZZb2kxdHJmNkNsSlpyME93OFBWZDZPSHBaMXVoMTI3SSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MTIyOiJodHRwczovL2Rldi5pbmZvdGFza3MuY29tL2V2ZW50L2lkY2FyZC9jcmVhdGU/Y2FyZHBlcnBhZ2U9MSZjdXN0b21faGVpZ2h0PSZjdXN0b21fd2lkdGg9JmlkPTMmcGFwZXJfc2l6ZT1BNCZwcmludF90eXBlPWFsbCI7czo1OiJyb3V0ZSI7czoxOToiZXZlbnQuaWRjYXJkLmNyZWF0ZSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjM5O3M6NzoidXNlcl9pZCI7aTozOTtzOjQ6InJvbGUiO3M6NjoidmVuZG9yIjtzOjk6InNjaG9vbF9pZCI7Tjt9', 1790331052),
+('zja01OvXd9ARV4BbaqDNbsmAJjIpYU50tkTHEeOo', NULL, '49.36.209.28', 'WhatsApp/2.23.20.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiWU9ldG4yUjBPcHFNZ0tINTNUTWo2Ujh2dmQ1enNvQk05MFAyRnVGTyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MTEzOiJodHRwczovL2Rldi5pbmZvdGFza3MuY29tL3Nob3dSZWdpc3RlclVzZXJtb2JpbGVDYXJkL0txWjRsTWJhdUVEclV2UDdJdTc2T1Rtd2wzNkFicGpuSlRaWXo2a1M0TXlaUGNHaDJqdTZwWElBRTdKbSI7czo1OiJyb3V0ZSI7czozMDoic2hvdy5yZWdpc3Rlci51c2VyLm1vYmlsZS5jYXJkIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1790325171);
 
 -- --------------------------------------------------------
 
@@ -9297,19 +9306,19 @@ ALTER TABLE `event_custom_fields`
 -- AUTO_INCREMENT for table `event_id_cards`
 --
 ALTER TABLE `event_id_cards`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `event_i_d_card_layouts`
 --
 ALTER TABLE `event_i_d_card_layouts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `event_registrations`
 --
 ALTER TABLE `event_registrations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `event_registration_field_values`
@@ -9351,7 +9360,7 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `paper_size`
 --
 ALTER TABLE `paper_size`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `permissions`

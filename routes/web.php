@@ -43,6 +43,9 @@ Route::get('/events/home', [ManageEventController::class, 'home'])
 
 Route::get('/showRegisterUsermobile/{id}', [ManageEventController::class, 'showRegisterUserMobile'])
     ->name('show.register.user.mobile');
+
+Route::get('/showRegisterUsermobileCard/{id}', [ManageEventController::class, 'showRegisterUserMobileCard'])
+    ->name('show.register.user.mobile.card');
 /// event public route end//////////////
 
 Route::get('/', function () {
@@ -241,5 +244,8 @@ Route::middleware('auth')->group(function () {
     '/manage-events/{event}/printidcard',
     [ManageEventController::class, 'printidcard']
     )->name('manage-event.print.idcard');
+
+    Route::get('/event/idcard/create', [ManageEventController::class, 'printFilteredIdCards'])
+    ->name('event.idcard.create');
     
 });

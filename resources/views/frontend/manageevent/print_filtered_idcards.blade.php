@@ -6,7 +6,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>{{ $evenidcard->name ?? 'Event ID Cards' }}</title>
+    <title>{{ @$evenidcard->name ?? 'Event ID Cards' }}</title>
 
     <style>
         * {
@@ -20,81 +20,51 @@
             background: #eee;
             font-family: Arial, Helvetica, sans-serif;
         }
-
-        /* =========================
-           PRINT SETTINGS
-        ========================== */
-
         @page {
-            size: {{ $evenidcard->paper_size ?? 'A4' }};
+            size: {{ @$paper_size ?? 'A4' }};
             margin: 0;
         }
+
+        /*.print-container {
+            width: 100%;
+            margin: 0 auto;
+        }*/
 
         .print-container {
             width: 100%;
             margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-
-        /* =========================
-           PAPER
-        ========================== */
-
-        /*.paper {
-            position: relative;
-
-            @if(strtoupper($evenidcard->paper_size ?? 'A4') === 'A4')
-                width: 210mm;
-                min-height: 297mm;
-            @elseif(strtoupper($evenidcard->paper_size ?? '') === 'A5')
-                width: 148mm;
-                min-height: 210mm;
-            @elseif(strtoupper($evenidcard->paper_size ?? '') === 'LETTER')
-                width: 215.9mm;
-                min-height: 279.4mm;
-            @else
-                width: 210mm;
-                min-height: 297mm;
-            @endif
-
-            margin: 0 auto;
-            padding: 10mm;
-
-            display: grid;
-
-           
-            @if((int)($evenidcard->cardperpage ?? 1) === 1)
-                grid-template-columns: 1fr;
-            @elseif((int)($evenidcard->cardperpage ?? 1) === 2)
-                grid-template-columns: repeat(2, 1fr);
-            @elseif((int)($evenidcard->cardperpage ?? 1) === 3)
-                grid-template-columns: repeat(3, 1fr);
-            @elseif((int)($evenidcard->cardperpage ?? 1) === 4)
-                grid-template-columns: repeat(2, 1fr);
-            @elseif((int)($evenidcard->cardperpage ?? 1) === 5)
-                grid-template-columns: repeat(2, 1fr);
-            @elseif((int)($evenidcard->cardperpage ?? 1) === 6)
-                grid-template-columns: repeat(3, 1fr);
-            @elseif((int)($evenidcard->cardperpage ?? 1) === 8)
-                grid-template-columns: repeat(4, 1fr);
-            @elseif((int)($evenidcard->cardperpage ?? 1) === 9)
-                grid-template-columns: repeat(3, 1fr);
-            @elseif((int)($evenidcard->cardperpage ?? 1) === 10)
-                grid-template-columns: repeat(5, 1fr);
-            @else
-                grid-template-columns: repeat(2, 1fr);
-            @endif
-
-            gap: 8mm;
-
-            align-content: start;
-        }*/
 
         .paper {
             position: relative;
-            margin: 0 auto;
+            margin: 20px auto;
             padding: 10mm;
             display: grid;
-            @switch(strtoupper($evenidcard->paper_size ?? 'A4'))
+            @php
+                $customWidth = request('custom_width');
+                $customHeight = request('custom_height');
+            @endphp
+
+            @if(!empty($customWidth) && !empty($customHeight))
+
+                width: {{ $customWidth }}mm;
+                min-height: {{ $customHeight }}mm;
+
+            @else
+            @switch(strtoupper(@$paper_size ?? 'A4'))
+
+                @case('A1')
+                    width: 594mm;
+                    min-height: 841mm;
+                    @break
+
+                @case('A2')
+                    width: 420mm;
+                    min-height: 594mm;
+                    @break
 
                 @case('A3')
                     width: 297mm;
@@ -120,8 +90,9 @@
                     width: 210mm;
                     min-height: 297mm;
             @endswitch
+            @endif
             @php
-                $perPage = (int) ($evenidcard->cardperpage ?? 1);
+                $perPage = (int) (@$cardperpage ?? 1);
                 $columns = match ($perPage) {
                     1 => 1,
                     2 => 2,
@@ -150,8 +121,8 @@
         .id-card {
             position: relative;
 
-            width: {{ $evenidcard->width }}mm;
-            height: {{ $evenidcard->height }}mm;
+            width: {{ @$evenidcard->width }}mm;
+            height: {{ @$evenidcard->height }}mm;
 
             overflow: hidden;
 
@@ -233,7 +204,7 @@
            SCREEN TOOLBAR
         ========================== */
 
-        .toolbar {
+       .toolbar {
             position: sticky;
             top: 0;
             z-index: 9999;
@@ -241,7 +212,17 @@
             padding: 12px;
             background: #222;
 
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        #printSettingsForm {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
         }
 
         .toolbar button {
@@ -253,6 +234,41 @@
 
             cursor: pointer;
 
+            font-size: 14px;
+        }
+
+        .card-control {
+            height: 38px;
+            min-width: 120px;
+
+            padding: 6px 10px;
+
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+
+            background: #fff;
+            color: #333;
+
+            font-size: 14px;
+            outline: none;
+        }
+
+        #cardperpage {
+            width: 120px;
+        }
+
+        .apply-btn {
+            height: 38px;
+
+            padding: 0 15px;
+
+            border: 0;
+            border-radius: 5px;
+
+            background: #28a745;
+            color: #fff;
+
+            cursor: pointer;
             font-size: 14px;
         }
 
@@ -317,447 +333,617 @@
                 box-shadow: 0 0 10px rgba(0,0,0,.2);
             }
         }
+
+        .card-control {
+            height: 38px;
+            min-width: 130px;
+            padding: 6px 10px;
+
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+
+            background: #fff;
+            color: #333;
+
+            font-size: 14px;
+            outline: none;
+        }
+
+        .card-control:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+        }
+
+        select.card-control {
+            cursor: pointer;
+        }
+
+        input.card-control {
+            width: 130px;
+        }
+
+
     </style>
 </head>
 
 <body>
 
+{{--<div class="toolbar">
+    @if($layout)
+        <button type="button"
+                class="print-btn"
+                onclick="window.print()">
+            🖨 Print ID Cards
+        </button>
+        <form action="{{ route('event.idcard.create') }}"
+              method="GET"
+              id="printSettingsForm">
+            <input type="hidden"
+                   name="id"
+                   value="{{ $event->id }}">
+            <input type="hidden"
+                   name="print_type"
+                   value="{{ request('print_type', 'all') }}">
+            @foreach(request('selected_users', []) as $userId)
+                <input type="hidden"
+                       name="selected_users[]"
+                       value="{{ $userId }}">
+            @endforeach
+            <select name="paper_size"
+                    id="papersize"
+                    class="card-control"
+                    onchange="this.form.submit()">
+                @foreach($papers as $paper)
+                    <option value="{{ $paper->size }}"
+                        {{ $paper_size == $paper->size ? 'selected' : '' }}>
+                        {{ $paper->size }}
+                    </option>
+                @endforeach
+            </select>
+            <input type="number"
+                   name="cardperpage"
+                   id="cardperpage"
+                   class="card-control"
+                   value="{{ $cardperpage }}"
+                   min="1"
+                   step="1"
+                   placeholder="Card Per Page"
+                   onchange="this.form.submit()">
+
+        </form>
+        <button type="button"
+                class="close-btn"
+                onclick="window.close()">
+            ✕ Close
+        </button>
+    @endif
+</div>--}}
+
 <div class="toolbar">
 
-    <button class="print-btn" onclick="window.print()">
-        🖨 Print ID Cards
-    </button>
+    @if($layout)
 
-    <button class="close-btn" onclick="window.close()">
-        ✕ Close
-    </button>
+        <button type="button"
+                class="print-btn"
+                onclick="window.print()">
+            🖨 Print ID Cards
+        </button>
+
+        <form action="{{ route('event.idcard.create') }}"
+              method="GET"
+              id="printSettingsForm">
+
+            <input type="hidden"
+                   name="id"
+                   value="{{ $event->id }}">
+
+            <input type="hidden"
+                   name="print_type"
+                   value="{{ request('print_type', 'all') }}">
+
+            @foreach(request('selected_users', []) as $userId)
+                <input type="hidden"
+                       name="selected_users[]"
+                       value="{{ $userId }}">
+            @endforeach
+
+
+            {{-- Paper Size --}}
+            <select name="paper_size"
+                    class="card-control"
+                    onchange="this.form.submit()">
+
+                @foreach($papers as $paper)
+                    <option value="{{ $paper->size }}"
+                        {{ $paper_size == $paper->size ? 'selected' : '' }}>
+                        {{ $paper->size }}
+                    </option>
+                @endforeach
+
+            </select>
+
+            <input type="number"
+                   name="cardperpage"
+                   class="card-control"
+                   value="{{ $cardperpage }}"
+                   min="1"
+                   step="1"
+                   placeholder="Cards" onchange="this.form.submit()">
+
+
+            {{-- Custom Width --}}
+            <input type="number"
+                   name="custom_width"
+                   class="card-control custom-size"
+                   value="{{ request('custom_width') }}"
+                   min="1"
+                   step="1"
+                   placeholder="Width">
+
+
+            {{-- Custom Height --}}
+            <input type="number"
+                   name="custom_height"
+                   class="card-control custom-size"
+                   value="{{ request('custom_height') }}"
+                   min="1"
+                   step="1"
+                   placeholder="Height">
+
+
+           <!--  <button type="submit"
+                    class="apply-btn">
+                Apply
+            </button> -->
+
+        </form>
+
+
+        <button type="button"
+                class="close-btn"
+                onclick="window.close()">
+            ✕ Close
+        </button>
+
+    @endif
 
 </div>
 
 @php
-
-    /*
-    |--------------------------------------------------------------------------
-    | Layout
-    |--------------------------------------------------------------------------
-    */
-
-    $cardLayout = $layout->layout;
-
+    /*$cardLayout = $layout->layout;
     if (is_string($cardLayout)) {
         $cardLayout = json_decode($cardLayout, true);
     }
-
     $fields = $cardLayout['fields'] ?? [];
-
     $tablePosition = $cardLayout['tablePosition'] ?? null;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Card Per Page
-    |--------------------------------------------------------------------------
-    */
-
     $cardPerPage = max(
         1,
-        (int)($evenidcard->cardperpage ?? 1)
+        (int)($cardperpage ?? 1)
     );
-
-    /*
-    |--------------------------------------------------------------------------
-    | Split users into pages
-    |--------------------------------------------------------------------------
-    */
-
-    $userPages = $alluser->chunk($cardPerPage);
-
+    $userPages = $alluser->chunk($cardPerPage);*/
 @endphp
 
+@if(!$layout)
+   <div style="
+        width: 100%;
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        ">
+    <div style="
+        width: 100%;
+        max-width: 500px;
+        padding: 40px 25px;
+    ">
+        <div class="mb-3">
+            <i class="fas fa-id-card text-danger"
+               style="font-size: 70px;"></i>
+        </div>
 
-<div class="print-container">
+        <h3 class="mb-3">
+            Card Layout Not Found
+        </h3>
 
-@foreach($userPages as $users)
+        <p class="text-muted mb-4">
+            Please create a card layout before printing ID cards.
+        </p>
 
-    <div class="paper">
+        <button type="button"
+                class="btn btn-primary"
+                onclick="window.close()">
 
-        @foreach($users as $user)
+            <i class="fas fa-arrow-left mr-1"></i>
+            Go Back
 
-            @php
+        </button>
 
-                /*
-                |--------------------------------------------------------------------------
-                | Photo
-                |--------------------------------------------------------------------------
-                */
+    </div>
 
-                $photoUrl = '';
+</div>
+@else
+    @php
+        $cardLayout = $layout->layout;
+        if (is_string($cardLayout)) {
+            $cardLayout = json_decode($cardLayout, true);
+        }
+        $cardLayout = is_array($cardLayout)
+            ? $cardLayout
+            : [];
+        $fields = $cardLayout['fields'] ?? [];
+        $tablePosition = $cardLayout['tablePosition'] ?? null;
+        $cardPerPage = max(
+            1,
+            (int)($cardperpage ?? 1)
+        );
+        $userPages = $alluser->chunk($cardPerPage);
+    @endphp
+    <div class="print-container">
+        @foreach($userPages as $users)
 
-                if (!empty($user->photo)) {
-                    $photoUrl = asset('storage/' . $user->photo);
-                }
+            <div class="paper">
 
-                /*
-                |--------------------------------------------------------------------------
-                | QR
-                |--------------------------------------------------------------------------
-                */
-
-                $qrData = $user->user_unique_code;
-
-                $qrUrl =
-                    'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='
-                    . urlencode($qrData);
-
-            @endphp
-
-
-            <div class="id-card">
-
-                {{-- ==========================================
-                     BACKGROUND
-                =========================================== --}}
-
-                @foreach($fields as $fieldKey => $field)
+                @foreach($users as $user)
 
                     @php
 
-                        $visible = $field['visible'] ?? true;
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Photo
+                        |--------------------------------------------------------------------------
+                        */
 
-                        if (!$visible) {
-                            continue;
+                        $photoUrl = '';
+
+                        if (!empty($user->photo)) {
+                            $photoUrl = asset('storage/' . $user->photo);
                         }
 
-                        $type = $field['type'] ?? 'text';
-
-                        $x = (float)($field['x'] ?? 0);
-                        $y = (float)($field['y'] ?? 0);
-
-                        $width = (float)($field['width'] ?? 100);
-                        $height = (float)($field['height'] ?? 30);
-
                         /*
                         |--------------------------------------------------------------------------
-                        | Stored layout uses pixels.
-                        | Convert based on original card dimensions.
+                        | QR
                         |--------------------------------------------------------------------------
                         */
 
-                        $layoutWidth =
-                            (float)($cardLayout['cardWidth'] ?? 294.803);
+                        //$qrData = $user->user_unique_code;
 
-                        $layoutHeight =
-                            (float)($cardLayout['cardHeight'] ?? 472.44);
+                        //$qrUrl ='https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='. urlencode($qrData);
 
-                        $cardWidth =
-                            (float)$evenidcard->width;
-
-                        $cardHeight =
-                            (float)$evenidcard->height;
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | Convert PX to percentage.
-                        |--------------------------------------------------------------------------
-                        */
-
-                        $leftPercent =
-                            ($x / $layoutWidth) * 100;
-
-                        $topPercent =
-                            ($y / $layoutHeight) * 100;
-
-                        $widthPercent =
-                            ($width / $layoutWidth) * 100;
-
-                        $heightPercent =
-                            ($height / $layoutHeight) * 100;
+                        $qrValue = $user->user_unique_code ?? null; $qrLink = $qrValue ? route('show.register.user.mobile', [ 'id' => $qrValue ]) : null; $qrUrl = $qrLink ? 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($qrLink) : null;
 
                     @endphp
 
 
-                    {{-- ==========================================
-                         LOGO
-                    =========================================== --}}
+                    <div class="id-card">
 
-                    @if($fieldKey === 'logo' && !empty($field['src']))
+                        {{-- ==========================================
+                             BACKGROUND
+                        =========================================== --}}
 
-                        <div
-                            class="layout-element"
-                            style="
-                                left: {{ $leftPercent }}%;
-                                top: {{ $topPercent }}%;
-                                width: {{ $widthPercent }}%;
-                                height: {{ $heightPercent }}%;
-                            "
-                        >
+                        @foreach($fields as $fieldKey => $field)
 
-                            <img
-                                src="{{ asset('storage/' . $field['src']) }}"
-                                class="layout-image"
-                                style="
-                                    width:100%;
-                                    height:100%;
-                                    object-fit:contain;
-                                    {{ $field['css'] ?? '' }}
-                                "
-                            >
+                            @php
 
-                        </div>
+                                $visible = $field['visible'] ?? true;
 
-                    {{-- ==========================================
-                         USER PHOTO
-                    =========================================== --}}
+                                if (!$visible) {
+                                    continue;
+                                }
 
-                    @elseif($fieldKey === 'photo')
+                                $type = $field['type'] ?? 'text';
 
-                        @if($photoUrl)
+                                $x = (float)($field['x'] ?? 0);
+                                $y = (float)($field['y'] ?? 0);
+
+                                $width = (float)($field['width'] ?? 100);
+                                $height = (float)($field['height'] ?? 30);
+
+                                /*
+                                |--------------------------------------------------------------------------
+                                | Stored layout uses pixels.
+                                | Convert based on original card dimensions.
+                                |--------------------------------------------------------------------------
+                                */
+
+                                $layoutWidth =
+                                    (float)($cardLayout['cardWidth'] ?? 294.803);
+
+                                $layoutHeight =
+                                    (float)($cardLayout['cardHeight'] ?? 472.44);
+
+                                $cardWidth =
+                                    (float)$evenidcard->width;
+
+                                $cardHeight =
+                                    (float)$evenidcard->height;
+
+                                /*
+                                |--------------------------------------------------------------------------
+                                | Convert PX to percentage.
+                                |--------------------------------------------------------------------------
+                                */
+
+                                $leftPercent =
+                                    ($x / $layoutWidth) * 100;
+
+                                $topPercent =
+                                    ($y / $layoutHeight) * 100;
+
+                                $widthPercent =
+                                    ($width / $layoutWidth) * 100;
+
+                                $heightPercent =
+                                    ($height / $layoutHeight) * 100;
+
+                            @endphp
+
+
+                            {{-- ==========================================
+                                 LOGO
+                            =========================================== --}}
+
+                            @if($fieldKey === 'logo' && !empty($field['src']))
+
+                                <div
+                                    class="layout-element"
+                                    style="
+                                        left: {{ $leftPercent }}%;
+                                        top: {{ $topPercent }}%;
+                                        width: {{ $widthPercent }}%;
+                                        height: {{ $heightPercent }}%;
+                                    "
+                                >
+
+                                    <img
+                                        src="{{ asset('storage/' . $field['src']) }}"
+                                        class="layout-image"
+                                        style="
+                                            width:100%;
+                                            height:100%;
+                                            object-fit:contain;
+                                            {{ $field['css'] ?? '' }}
+                                        "
+                                    >
+
+                                </div>
+
+                            {{-- ==========================================
+                                 USER PHOTO
+                            =========================================== --}}
+
+                            @elseif($fieldKey === 'photo')
+
+                                @if($photoUrl)
+
+                                    <div
+                                        class="layout-element"
+                                        style="
+                                            left: {{ $leftPercent }}%;
+                                            top: {{ $topPercent }}%;
+                                            width: {{ $widthPercent }}%;
+                                            height: {{ $heightPercent }}%;
+
+                                            border-radius: {{ $field['borderRadius'] ?? 0 }}px;
+                                            overflow:hidden;
+                                        "
+                                    >
+
+                                        <img
+                                            src="{{ $photoUrl }}"
+                                            class="user-photo"
+                                            style="
+                                                border-radius: {{ $field['borderRadius'] ?? 0 }}px;
+                                                {{ $field['css'] ?? '' }}
+                                            "
+                                        >
+
+                                    </div>
+
+                                @endif
+
+
+                            {{-- ==========================================
+                                 QR CODE
+                            =========================================== --}}
+
+                            @elseif($fieldKey === 'qr')
+
+                                <div
+                                    class="layout-element"
+                                    style="
+                                        left: {{ $leftPercent }}%;
+                                        top: {{ $topPercent }}%;
+                                        width: {{ $widthPercent }}%;
+                                        height: {{ $heightPercent }}%;
+                                    "
+                                >
+
+                                    <img
+                                        src="{{ $qrUrl }}"
+                                        class="qr-image"
+                                        alt="QR Code"
+                                        style="{{ $field['css'] ?? '' }}"
+                                    >
+
+                                </div>
+
+
+                            {{-- ==========================================
+                                 TEXT FIELDS
+                            =========================================== --}}
+
+                            @elseif($type === 'text')
+
+                                @php
+
+                                    $text = $field['text'] ?? '';
+
+                                    /*
+                                    |--------------------------------------------------------------------------
+                                    | Replace known values with registration data
+                                    |--------------------------------------------------------------------------
+                                    */
+
+                                    switch ($fieldKey) {
+
+                                        case 'name':
+                                            $text = $user->name;
+                                            break;
+
+                                        case 'email':
+                                            $text = $user->email;
+                                            break;
+
+                                        case 'mobile':
+                                            $text = $user->mobile;
+                                            break;
+
+                                        case 'organization':
+                                            $text = $user->organization;
+                                            break;
+
+                                        case 'address':
+                                            //$text = $user->address;
+                                            break;
+
+                                        case 'user_unique_code':
+                                            $text = $user->user_unique_code;
+                                            break;
+
+                                    }
+
+                                    /*
+                                    |--------------------------------------------------------------------------
+                                    | Replace placeholders too
+                                    |--------------------------------------------------------------------------
+                                    */
+
+                                    $text = str_replace(
+                                        [
+                                            '{{name}}',
+                                            '{{email}}',
+                                            '{{mobile}}',
+                                            '{{organization}}',
+                                            '{{address}}',
+                                            '{{user_unique_code}}'
+                                        ],
+                                        [
+                                            $user->name,
+                                            $user->email,
+                                            $user->mobile,
+                                            $user->organization,
+                                            $user->address,
+                                            $user->user_unique_code
+                                        ],
+                                        $text
+                                    );
+
+                                @endphp
+
+
+                                <div
+                                    class="layout-element layout-text"
+                                    style="
+                                        left: {{ $leftPercent }}%;
+                                        top: {{ $topPercent }}%;
+                                        width: {{ $widthPercent }}%;
+                                        height: {{ $heightPercent }}%;
+
+                                        font-size: {{ $field['fontSize'] ?? 12 }}px;
+
+                                        color: {{ $field['color'] ?? '#000' }};
+
+                                        font-weight: {{ $field['fontWeight'] ?? '400' }};
+
+                                        text-align: {{ $field['textAlign'] ?? 'left' }};
+
+                                        {{ $field['css'] ?? '' }}
+                                    "
+                                >
+                                    {{ $text }}
+                                </div>
+
+                            @endif
+
+                        @endforeach
+
+
+                        {{-- ==========================================
+                             TABLE DATA
+                        =========================================== --}}
+
+                        @if($tablePosition)
+
+                            @php
+
+                                $tableLeft =
+                                    ((float)($tablePosition['left'] ?? 0)
+                                    / (float)($cardLayout['cardWidth'] ?? 294.803))
+                                    * 100;
+
+                                $tableTop =
+                                    ((float)($tablePosition['top'] ?? 0)
+                                    / (float)($cardLayout['cardHeight'] ?? 472.44))
+                                    * 100;
+
+                                $tableWidth =
+                                    ((float)($tablePosition['width'] ?? 150)
+                                    / (float)($cardLayout['cardWidth'] ?? 294.803))
+                                    * 100;
+
+                            @endphp
 
                             <div
                                 class="layout-element"
                                 style="
-                                    left: {{ $leftPercent }}%;
-                                    top: {{ $topPercent }}%;
-                                    width: {{ $widthPercent }}%;
-                                    height: {{ $heightPercent }}%;
-
-                                    border-radius: {{ $field['borderRadius'] ?? 0 }}px;
-                                    overflow:hidden;
+                                    left: {{ $tableLeft }}%;
+                                    top: {{ $tableTop }}%;
+                                    width: {{ $tableWidth }}%;
                                 "
                             >
 
-                                <img
-                                    src="{{ $photoUrl }}"
-                                    class="user-photo"
-                                    style="
-                                        border-radius: {{ $field['borderRadius'] ?? 0 }}px;
-                                        {{ $field['css'] ?? '' }}
-                                    "
-                                >
+                                <table class="user-table">
+
+                                    <tr>
+                                        <td><strong>Name</strong></td>
+                                        <td>{{ $user->name }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><strong>Mobile</strong></td>
+                                        <td>{{ $user->mobile }}</td>
+                                    </tr>
+
+                                    @if(!empty($user->email))
+                                        <tr>
+                                            <td><strong>Email</strong></td>
+                                            <td>{{ $user->email }}</td>
+                                        </tr>
+                                    @endif
+
+                                    @if(!empty($user->organization))
+                                        <tr>
+                                            <td><strong>Organization</strong></td>
+                                            <td>{{ $user->organization }}</td>
+                                        </tr>
+                                    @endif
+
+                                </table>
 
                             </div>
 
                         @endif
 
-
-                    {{-- ==========================================
-                         QR CODE
-                    =========================================== --}}
-
-                    @elseif($fieldKey === 'qr')
-
-                        <div
-                            class="layout-element"
-                            style="
-                                left: {{ $leftPercent }}%;
-                                top: {{ $topPercent }}%;
-                                width: {{ $widthPercent }}%;
-                                height: {{ $heightPercent }}%;
-                            "
-                        >
-
-                            <img
-                                src="{{ $qrUrl }}"
-                                class="qr-image"
-                                alt="QR Code"
-                                style="{{ $field['css'] ?? '' }}"
-                            >
-
-                        </div>
-
-
-                    {{-- ==========================================
-                         TEXT FIELDS
-                    =========================================== --}}
-
-                    @elseif($type === 'text')
-
-                        @php
-
-                            $text = $field['text'] ?? '';
-
-                            /*
-                            |--------------------------------------------------------------------------
-                            | Replace known values with registration data
-                            |--------------------------------------------------------------------------
-                            */
-
-                            switch ($fieldKey) {
-
-                                case 'name':
-                                    $text = $user->name;
-                                    break;
-
-                                case 'email':
-                                    $text = $user->email;
-                                    break;
-
-                                case 'mobile':
-                                    $text = $user->mobile;
-                                    break;
-
-                                case 'organization':
-                                    $text = $user->organization;
-                                    break;
-
-                                case 'address':
-                                    //$text = $user->address;
-                                    break;
-
-                                case 'user_unique_code':
-                                    $text = $user->user_unique_code;
-                                    break;
-
-                            }
-
-                            /*
-                            |--------------------------------------------------------------------------
-                            | Replace placeholders too
-                            |--------------------------------------------------------------------------
-                            */
-
-                            $text = str_replace(
-                                [
-                                    '{{name}}',
-                                    '{{email}}',
-                                    '{{mobile}}',
-                                    '{{organization}}',
-                                    '{{address}}',
-                                    '{{user_unique_code}}'
-                                ],
-                                [
-                                    $user->name,
-                                    $user->email,
-                                    $user->mobile,
-                                    $user->organization,
-                                    $user->address,
-                                    $user->user_unique_code
-                                ],
-                                $text
-                            );
-
-                        @endphp
-
-
-                        <div
-                            class="layout-element layout-text"
-                            style="
-                                left: {{ $leftPercent }}%;
-                                top: {{ $topPercent }}%;
-                                width: {{ $widthPercent }}%;
-                                height: {{ $heightPercent }}%;
-
-                                font-size: {{ $field['fontSize'] ?? 12 }}px;
-
-                                color: {{ $field['color'] ?? '#000' }};
-
-                                font-weight: {{ $field['fontWeight'] ?? '400' }};
-
-                                text-align: {{ $field['textAlign'] ?? 'left' }};
-
-                                {{ $field['css'] ?? '' }}
-                            "
-                        >
-                            {{ $text }}
-                        </div>
-
-                    @endif
-
-                @endforeach
-
-
-                {{-- ==========================================
-                     TABLE DATA
-                =========================================== --}}
-
-                @if($tablePosition)
-
-                    @php
-
-                        $tableLeft =
-                            ((float)($tablePosition['left'] ?? 0)
-                            / (float)($cardLayout['cardWidth'] ?? 294.803))
-                            * 100;
-
-                        $tableTop =
-                            ((float)($tablePosition['top'] ?? 0)
-                            / (float)($cardLayout['cardHeight'] ?? 472.44))
-                            * 100;
-
-                        $tableWidth =
-                            ((float)($tablePosition['width'] ?? 150)
-                            / (float)($cardLayout['cardWidth'] ?? 294.803))
-                            * 100;
-
-                    @endphp
-
-                    <div
-                        class="layout-element"
-                        style="
-                            left: {{ $tableLeft }}%;
-                            top: {{ $tableTop }}%;
-                            width: {{ $tableWidth }}%;
-                        "
-                    >
-
-                        <table class="user-table">
-
-                            <tr>
-                                <td><strong>Name</strong></td>
-                                <td>{{ $user->name }}</td>
-                            </tr>
-
-                            <tr>
-                                <td><strong>Mobile</strong></td>
-                                <td>{{ $user->mobile }}</td>
-                            </tr>
-
-                            @if(!empty($user->email))
-                                <tr>
-                                    <td><strong>Email</strong></td>
-                                    <td>{{ $user->email }}</td>
-                                </tr>
-                            @endif
-
-                            @if(!empty($user->organization))
-                                <tr>
-                                    <td><strong>Organization</strong></td>
-                                    <td>{{ $user->organization }}</td>
-                                </tr>
-                            @endif
-
-                        </table>
-
                     </div>
 
-                @endif
+                @endforeach
 
             </div>
 
         @endforeach
-
     </div>
-
-@endforeach
-
-</div>
-
-
-<script>
-    /*
-    |--------------------------------------------------------------------------
-    | Automatically open print dialog
-    |--------------------------------------------------------------------------
-    */
-
-    window.addEventListener('load', function () {
-
-        setTimeout(function () {
-            window.print();
-        }, 500);
-
-    });
-</script>
-
+@endif
 </body>
 </html>
 

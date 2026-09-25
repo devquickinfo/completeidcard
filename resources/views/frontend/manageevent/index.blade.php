@@ -244,7 +244,7 @@
 
                                              <a href="{{ route('manage-event.print.idcard', $event->id) }}"
                                                class="btn btn-sm btn-primary"
-                                               title="Print ID Card" target="_blank">
+                                               title="Print ID Card">
                                                 <i class="fas fa-print"></i>
                                             </a>                                         
                                         </td>

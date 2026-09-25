@@ -335,7 +335,7 @@
                                                             $qrValue = $manageEvent->user_unique_code ?? null;
 
                                                             $qrUrl = $qrValue
-                                                                ? route('show.register.user.mobile', [
+                                                                ? route('show.register.user.mobile.card', [
                                                                     'id' => $qrValue
                                                                 ])
                                                                 : null;

@@ -392,6 +392,36 @@
                                                         <i class="fas fa-edit"></i>
                                                     </a>
 
+
+                                                    <form action="{{ route('manage-events.destroy', $event->id) }}"
+                                                          method="POST"
+                                                          class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                                class="btn btn-sm btn-danger"
+                                                                title="Delete">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                    <a href="{{ route('manage-event.people', $event->unique_code) }}"
+                                                       class="btn btn-sm btn-info"
+                                                       title="People">
+
+                                                        <i class="fas fa-user"></i>
+                                                    </a>
+                                                    <a href="{{ route('manage-event.settings', $event->id) }}"
+                                                       class="btn btn-sm btn-primary"
+                                                       title="Settings">
+                                                        <i class="fas fa-cog"></i>
+                                                    </a>  
+
+                                                     <a href="{{ route('manage-event.print.idcard', $event->id) }}"
+                                                       class="btn btn-sm btn-primary"
+                                                       title="Print ID Card">
+                                                        <i class="fas fa-print"></i>
+                                                    </a> 
+
                                                 </td>
 
                                             </tr>
