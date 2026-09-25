@@ -163,22 +163,22 @@ Route::middleware('auth')->group(function () {
     Route::get(
     '/manage-events/{event}/settings',
     [ManageEventController::class, 'settings']
-)->name('manage-event.settings');
+    )->name('manage-event.settings');
 
-Route::post(
-    '/manage-events/{event}/settings/custom-fields',
-    [ManageEventController::class, 'storeCustomField']
-)->name('manage-event.custom-fields.store');
+    Route::post(
+        '/manage-events/{event}/settings/custom-fields',
+        [ManageEventController::class, 'storeCustomField']
+    )->name('manage-event.custom-fields.store');
 
-Route::put(
-    '/manage-events/{event}/settings/custom-fields/{field}',
-    [ManageEventController::class, 'updateCustomField']
-)->name('manage-event.custom-fields.update');
+    Route::put(
+        '/manage-events/{event}/settings/custom-fields/{field}',
+        [ManageEventController::class, 'updateCustomField']
+    )->name('manage-event.custom-fields.update');
 
-Route::delete(
-    '/manage-events/{event}/settings/custom-fields/{field}',
-    [ManageEventController::class, 'deleteCustomField']
-)->name('manage-event.custom-fields.delete');
+    Route::delete(
+        '/manage-events/{event}/settings/custom-fields/{field}',
+        [ManageEventController::class, 'deleteCustomField']
+    )->name('manage-event.custom-fields.delete');
 
 
     Route::get('/showRegisterUser/{id}', [ManageEventController::class, 'showRegisterUser'])
@@ -235,5 +235,11 @@ Route::delete(
      // routes/web.php
      Route::post('/event-id-cards/{idCard}/field-image', [EventIdCardController::class, 'uploadFieldImage'])
     ->name('event-id-cards.field-image');
+
+
+    Route::get(
+    '/manage-events/{event}/printidcard',
+    [ManageEventController::class, 'printidcard']
+    )->name('manage-event.print.idcard');
     
 });

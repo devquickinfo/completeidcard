@@ -226,9 +226,6 @@
 
                                 <div class="col-md-6">
                                     <div class="info-item">
-                                        <div class="info-icon bg-primary">
-                                            <i class="fas fa-id-card-alt"></i>
-                                        </div>
                                         <div class="flex-grow-1">
                                             <div class="info-label mb-2">
                                                 Event ID Card

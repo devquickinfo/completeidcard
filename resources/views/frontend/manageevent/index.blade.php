@@ -240,7 +240,13 @@
                                                class="btn btn-sm btn-primary"
                                                title="Settings">
                                                 <i class="fas fa-cog"></i>
-                                            </a>                                           
+                                            </a>  
+
+                                             <a href="{{ route('manage-event.print.idcard', $event->id) }}"
+                                               class="btn btn-sm btn-primary"
+                                               title="Print ID Card" target="_blank">
+                                                <i class="fas fa-print"></i>
+                                            </a>                                         
                                         </td>
                                     </tr>
                                 @empty

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use App\Models\EventIDCardLayout;
+use App\Models\EventIDCard;
 
 
 class ManageEventController extends Controller
@@ -1123,8 +1124,8 @@ class ManageEventController extends Controller
         'user_unique_code',
         $id
         )->firstOrFail();
-
-       return view('frontend.manageevent.showregisterusermobile', compact('manageEvent'));
+        $layout= EventIDCardLayout::where('event_id',$manageEvent->event_id)->first();
+       return view('frontend.manageevent.showregisterusermobile', compact('manageEvent','layout'));
 
 
     }
@@ -1927,5 +1928,20 @@ class ManageEventController extends Controller
             'success',
             'Custom field deleted successfully.'
         );
+    }
+    public function printidcard($id){
+       // return view('frontend.manageevent.createidcard');
+        $vendorId= Auth::id() ?? session('vendor_viewing');
+        $event=ManageEvent::where('id',$id)->first();
+        $evenidcard=EventIDCard::where('event_id',$id)->first();
+        $alluser=EventRegistration::where('event_id',$id)->get();
+        $layout=EventIDCardLayout::where('vendor_id',$vendorId)->where('event_id',$id)->first();
+
+        //echo '<pre>'; print_r($layout); 
+        return view('frontend.manageevent.print_filtered_idcards', compact(
+            'evenidcard',
+            'alluser',
+            'layout'
+        ));
     }
 }

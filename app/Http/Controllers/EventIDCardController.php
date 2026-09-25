@@ -17,15 +17,28 @@ class EventIDCardController extends Controller
      */
     public function index()
     {
-        $events= ManageEvent::where('vendor_id',Auth::id())->get();
-        $idcards =EventIDCard::where('vendor_id',Auth::id())->get();
-        return view('frontend.eventidcard.upload',compact('idcards','events'));
+        // $events= ManageEvent::where('vendor_id',Auth::id())->get();
+        // $idcards =EventIDCard::where('vendor_id',Auth::id())->get();
+        // return view('frontend.eventidcard.upload',compact('idcards','events'));
+        $vendorId = session('vendor_viewing') ?? Auth::id();
+
+        $events = ManageEvent::where('vendor_id', $vendorId)->get();
+
+        $idcards = EventIDCard::where('vendor_id', $vendorId)->get();
+
+        return view(
+            'frontend.eventidcard.upload',
+            compact('idcards', 'events')
+        );
     }
 
     
     public function create()
     {
-        return view('frontend.eventidcard.create');
+        $vendorId = session('vendor_viewing') ?? Auth::id();
+
+        $events = ManageEvent::where('vendor_id', $vendorId)->get();
+        return view('frontend.eventidcard.create',compact('events'));
     }
 
     // public function store(Request $request)
@@ -121,6 +134,7 @@ class EventIDCardController extends Controller
                 'width'      => 'required|numeric|min:1',
                 'height'     => 'required|numeric|min:1',
                 'paper_size' => 'required|in:A4,A3,A5,A6',
+                'cardperpage' => 'required',
             ]);
 
             $eventIDCard->event_id = $validated['event_id'];
@@ -128,6 +142,7 @@ class EventIDCardController extends Controller
             $eventIDCard->width = $validated['width'];
             $eventIDCard->height = $validated['height'];
             $eventIDCard->paper_size = $validated['paper_size'];
+            $eventIDCard->cardperpage = $validated['cardperpage'];
 
             if ($request->hasFile('image')) {
 
@@ -160,6 +175,7 @@ class EventIDCardController extends Controller
             'width'      => 'required|numeric|min:1',
             'height'     => 'required|numeric|min:1',
             'paper_size' => 'required|in:A4,A3,A5,A6',
+            'cardperpage' => 'required',
         ]);
 
         $eventIDCard = new EventIDCard();
@@ -170,6 +186,7 @@ class EventIDCardController extends Controller
         $eventIDCard->width = $validated['width'];
         $eventIDCard->height = $validated['height'];
         $eventIDCard->paper_size = $validated['paper_size'];
+        $eventIDCard->cardperpage = $validated['cardperpage'];
 
         if ($request->hasFile('image')) {
             $eventIDCard->file_path = $request
@@ -242,8 +259,10 @@ class EventIDCardController extends Controller
             'name'            => 'nullable|string|max:255',
             'event_id'        => 'nullable|integer',
             'sample_id'       => 'nullable|integer',
-            'card_width'      => 'required|numeric',
-            'card_height'     => 'required|numeric',
+            //'card_width'      => 'required|numeric',
+            //'card_height'     => 'required|numeric',
+            'width'           => 'required|numeric',
+            'height'          => 'required|numeric',
             'layout'          => 'required|string', // JSON string via FormData
             'background'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'background_path' => 'nullable|string',
@@ -287,12 +306,17 @@ class EventIDCardController extends Controller
             'event_id'   => $data['event_id'] ?? null,
             'sample_id'  => $data['sample_id'] ?? null,
             'name'       => $data['name'] ?? 'Default ID Card',
-            'width'      => $data['card_width'],
-            'height'     => $data['card_height'],
+            'width'      => $data['width'],
+            'height'     => $data['height'],
             'layout'     => $layoutArray,
             'background' => $backgroundPath,
             'is_default' => $data['is_default'] ?? false,
         ]);
+
+        $idCardData = EventIDCard::findOrFail($data['sample_id']);
+        $idCardData->width =  $data['width'];
+        $idCardData->height = $data['height'];
+        $idCardData->save();
 
         return response()->json([
             'success' => true,

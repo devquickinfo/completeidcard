@@ -9,7 +9,11 @@ class EventIDCard extends Model
 	protected $table='event_id_cards';
     protected $fillable = [
     'name',
-    'image',
+    'file_path',
     'vendor_id',
+    'height',
+    'width',
+    'paper_size',
+    'cardperpage',
    ];
 }

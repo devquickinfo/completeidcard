@@ -900,45 +900,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 (function () {
-
-    // =========================================================
-    // BASIC CARD VARIABLES
-    // =========================================================
-
     const card = document.getElementById('idCard');
-
-    // Card size now comes straight from user input (no horizontal/
-    // vertical preset). Change the default values below if you want
-    // a different starting size.
-    // let CARD_W = {{$width}};
-    // let CARD_H = {{$height}};
-
-    // const cardWidthInput  = document.getElementById('cardWidthInput');
-    // const cardHeightInput = document.getElementById('cardHeightInput');
-    // const applyCardSizeBtn = document.getElementById('applyCardSizeBtn');
-
-    // function applyCardSize() {
-
-    //     const w = Math.max(50, parseInt(cardWidthInput?.value, 10) || CARD_W);
-    //     const h = Math.max(50, parseInt(cardHeightInput?.value, 10) || CARD_H);
-
-    //     CARD_W = w;
-    //     CARD_H = h;
-
-    //     card.style.width  = CARD_W + 'px';
-    //     card.style.height = CARD_H + 'px';
-    // }
-
-    // if (cardWidthInput)  cardWidthInput.value  = CARD_W;
-    // if (cardHeightInput) cardHeightInput.value = CARD_H;
-
-    // applyCardSize(); // set initial size on load
-
-    // Laravel values are in MM this is changed
     let CARD_W_MM = {{ $width }};
     let CARD_H_MM = {{ $height }};
 
-    // Pixel values used by the editor
     let CARD_W = 0;
     let CARD_H = 0;
 
@@ -948,14 +913,10 @@
     const cardHeightInput = document.getElementById('cardHeightInput');
     const applyCardSizeBtn = document.getElementById('applyCardSizeBtn');
 
-
-    // MM → PX
     function mmToPx(mm) {
         return mm * MM_TO_PX;
     }
 
-
-    // PX → MM
     function pxToMm(px) {
         return px / MM_TO_PX;
     }
@@ -963,7 +924,6 @@
 
     function applyCardSize() {
 
-        // Get MM values from inputs
         const wMm = Math.max(
             10,
             parseFloat(cardWidthInput?.value) || CARD_W_MM
@@ -975,12 +935,9 @@
         );
 
 
-        // Keep original values in MM
         CARD_W_MM = wMm;
         CARD_H_MM = hMm;
 
-
-        // Convert MM → PX
         CARD_W = mmToPx(CARD_W_MM);
         CARD_H = mmToPx(CARD_H_MM);
 
@@ -1003,9 +960,7 @@
 
     // Apply initial size
     applyCardSize();
-
     if (applyCardSizeBtn) {
-        //applyCardSizeBtn.addEventListener('click', applyCardSize);
        applyCardSizeBtn.addEventListener('click', function () {
             const width = cardWidthInput.value;
             const height = cardHeightInput.value;
@@ -1090,10 +1045,7 @@
 
     renderTableDataPreview();
 
-
-    // =========================================================
-    // TABLE VISUAL BUILDER
-    // =========================================================
+    
     (function () {
 
         const gridEditor = document.getElementById('tableGridEditor');
@@ -3075,16 +3027,7 @@
     wireExportButton('exportLayoutBtnFloat');
 
 
-    // =========================================================
-    // SAVE ID CARD (POST layout JSON to your server)
-    // =========================================================
-
-        // =========================================================
-    // SAVE ID CARD
-    // Sends the layout JSON + (optionally) the background image
-    // file in one multipart request. The controller stores the
-    // file and saves only its path in the `background` column.
-    // =========================================================
+  
 
     function wireSaveButton(id) {
 
@@ -3103,6 +3046,9 @@
                 formData.append('name', 'Default ID Card');
                 formData.append('card_width', CARD_W);
                 formData.append('card_height', CARD_H);
+
+                formData.append('width', CARD_W_MM);
+                formData.append('height', CARD_H_MM);
                 formData.append('layout', JSON.stringify(layout));
 
                 if (sampleId) {
