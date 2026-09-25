@@ -3,7 +3,7 @@
 @section('content')
 @php
  
-  $editorBackground = $idCardData->file_path;
+  $editorBackground = @$idCardData->file_path;
   $editorBackgroundUrl = $editorBackground
       ? (preg_match('/^https?:\\/\\//', $editorBackground)
           ? $editorBackground

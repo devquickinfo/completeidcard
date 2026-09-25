@@ -1,13 +1,15 @@
 @php
     use App\Helpers\ImageHelper;
-     $defaultOrientation = \App\Models\Mainidcard::where(
+     /*$defaultOrientation = \App\Models\Mainidcard::where(
     'school_id',
     auth()->user()->school_id ?? session('viewing_school')
     )
     ->whereNull('class_id')
     ->whereNull('applicable_id')
     ->where('is_default', 1)
-    ->value('orientation') ?? 'vertical';
+    ->value('orientation') ?? 'vertical';*/
+    $defaultOrientation = \App\Models\Mainidcard::where('school_id',auth()->user()->school_id ?? session('viewing_school')
+    )->latest('id')->value('orientation') ?? 'vertical';
     $idCardData = ImageHelper::getIdCard($student->id);
     $verticalSample = $idCardData['verticalSample'];
     $horizontalSample = $idCardData['horizontalSample'];
@@ -16,7 +18,7 @@
     $school = $idCardData['school'];
 @endphp
 <div class="tab-content">
-    <div class="tab-pane fade {{ $orientation === 'vertical' ? 'show active' : '' }}" id="student-vertical-card" role="tabpanel">
+    <div class="tab-pane fade {{  $defaultOrientation=== 'vertical' ? 'show active' : '' }}" id="student-vertical-card" role="tabpanel">
         @if($verticalDesign &&
         is_array($verticalDesign->layout))
         @php
@@ -486,7 +488,7 @@
     {{-- =====================================================
     --}}
 
-    <div class="tab-pane fade {{ $orientation === 'horizontal' ? 'show active' : '' }}" id="student-horizontal-card" role="tabpanel">
+    <div class="tab-pane fade {{  $defaultOrientation === 'horizontal' ? 'show active' : '' }}" id="student-horizontal-card" role="tabpanel">
 
         @if($horizontalDesign &&
         is_array($horizontalDesign->layout))

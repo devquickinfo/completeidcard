@@ -146,26 +146,6 @@
         }
 
         /* =========================
-           TEAR / CUT MARKS
-        ========================== */
-
-        .tear-row {
-            grid-column: 1 / -1;
-            text-align: center;
-        }
-
-        .tear-mark {
-            display: inline-block;
-
-            font-size: 14px;
-            line-height: 1;
-            color: #000;
-
-            pointer-events: none;
-            user-select: none;
-        }
-
-        /* =========================
            LAYOUT ELEMENT
         ========================== */
 
@@ -598,18 +578,11 @@
             (int)($cardperpage ?? 1)
         );
         $userPages = $alluser->chunk($cardPerPage);
-
-        // Only show the +/tear marks when there is more than one card on the page
-        $showTearMarks = $cardPerPage > 1;
     @endphp
     <div class="print-container">
         @foreach($userPages as $users)
 
             <div class="paper">
-
-                @if($showTearMarks)
-                    <div class="tear-row"><span class="tear-mark">+</span></div>
-                @endif
 
                 @foreach($users as $user)
 
@@ -963,10 +936,6 @@
                         @endif
 
                     </div>
-
-                    @if($showTearMarks && ($loop->iteration % $columns === 0 || $loop->last))
-                        <div class="tear-row"><span class="tear-mark">+</span></div>
-                    @endif
 
                 @endforeach
 

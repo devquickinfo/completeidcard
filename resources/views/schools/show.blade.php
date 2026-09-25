@@ -30,8 +30,14 @@
     }
 </style>
 @php
-    $defaultOrientation = \App\Models\Mainidcard::where('school_id',auth()->user()->school_id ?? session('viewing_school')
-    )->latest('id')->value('orientation') ?? 'vertical';
+    //$defaultOrientation = \App\Models\Mainidcard::where('school_id',auth()->user()->school_id ?? session('viewing_school')
+    //)->latest('id')->value('orientation') ?? 'vertical';
+    $defaultOrientation = \App\Models\Mainidcard::where(
+        'school_id',
+        auth()->user()->school_id ?? session('viewing_school')
+    )->first();
+
+    
     /*$defaultOrientation = \App\Models\Mainidcard::where(
         'school_id',
         auth()->user()->school_id ?? session('viewing_school')
@@ -179,7 +185,7 @@
                                 </div>
                                 <ul class="nav nav-tabs mb-3" role="tablist">
                                     <li class="nav-item">
-                                        <a class="nav-link {{ $defaultOrientation === 'vertical' ? 'active' : '' }}" id="vertical-tab" data-toggle="tab"
+                                        <a class="nav-link {{ $defaultOrientation->orientation === 'vertical' ? 'active' : '' }}" id="vertical-tab" data-toggle="tab"
                                             href="#vertical-card" role="tab">
 
                                             <i class="fas fa-mobile-alt mr-1"></i>
@@ -188,7 +194,7 @@
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link {{ $defaultOrientation === 'horizontal' ? 'active' : '' }}" id="horizontal-tab" data-toggle="tab"
+                                        <a class="nav-link {{ $defaultOrientation->orientation === 'horizontal' ? 'active' : '' }}" id="horizontal-tab" data-toggle="tab"
                                             href="#horizontal-card" role="tab">
 
                                             <i class="fas fa-mobile-alt fa-rotate-90 mr-1"></i>
@@ -197,7 +203,7 @@
                                     </li>
                                 </ul>
                                 <div class="tab-content">
-                                    <div class="tab-pane fade show {{ $defaultOrientation === 'vertical' ? 'show active' : '' }}" id="vertical-card" role="tabpanel">
+                                    <div class="tab-pane fade show {{ $defaultOrientation->orientation === 'vertical' ? 'show active' : '' }}" id="vertical-card" role="tabpanel">
 
                                         @if($verticalDesign && is_array($verticalDesign->layout))
 
@@ -250,7 +256,7 @@
 
                                         <div class="id-card-preview text-center">
 
-                                        <a href="{{ route('card.template.edit',['schoolId' => $school->id, 'orientation' => 'vertical']) }}"
+                                        <a href="{{ route('card.template.edit',['schoolId' => $defaultOrientation->sample_id, 'orientation' => 'vertical']) }}"
                                                 target="_blank" title="Edit Vertical ID Card"
                                                 style="display:inline-block;">
 
@@ -263,7 +269,7 @@
                                             cursor:pointer;
                                             ">
 
-                                                                        <div style="
+                                            <div style="
                                                 width:{{ $cardW }}px;
                                                 height:{{ $cardH }}px;
                                                 position:relative;
@@ -452,7 +458,7 @@
 
                                         {{-- No saved design --}}
                                         <div class="id-card-preview text-center">
-                                        <a href="{{ route('card.template.edit', [ 'schoolId' => $school->id, 'orientation' => 'vertical']) }}"
+                                        <a href="{{ route('card.template.edit', [ 'schoolId' => $defaultOrientation->sample_id, 'orientation' => 'vertical']) }}"
                                                 target="_blank">
 
                                                 <img src="{{ asset('storage/' . $verticalSample->file_path) }}"
@@ -483,7 +489,7 @@
                                     {{-- HORIZONTAL --}}
                                     {{-- ===================================================== --}}
 
-                                    <div class="tab-pane fade {{ $defaultOrientation === 'horizontal' ? 'show active' : '' }}" id="horizontal-card" role="tabpanel">
+                                    <div class="tab-pane fade {{ $defaultOrientation->orientation === 'horizontal' ? 'show active' : '' }}" id="horizontal-card" role="tabpanel">
 
                                         @if($horizontalDesign && is_array($horizontalDesign->layout))
 
@@ -532,7 +538,7 @@
                                         }
                                         @endphp
                                         <div class="id-card-preview text-center">
-                                            <a href="{{ route('card.template.edit', [ 'schoolId' => $school->id, 'orientation' => 'horizontal']) }}"
+                                            <a href="{{ route('card.template.edit', [ 'schoolId' => $defaultOrientation->sample_id, 'orientation' => 'horizontal']) }}"
                                                 target="_blank" title="Edit Horizontal ID Card"
                                                 style="display:inline-block;">
 
@@ -687,7 +693,7 @@
                                         </div>
                                         @elseif($horizontalSample)
                                         <div class="id-card-preview text-center">
-                                            <a href="{{ route('card.template.edit', ['schoolId' => $school->id, 'orientation' => 'horizontal']) }}"
+                                            <a href="{{ route('card.template.edit', ['schoolId' => $defaultOrientation->sample_id, 'orientation' => 'horizontal']) }}"
                                                 target="_blank">
 
                                                 <img src="{{ asset('storage/' . $horizontalSample->file_path) }}"

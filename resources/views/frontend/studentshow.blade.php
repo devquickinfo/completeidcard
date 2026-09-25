@@ -2,16 +2,16 @@
 @section('title', 'Student Details')
 @section('content')
 @php
-   // $defaultOrientation = \App\Models\Mainidcard::where('school_id',auth()->user()->school_id ?? //session('viewing_school'))->latest('id')->value('orientation') ?? 'vertical';
+    $defaultOrientation = \App\Models\Mainidcard::where('school_id',auth()->user()->school_id ?? session('viewing_school'))->latest('id')->value('orientation') ?? 'vertical';
 
-   $defaultOrientation = \App\Models\Mainidcard::where(
+   /*$defaultOrientation = \App\Models\Mainidcard::where(
     'school_id',
     auth()->user()->school_id ?? session('viewing_school')
     )
     ->whereNull('class_id')
     ->whereNull('applicable_id')
     ->where('is_default', 1)
-    ->value('orientation') ?? 'vertical';
+    ->value('orientation') ?? 'vertical';*/
 @endphp
 <style>
     /*.student-photo-wrapper {
